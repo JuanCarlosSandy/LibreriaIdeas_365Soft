@@ -606,6 +606,36 @@ public function indexRecibo(Request $request)
         }
     }
 
+    public function store2(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+        $idtipoventa = $request->idtipo_venta;
+
+        try {
+            DB::beginTransaction();
+
+            if (!$this->validarCajaAbierta()) {
+                return ['id' => -1, 'caja_validado' => 'Debe tener una caja abierta'];
+            }
+
+            if ($request->tipo_comprobante === "RESIVO") {
+                // Crear venta con RESIVO
+                $venta = $this->crearVentaResivo2($request);
+            } else {
+                // Crear venta regular (con factura)
+                $venta = $this->crearVenta2($request);
+            }
+
+            //$this->actualizarCaja($request);
+            $this->registrarDetallesVenta($venta, $request->data, $request->idAlmacen);
+            $this->notificarAdministradores();
+
+            DB::commit();
+            return ['id' => $venta->id];
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+    }
 
 
     private function validarCajaAbierta()
@@ -642,6 +672,38 @@ public function indexRecibo(Request $request)
             $venta->estado = 'Pendiente';
         } else {
             $venta->estado = 'Registrado';
+        }
+
+        $venta->idcaja = Caja::latest()->first()->id;
+        $venta->save();
+
+        if ($request->idtipo_venta == 2) {
+            $creditoventa = $this->crearCreditoVenta($venta, $request);
+            $this->registrarCuotasCredito($creditoventa, $request->cuotaspago);
+        }
+
+        return $venta;
+    }
+
+    private function crearVenta2($request)
+    {
+        $venta = new Venta();
+        $venta->fill($request->only([
+            'idcliente',
+            'idtipo_pago',
+            'idtipo_venta',
+            'tipo_comprobante',
+            'serie_comprobante',
+            'num_comprobante',
+            'impuesto',
+            'total'
+        ]));
+        $venta->idusuario = \Auth::user()->id;
+        $venta->fecha_hora = now()->setTimezone('America/La_Paz');
+        $venta->estado = 'Pendiente';
+
+        if ($request->idtipo_venta == 2) {
+            $venta->estado = 'Pendiente';
         }
 
         $venta->idcaja = Caja::latest()->first()->id;
@@ -1592,6 +1654,38 @@ public function indexRecibo(Request $request)
         return $ventaResivo;
     }
 
+    private function crearVentaResivo2($request)
+    {
+        $ventaResivo = new Venta();
+        $ventaResivo->fill($request->only([
+            'idcliente',
+            'idtipo_pago',
+            'idtipo_venta',
+            'tipo_comprobante', // Asumiendo que el tipo de comprobante es 'RESIVO'
+            'serie_comprobante', // Agregado para prueba
+            'num_comprobante', // Agregado para prueba
+            'impuesto',
+            'total'
+        ]));
+        $ventaResivo->idusuario = \Auth::user()->id;
+        $ventaResivo->fecha_hora = now()->setTimezone('America/La_Paz');
+        $ventaResivo->estado = 'Pendiente';
+
+        if ($request->idtipo_venta == 2) {
+            $ventaResivo->estado = 'Pendiente';
+        }
+
+        $ventaResivo->idcaja = Caja::latest()->first()->id;
+        $ventaResivo->save();
+
+        if ($request->idtipo_venta == 2) {
+            $creditoventa = $this->crearCreditoVenta($ventaResivo, $request);
+            $this->registrarCuotasCredito($creditoventa, $request->cuotaspago);
+        }
+
+        return $ventaResivo;
+    }
+
     public function imprimirFacturaRollo($id)
     {
         $user = Auth::user();
@@ -2269,5 +2363,75 @@ public function imprimirResivoCarta($id) {
         }
     }
 
-    
+    public function ventaSelecionada($id)
+    {
+        // Encuentra la venta por su ID
+        $venta = Venta::find($id);
+
+        // Verifica si la venta existe
+        if ($venta) {
+            // Devuelve la respuesta JSON con los datos requeridos
+            return response()->json([
+                'id' => $venta->id,
+                'num_comprobante' => $venta->num_comprobante,
+                'total' => $venta->total,
+            ]);
+        } else {
+            // Devuelve un error 404 si la venta no se encuentra
+            return response()->json(['message' => 'Venta no encontrada'], 404);
+        }
+    }
+
+    public function cerrarVenta(Request $request)
+{
+    if (!$request->ajax()) return redirect('/');
+
+    try {
+        DB::beginTransaction();
+
+        $venta = Venta::findOrFail($request->id);
+        $venta->idtipo_pago = $request->idtipo_pago;
+        $venta->estado = $request->estado;
+
+        // Buscar la caja asociada a la venta
+        $ultimaCaja = Caja::find($venta->idcaja);
+
+        if ($ultimaCaja) {
+            // Actualizar las ventas y el saldo de la caja dependiendo del tipo de pago
+            if ($venta->idtipo_pago == 1) {
+                $ultimaCaja->ventasContado += $venta->total;
+                $ultimaCaja->saldoCaja += $venta->total;
+                $ultimaCaja->saldototalventas += $venta->total;
+            } elseif ($venta->idtipo_pago == 7) {
+                $ultimaCaja->ventasQR += $venta->total;
+                $ultimaCaja->saldototalventas += $venta->total;
+            } elseif ($venta->idtipo_pago == 2) {
+                $ultimaCaja->ventasTarjeta += $venta->total;
+                $ultimaCaja->saldototalventas += $venta->total;
+            }
+
+            // Guardar la caja
+            $ultimaCaja->save();
+        } else {
+            return response()->json([
+                'id' => -1,
+                'error' => 'No se encontró la caja asociada a esta venta'
+            ]);
+        }
+
+        $venta->save();
+
+        DB::commit();
+
+        return response()->json(['id' => $venta->id]);
+
+    } catch (Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'id' => -1,
+            'error' => 'Ha ocurrido un error al cerrar la venta'
+        ]);
+    }
+}
+
 }

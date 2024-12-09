@@ -2,11 +2,11 @@
     <main class="main">
         <!-- Breadcrumb -->
         <Panel header=" Ventas">
-            <span class="badge bg-secondary" id="comunicacionSiat" style="color: white;" v-show="mostrarElementos">Desconectado</span>
+            <!--<span class="badge bg-secondary" id="comunicacionSiat" style="color: white;" v-show="mostrarElementos">Desconectado</span>
             <span class="badge bg-secondary" id="cuis" v-show="mostrarElementos">CUIS: Inexistente</span>
             <span class="badge bg-secondary" id="cufd" v-show="mostrarElementos">No existe cufd vigente</span>
             <span class="badge bg-secondary" id="direccion" v-show="mostrarDireccion">No hay dirección registrada</span>
-            <span class="badge bg-primary" id="cufdValor" v-show="mostrarCUFD">No hay CUFD</span>
+            <span class="badge bg-primary" id="cufdValor" v-show="mostrarCUFD">No hay CUFD</span>-->
 
             <template>
                 <div class="p-d-flex p-jc-between p-ai-center">
@@ -16,10 +16,9 @@
                     </span>
 
                     <Button icon="pi pi-refresh" @click="resetBuscarCriterio" class="p-button-rounded p-button-text"></Button>
-
                     <div class="col-md-6 text-right">
-                            <button class="btn btn-primary" @click="cambiarTipoventa('Factura', buscar, criterio)">Factura</button>
-                            <button class="btn btn-secondary" @click="cambiarTipoventa('Recibo', buscar, criterio)">Recibo</button>
+                        <button class="btn btn-primary" @click="cambiarTipoventa('Factura', buscar, criterio)">Factura</button>
+                        <button class="btn btn-secondary" @click="cambiarTipoventa('Recibo', buscar, criterio)">Recibo</button>
                     </div>
                     <Button @click="abrirTipoVenta" label="Nuevo" icon="pi pi-plus" class="p-button-primary" />
                 </div>
@@ -36,7 +35,7 @@
                                         icon="pi pi-eye" 
                                         @click="verVenta(slotProps.data.id)" 
                                         class="p-button-sm p-mr-1"
-                                        style="background-color: green; border-color: green; color: white;" 
+                                        style="background-color: red; border-color: yellow; color: white;" 
                                     />
 
                                     <!-- Botón para desactivar la venta, solo para recibos y estado registrado -->
@@ -55,6 +54,15 @@
                                         v-if="slotProps.data.tipo_comprobante === 'RESIVO'" 
                                         @click="imprimirResivo(slotProps.data.id, slotProps.data.correo)"
                                         class="p-button-sm p-button-primary p-mr-1" 
+                                    />
+
+                                    <!-- Botón para abrir modal de pago -->
+                                    <Button 
+                                        icon="pi pi-dollar" 
+                                        v-if="slotProps.data.estado === 'Pendiente'" 
+                                        @click="abrirModalPago(slotProps.data.id)" 
+                                        class="p-button-sm p-mr-1" 
+                                        style="background-color: green; border-color: green; color: white;" 
                                     />
 
                                     <!-- Botones para acciones de factura -->
@@ -92,14 +100,10 @@
                             <Column field="estado" header="Estado" class="d-none d-md-table-cell"></Column>
                         </DataTable>
 
-
                     <Paginator :rows="5" :totalRecords="pagination.total" :first="(pagination.current_page - 1) * 5"
                         @page="onPageChange" />
                 </div>
             </template>
-
-
-
             <!--Fin Listado-->
 
             <!--Ver ingreso-->
@@ -374,7 +378,7 @@
                                     <!-- ... (existing cash and QR payment code) ... -->
                                     <div class="d-flex justify-content-center mb-3">
                                         <div class="form-group">
-                                            <div class="btn-group">
+                                            <!--<div class="btn-group">
                                                 <button class="btn btn-primary" @click="opcionPago = 'efectivo'">
                                                     <i class="fa fa-money mr-2" aria-hidden="true"></i>
                                                     Efectivo
@@ -383,11 +387,11 @@
                                                     <i class="fa fa-qrcode mr-2" aria-hidden="true"></i>
                                                     QR
                                                 </button>
-                                            </div>
+                                            </div>-->
                                         </div><br>
                                         <div v-if="opcionPago === 'efectivo'">
                                             <div class="row">
-                                                <div class="col-md-7">
+                                                <!--<div class="col-md-7">
                                                     <div class="card">
                                                         <div class="card-body">
                                                             <form>
@@ -421,11 +425,11 @@
                                                             </form>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-5">
+                                                </div>-->
+                                                <div class="col-md-12">
                                                     <div class="card">
                                                         <div class="card-body">
-                                                            <div class="mb-3">
+                                                            <div class="mb-12">
                                                                 <h5 class="mb-0">Detalle de Venta</h5>
                                                             </div>
                                                             <div class="d-flex justify-content-between mb-2">
@@ -597,9 +601,7 @@
                                         @click="registrarVenta()">Registrar</button>
                                 </div>
 
-                                </div>
-                             
-
+                                </div>                           
                             </div>
 
                             <div class="buttons d-flex justify-content-center">
@@ -609,13 +611,134 @@
                                     :disabled="step === 3">Siguiente</button>
                             </div>
                         </div>
-                    
-               
-              
-        
              </Dialog>
             
         </template>
+
+        <!-- Modal de Pago -->
+        <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentModalLabel">Opciones de Pago</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <template v-if="cambiar_pagina == 1">
+                            <TabView>
+                                <TabPanel header="Efectivo">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card shadow-sm">
+                                                    <div class="card-body">
+                                                        <form>
+                                                            <div class="form-group">
+                                                                <label for="montoEfectivo"><i class="fa fa-money mr-2"></i> Monto Recibido:</label>
+                                                                <div class="input-group mb-3">
+                                                                    <div class="input-group-prepend">
+                                                                        <span class="input-group-text">{{ monedaVenta[1] }}</span>
+                                                                    </div>
+                                                                    <input type="number" class="form-control" id="montoEfectivo" v-model="recibido" placeholder="Ingrese el monto recibido">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="cambioRecibir"><i class="fa fa-exchange mr-2"></i> Entregar:</label>
+                                                                <input type="text" class="form-control" id="cambioRecibir" placeholder="Se calculará automáticamente" :value="(recibido - totalReservaSeleccionada).toFixed(2)" readonly>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card shadow-sm">
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <h5 class="mb-0"> Detalle de Venta</h5>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between mb-2">
+                                                            <span><i class="fa fa-dollar mr-2"></i> Monto:</span>
+                                                            <span class="font-weight-bold">{{ Number(totalReservaSeleccionada).toFixed(2) }}</span>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between mb-2">
+                                                            <span><i class="fa fa-tag mr-2 text-success"></i> Descuento:</span>
+                                                            <span class="font-weight-bold text-success">0.00</span>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="d-flex justify-content-between">
+                                                            <span><i class="fa fa-money mr-2"></i> Total:</span>
+                                                            <span class="font-weight-bold h5">{{ Number(totalReservaSeleccionada).toFixed(2) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" @click="cerrarVenta(1)" class="btn btn-success btn-block">
+                                                    <i class="fa fa-check mr-2"></i> Registrar Pago
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </TabPanel>
+
+                                <TabPanel header="QR">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <div>
+                                            <InputText v-model="alias" readonly style="display: none;" />
+                                            <br>
+                                            <label for="montoQR">Monto:</label>
+                                            <span class="font-weight-bold">{{ Number(totalReservaSeleccionada).toFixed(2) }}</span>
+                                            <br>
+                                            <Button v-if="(idrol !== 1 || (idrol === 1  && tipo_entrega != 'Entregas'))" @click="generarQr" label="Generar QR" />
+                                            
+                                            <!-- Espacio para mostrar la imagen del código QR -->
+                                            <div v-if="qrImage">
+                                                <img :src="qrImage" alt="Código QR" />
+                                            </div>
+
+                                            <!-- Botón para verificar estado -->
+                                            <Button @click="verificarEstado" v-if="qrImage" label="Verificar Estado de Pago" />
+
+                                            <!-- Mostrar estado de transacción -->
+                                            <div v-if="estadoTransaccion" class="p-card p-p-2">
+                                                <div class="p-text-bold">Estado Actual:</div>
+                                                <div>
+                                                    <Badge :value="estadoTransaccion.objeto.estadoActual" :severity="badgeSeverity" />
+                                                </div>
+                                            </div>
+
+                                            <!-- Botón para registrar la venta -->
+                                            <button
+                                                v-if="((idrol === 1 && tipo_entrega === 'Entregas')   || (idrol === 2 && estadoTransaccion && estadoTransaccion.objeto.estadoActual === 'PAGADO' ) || (idrol === 1 && tipo_entrega != 'Entregas' && estadoTransaccion && estadoTransaccion.objeto.estadoActual === 'PAGADO'  ))" 
+                                                type="button" @click="cerrarVenta(7)" class="btn btn-success btn-block">
+                                                <i class="fa fa-check mr-2"></i> Confirmar Venta
+                                            </button>
+                                        </div>
+                                    </div>
+                                </TabPanel>
+
+                                <TabPanel header="Tarjeta">
+                                    <div>
+                                        <div class="mt-4">
+                                            <form>
+                                                <div class="form-group">
+                                                    <label for="numeroTarjeta"><i class="fa fa-credit-card mr-2"></i> Número de Tarjeta:</label>
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" id="numeroTarjeta" v-model="numeroTarjeta" placeholder="Ingrese el número de tarjeta">
+                                                    </div>
+                                                </div>
+                                                <button type="button" @click="cerrarVenta(2)" class="btn btn-success btn-block"><i class="fa fa-check mr-2"></i> Confirmar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </TabPanel>
+                            </TabView>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <template>
             <Dialog :visible="modal" :containerStyle="{ width: '800px' }" style="padding-top: 35px;" :modal="true"
@@ -678,6 +801,8 @@
 import Dropdown from 'primevue/dropdown';
 import Swal from 'sweetalert2';
 import DataTable from 'primevue/datatable';
+import TabPanel from 'primevue/tabpanel';
+import TabView from 'primevue/tabview';
 import Column from 'primevue/column';
 import Paginator from 'primevue/paginator';
 import Card from 'primevue/card';
@@ -710,9 +835,13 @@ export default {
         Tag,
         SelectButton,
         InputNumber,
+        TabPanel,
+        TabView,
     },
     data() {
         return {
+            tipocompro: 'Recibo',
+
             opcionesPago: [
         { label: 'Efectivo', value: 'efectivo' },
         { label: 'QR', value: 'qr' }
@@ -729,7 +858,6 @@ export default {
       ],
       opcionPago: 'efectivo',
       tipoVenta: 'contado',
-      tipocompro: 'Recibo',
 
       mostrarSpinner: false,
       selectedAlmacen: 1,
@@ -761,6 +889,9 @@ export default {
             datosFormularioKit: [],
             modalDetalleKit: 0,
             arrayKit: [],
+
+            cambiar_pagina: 1,
+            totalReservaSeleccionada: 0,
 
             arrayPreciosEspeciales: [],
             modalDetalle: 0,
@@ -1119,7 +1250,7 @@ export default {
             this.aliasverificacion = this.alias;
             axios.post('/qr/generarqr', {
                 alias: this.alias,
-                monto: this.calcularTotal
+                monto: this.totalReservaSeleccionada
             })
                 .then(response => {
                     const imagenBase64 = response.data.objeto.imagenQr;
@@ -2401,7 +2532,7 @@ export default {
 
                 try {
                     this.mostrarSpinner = true;
-                    const response = await axios.post("/venta/registrar", ventaData);
+                    const response = await axios.post("/venta2/registrar", ventaData);
 
                     if (response.data.id > 0) {
                         this.manejarVentaExitosa(response.data.id);
@@ -2417,7 +2548,96 @@ export default {
             }
         },
 
+         //-------------REGISTRAR VENTA ------
+         async cerrarVenta(idtipo_pago) {
+                /*if (this.validarVenta()) {
+                    return;
+                }*/
 
+                let me = this;
+                let idvent = this.idventaa;
+                this.idtipo_pago = idtipo_pago;
+
+                try {
+                    /*const response = await axios.get(`/api/clientes/existe?documento=${this.documento}`);
+                    if (!response.data.existe) {
+                        const nuevoClienteResponse = await axios.post('/cliente/registrar', {
+                            'nombre': this.cliente,
+                            'num_documento': this.documento,
+                            'email': this.email
+                        });
+
+                        this.idcliente = nuevoClienteResponse.data.id;
+                    } else {
+                        this.idcliente = response.data.cliente.id;
+                    }*/
+
+                    axios.put('/venta/cerrarVenta', {
+                    'id': idvent,
+                    'idtipo_pago': idtipo_pago,
+                    'idtipo_venta': this.idtipo_venta,
+                    'observacion': this.observacion,
+                    'estado': "Registrado"
+
+                }).then(function (response) {
+                    const ventaId = response.data.id;
+                    console.log('Venta cerrada con ID:', ventaId);
+
+                    swal(
+                        'VENTA CERRADA',
+                        'Éxito',
+                        'success'
+                    );
+                        //me.emitirFactura(ventaId);
+                        me.ejecutarFlujoCompleto();
+                        me.listado = 1;
+                        me.listarVenta(1, '', 'num_comprob');
+                        me.cerrarModal2();
+                        me.idproveedor = 0;
+                        me.tipo_comprobante = 'RECIBO';
+                        me.categoria_general = 'bebidas'
+                        me.idtipo_pago = '';
+                        me.telefono = '';
+                        me.numeroTarjeta =  null;
+                        me.metodoPago = '';
+                        me.menu = 49;
+                        me.idproveedor = 0;
+                        me.nombreCliente = '';
+                        me.idcliente = '';
+                        me.tipo_documento = 0;
+                        me.complemento_id = '';
+                        me.cliente = '';
+                        me.documento = '';
+                        me.email = '';
+                        me.imagen = '';
+                        me.serie_comprobante = '';
+                        me.impuesto = 0.18;
+                        me.total = 0.0;
+                        me.codigoComida = 0;
+                        me.articulo = '';
+                        me.cantidad = 0;
+                        me.precio = 0;
+                        me.stock = 0;
+                        me.codigo = '';
+                        me.descuento = 0;
+                        me.arrayDetalle = [];
+                        me.primer_precio_cuota = 0;
+                        me.recibido = 0;
+                        $('#paymentModal').modal('hide');
+
+                }).catch(function (error) {
+                    console.log(error);
+                    swal(
+                        'FALLO AL CERRAR LA VENTA',
+                        'Intente de Nuevo',
+                        'warning'
+                    );
+                    $('#paymentModal').modal('hide');
+                });
+                }catch (error) {
+                    console.error('Error al cerrar la venta:', error);
+                } 
+            },
 
 
 
@@ -2453,6 +2673,7 @@ export default {
                 impuesto: this.impuesto,
                 total: this.calcularTotal,
                 idAlmacen: this.idAlmacen,
+                estado: 'Pendiente',
                 idtipo_pago,
                 idtipo_venta: this.idtipo_venta,
                 data: this.arrayDetalle,
@@ -2532,7 +2753,7 @@ export default {
         let complemento = null;
         //let tipoDocumentoIdentidad = document.getElementById("tipo_documento").value;
         let tipoDocumentoIdentidad = 5;
-        let montoTotal = (this.calcularTotal.toFixed(2));
+        let montoTotal = Number(this.totalReservaSeleccionada).toFixed(2);
         //let descuentoAdicional = document.getElementById("descuentoAdicional").value;
         let descuentoAdicional = this.descuentoAdicional;
         //let usuario = document.getElementById("usuarioAutenticado").value;
@@ -2635,7 +2856,6 @@ export default {
 
                 if (mensaje === "VALIDADA") {
                     me.visibleDialog = false;
-                    me.cambiar_pagina = 0;
                     me.ejecutarFlujoCompleto();
                     //me.obtenerNumeroFactura();
                     
@@ -2665,7 +2885,6 @@ export default {
                 } else{
                     me.listarVenta(1, "", "num_comprobante");
                     me.visibleDialog = false;
-                    me.cambiar_pagina = 0;
                     me.arrayProductos = [];
                     me.codigoExcepcion = 0;
                     me.idtipo_pago = '';
@@ -2793,7 +3012,8 @@ export default {
                 //arrayProductos: [],
                 primer_precio_cuota: 0,
                 step: 1,
-                recibido: 0
+                recibido: 0,
+
             });
         },
 
@@ -3054,6 +3274,29 @@ export default {
                             confirmButtonText: 'Ok'
                         });
                     }
+                });
+        },
+
+        abrirModalPago(ventaId) {
+            this.idventaa = ventaId;
+            axios.get(`/ventaselect/${ventaId}`)
+                .then(response => {
+                    const ventaSeleccionada = response.data;
+                    console.log("Venta seleccionada: ", ventaSeleccionada);
+
+                    if (ventaSeleccionada) {
+                        // Establecer los datos de la venta seleccionada
+                        this.totalReservaSeleccionada = ventaSeleccionada.total;
+                        //this.num_comprob = ventaSeleccionada.num_comprobante;
+
+                        // Mostrar el modal de pago
+                        $('#paymentModal').modal('show');
+                    } else {
+                        console.error('Venta no encontrada');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener la venta:', error);
                 });
         },
     },

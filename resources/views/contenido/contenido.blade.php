@@ -266,6 +266,9 @@
 <template v-if="menu==73">
     <ajusteinventarios></ajusteinventarios>
 </template>
+<template v-if="menu==74">
+    <venta2></venta2>
+</template>
 @elseif (Auth::user()->idrol == 2)
 <template v-if="menu==0">
     <venta></venta>
@@ -301,6 +304,10 @@
 
 <template v-if="menu==28">
     <monitoreoproductos></monitoreoproductos>
+</template>
+
+<template v-if="menu==29">
+    <venta2></venta2>
 </template>
 
 @elseif (Auth::user()->idrol == 3)

@@ -51,6 +51,10 @@
                      <li @click="menu=0" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-shopping-cart"></i> Vender</a>
                     <li @click="menu=55" class="nav-item">
+
+                    <li @click="menu=74" class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-shopping-cart"></i> Vender Campaña</a>
+                    <li @click="menu=55" class="nav-item">
                     <!-- <li @click="menu=40" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-list" style="font-size: 11px;"></i> Registro
                             Ventas</a>

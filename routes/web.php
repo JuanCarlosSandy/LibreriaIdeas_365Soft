@@ -118,6 +118,10 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::get("/venta/obtenerCabecera", "VentaController@obtenerCabecera");
         Route::get("/venta/obtenerDetalles", "VentaController@obtenerDetalles");
         Route::get("/venta/pdf/{id}", "VentaController@pdf")->name("venta_pdf");
+
+        Route::put('/venta/cerrarVenta', 'VentaController@cerrarVenta');
+        Route::post("/venta2/registrar", "VentaController@store2");
+
     });
 
     Route::group(["middleware" => ["Administrador"]], function () {
@@ -286,6 +290,11 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::get("/venta/obtenerCabecera", "VentaController@obtenerCabecera");
         Route::get("/venta/obtenerDetalles", "VentaController@obtenerDetalles");
         Route::get("/venta/pdf/{id}", "VentaController@pdf")->name("venta_pdf");
+
+        Route::put('/venta/cerrarVenta', 'VentaController@cerrarVenta');
+        Route::post("/venta2/registrar", "VentaController@store2");
+
+
 
         Route::get('/ventaReporte', 'VentaController@indexRecibo');
         Route::get('/ventaReporteFactura', 'VentaController@indexFactura');
@@ -915,6 +924,9 @@ Route::group(["middleware" => ["auth"]], function () {
             "/credito/recibo-general/{id}",
             "CreditoVentaController@generarReciboGeneral"
         );
+
+        Route::get('/ventaselect/{id}', 'VentaController@ventaSelecionada');
+
     });
 
     //RUTA PARA RECUPERAR LA SESSION CON EL ID DE LA PERSONA LOGUEADA

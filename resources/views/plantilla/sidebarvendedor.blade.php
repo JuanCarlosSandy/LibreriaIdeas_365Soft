@@ -16,6 +16,9 @@
                             <li @click="menu=5" class="nav-item">
                                 <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Ventas</a>
                             </li>
+                            <li @click="menu=29" class="nav-item">
+                                <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Vender Campaña</a>
+                            </li>
                             <li @click="menu=6" class="nav-item">
                                 <a class="nav-link" href="#"><i class="icon-notebook"></i> Clientes</a>
                             </li>
