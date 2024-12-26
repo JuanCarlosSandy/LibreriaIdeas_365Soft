@@ -76,13 +76,8 @@
                             <small class="p-error" v-if="errores.nombre"><strong>{{ errores.nombre }}</strong></small>
 
                         </div>
-                        <div>
-                            <label class="font-weight-bold" for="nombreGenerico">Nombre Genérico <span class="text-danger">*</span></label>
-                            <InputText id="nombreGenerico" v-model="datosFormulario.nombre_generico" placeholder="Ej. Lapicero" class="form-control p-inputtext-sm" :class="{'p-invalid' : errores.nombre}" @input="validarCampo('nombre_generico')" />
-                            <small class="p-error" v-if="errores.nombre_generico"><strong>{{ errores.nombre_generico }}</strong></small>
-
-                        </div>
                     </div>
+
                     <div class="col-md-6">
                         <div>
                             <label class="font-weight-bold" for="foto">Foto del Producto</label>
@@ -107,19 +102,34 @@
                 <div class="form-group row">
                     <div class="col-md-6">
                         <div>
-                            <label class="font-weight-bold" for="descripcion">Descripción del Producto <span class="text-danger">*</span></label>
-                            <Textarea id="descripcion" v-model="datosFormulario.descripcion" placeholder="Ej. Lapicero color azul" rows="3" class="form-control p-inputtext-sm" 
-                                        :class="{'p-invalid' : errores.descripcion}" @input="validarCampo('descripcion')"/>
-                            <small class="p-error" v-if="errores.descripcion"><strong>{{ errores.descripcion }}</strong></small>
-
+                            <label class="font-weight-bold" for="proveedor">Proveedor <span class="text-danger">*</span></label>
+                            <div class="p-inputgroup ">
+                                <InputText id="proveedor" v-model="proveedorSeleccionado.nombre"  placeholder="Seleccione un proveedor" class="form-control p-inputtext-sm bold-input" disabled 
+                                            :class="{'p-invalid' : errores.idproveedor}"  @input="validarCampo('codigo')"     />
+                                <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Proveedores')" />
+                            </div>
+                            <small class="p-error" v-if="errores.idproveedor"><strong>{{ errores.idproveedor }}</strong></small>
                         </div>
-                        <!--<div>
-                            <label class="font-weight-bold" for="codigoAlfanumerico">Código Alfanumérico</label>
-                            <InputText id="codigoAlfanumerico" v-model="datosFormulario.codigo_alfanumerico" placeholder="Ej. ABC123" class="form-control p-inputtext-sm"
-                                        :class="{'p-invalid' : errores.codigo_alfanumerico}" @input="validarCampo('codigo_alfanumerico')" />
-                            <small class="p-error" v-if="errores.codigo_alfanumerico"><strong>{{ errores.codigo_alfanumerico }}</strong></small>
 
-                        </div>-->
+                        <div>
+                            <label class="font-weight-bold" for="linea">Línea <span class="text-danger">*</span></label>
+                            <div class="p-inputgroup">
+                                <InputText id="linea"  v-model="lineaSeleccionado.nombre" placeholder="Seleccione una línea" class="form-control p-inputtext-sm bold-input" disabled
+                                            :class="{'p-invalid' : errores.idcategoria}" />
+                                <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Lineas')" />
+                            </div>
+                            <small class="p-error" v-if="errores.idcategoria"><strong>{{ errores.idcategoria }}</strong></small>
+                        </div>
+
+                        <div>
+                            <label class="font-weight-bold" for="marca">Marca <span class="text-danger">*</span></label>
+                            <div class="p-inputgroup">
+                                <InputText id="marca"  v-model="marcaSeleccionado.nombre" placeholder="Seleccione una marca" class="form-control p-inputtext-sm bold-input" disabled 
+                                            :class="{'p-invalid' : errores.idmarca}"  />
+                                <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Marcas')" />
+                            </div>
+                            <small class="p-error" v-if="errores.idmarca"><strong>{{ errores.idmarca }}</strong></small>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="font-weight-bold" for="codigo">Código del Producto <span class="text-danger">*</span> </label>
@@ -127,72 +137,9 @@
                                     :class="{'p-invalid' : errores.codigo}" @input="validarCampo('codigo')" />
                         <small class="p-error" v-if="errores.codigo"><strong>{{ errores.codigo }}</strong></small>
                         
-                        <div class="d-flex mt-4 justify-content-center" style="width:250px;overflow-x: auto;">
+                        <div class="d-flex mt-4 justify-content-center" style="width:350px;overflow-x: auto;">
                             <barcode :value="datosFormulario.codigo" :options="{ format: 'EAN-13' }"></barcode>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <!--<div class="col-md-6">
-                        <label class="font-weight-bold" for="descripcionFabricacion">Descripción de Fabricación</label>
-                        <Textarea id="descripcionFabricacion" v-model="datosFormulario.descripcion_fabrica" placeholder="Ej. Producto fabricado por Laboratorios XYZ" rows="3" class="form-control p-inputtext-sm" 
-                                    :class="{'p-invalid' : errores.descripcion_fabrica}" @input="validarCampo('descripcion_fabrica')" />
-                        <small class="p-error" v-if="errores.descripcion_fabrica"><strong>{{ errores.descripcion_fabrica }}</strong></small>
-                        
-                    </div>-->
-                    <div class="col-md-6">
-                        <label class="font-weight-bold" for="proveedor">Proveedor <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup ">
-                            <InputText id="proveedor" v-model="proveedorSeleccionado.nombre"  placeholder="Seleccione un proveedor" class="form-control p-inputtext-sm bold-input" disabled 
-                                        :class="{'p-invalid' : errores.idproveedor}"  @input="validarCampo('codigo')"     />
-                            <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Proveedores')" />
-                        </div>
-                        <small class="p-error" v-if="errores.idproveedor"><strong>{{ errores.idproveedor }}</strong></small>
-
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label class="font-weight-bold" for="linea">Línea <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup">
-                            <InputText id="linea"  v-model="lineaSeleccionado.nombre" placeholder="Seleccione una línea" class="form-control p-inputtext-sm bold-input" disabled
-                                        :class="{'p-invalid' : errores.idcategoria}" />
-                            <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Lineas')" />
-                        </div>
-                        <small class="p-error" v-if="errores.idcategoria"><strong>{{ errores.idcategoria }}</strong></small>
-
-                    </div>
-                    <div class="col-md-6">
-                        <label class="font-weight-bold" for="marca">Marca <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup">
-                            <InputText id="marca"  v-model="marcaSeleccionado.nombre" placeholder="Seleccione una marca" class="form-control p-inputtext-sm bold-input" disabled 
-                                        :class="{'p-invalid' : errores.idmarca}"  />
-                            <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Marcas')" />
-                        </div>
-                        <small class="p-error" v-if="errores.idmarca"><strong>{{ errores.idmarca }}</strong></small>
-
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label class="font-weight-bold" for="industria">Industria <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup">
-                            <InputText id="industria" v-model="industriaSeleccionado.nombre"  placeholder="Seleccione una industria" class="form-control p-inputtext-sm bold-input" disabled 
-                                         :class="{'p-invalid' : errores.idindustria}"/>
-                            <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Industrias')" />
-                        </div>
-                        <small class="p-error" v-if="errores.idindustria"><strong>{{ errores.idindustria }}</strong></small>
-
-                    </div>
-                    <div class="col-md-6">
-                        <label class="font-weight-bold" for="grupoFamilia">Grupo/Familia <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup">
-                            <InputText id="grupoFamilia"  v-model="grupoSeleccionado.nombre_grupo" placeholder="Seleccione un grupo" class="form-control p-inputtext-sm bold-input" disabled 
-                                            :class="{'p-invalid' : errores.idgrupo}"/>
-                            <Button label="..." class="p-button-primary p-button-sm" @click="abrirDialogos('Grupos')" />
-                        </div>
-                        <small class="p-error" v-if="errores.idgrupo"><strong>{{ errores.idgrupo }}</strong></small>
-
                     </div>
                 </div>
                 <!-- Agregar campos adicionales -->
@@ -271,10 +218,7 @@
 
                 </div>
                 <div class="form-group row">
-                    <div class="col-md-6 switch-container">
-                        <label class="font-weight-bold" for="switchvencimiento">Fecha vencimiento <span class="text-danger">*</span></label>
-                        <InputSwitch id="switchvencimiento" v-model="fechaVencimientoSeleccion"  class="p-inputtext-sm" />
-                    </div>
+
                     <div v-show="tipoAccion == 1" class="col-md-6 switch-container">
                         <label class="font-weight-bold" for="switchstock">Agregar a Stock <span class="text-danger">*</span></label>
                         <InputSwitch id="switchstock" v-model="agregarStock"  class="p-inputtext-sm" />
@@ -290,14 +234,14 @@
                         <small class="p-error" v-if="erroresinventario.unidadStock"><strong>{{ erroresinventario.unidadStock }}</strong></small>   
 
                     </div>
-                    <div class="col-md-4">
+                    <!--<div class="col-md-4">
                         <label  class="font-weight-bold" for="fechavencimiento">Fecha de Vencimiento <span class="text-danger">*</span></label>
                         <div class="p-inputgroup">
                             <Calendar v-if="fechaVencimientoSeleccion == false" id="fechavencimiento" v-model="fechaPorDefecto" placeholder="dd/mm/yy" class="p-inputtext-sm" :touchUI="true" :hideOnDateTimeSelect="false" dateFormat="yy-mm-dd" disabled/>
                             <Calendar v-if="fechaVencimientoSeleccion == true" id="fechavencimiento" v-model="fechaVencimientoAlmacen" placeholder="dd/mm/yy" :touchUI="true" :minDate="minDate" @date-select="handleDateChange" class="p-inputtext-sm" dateFormat="dd/mm/yy" />
 
                         </div>
-                    </div>
+                    </div>-->
                     
                     <div class="col-md-4">
                         <label class="font-weight-bold" for="almacen">Almacen <span class="text-danger">*</span></label>
@@ -537,20 +481,15 @@ export default {
                 { field: 'acciones', header: 'Acciones', type: 'button' },
                 { field: 'codigo', header: 'CODIGO' },
                 { field: 'nombre', header: 'NOMBRE COMERCIAL' },
-                { field: 'nombre_generico', header: 'NOMBRE GENERICO' },
                 { field: 'unidad_envase', header: 'UNIDADES POR PAQUETE' },
                 { field: 'precio_costo_unid', header: 'COSTO UNITARIO' },
                 { field: 'precio_costo_paq', header: 'COSTO PAQUETE' },
-                // Las columnas dinámicas se insertarán aquí
                 { field: 'nombre_categoria', header: 'CATEGORIA' },
-                { field: 'nombre_industria', header: 'INDUSTRIA' },
                 { field: 'nombre_marca', header: 'MARCA' },
                 { field: 'stock', header: 'STOCK MINIMO' },
                 { field: 'nombre_proveedor', header: 'PROVEEDOR' },
-                { field: 'descripcion', header: 'DESCRIPCION' },
-                { field: 'condicion', header: 'CONTROLADO', type: 'badge' },
-                { field: 'nombre_grupo', header: 'GRUPO/FAMILIA' },
-                { field: 'fotografia', header: 'FOTOGRAFIA', type: 'image' }
+                { field: 'fotografia', header: 'FOTOGRAFIA', type: 'image' },
+                { field: 'condicion', header: 'CONTROLADO', type: 'badge' }
             ]
         };
     },

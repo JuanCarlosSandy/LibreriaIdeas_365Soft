@@ -18,22 +18,18 @@ use Exception; // Importa la clase Exception
 class ArticuloImport implements ToCollection
 {
     private $categoriaMapping;
-    private $grupoMapping;
     private $proveedorMapping;
     private $medidaMapping;
     private $marcaMapping;
-    private $industriaMapping;
     private $personaMapping;
     private $errors = [];
 
     public function __construct()
     {
         $this->categoriaMapping = $this->createCategoriaMapping();
-        $this->grupoMapping = $this->createGrupoMapping();
         $this->proveedorMapping = $this->createProveedorMapping();
         $this->medidaMapping = $this->createMedidaMapping();
         $this->marcaMapping = $this->createMarcaMapping();
-        $this->industriaMapping = $this->createIndustriaMapping();
         $this->personaMapping = $this->createPersonaMapping();
     }
 
@@ -89,57 +85,37 @@ class ArticuloImport implements ToCollection
             foreach ($rows as $row) {
                 $rowErrors = [];
 
-                $idCategoria = $this->getCategoriaId($row[16]);
-                $idGrupo = $this->getGrupoId($row[17]);
-                $idProveedor = $this->getProveedorId($row[18]);
-                $idMedida = $this->getMedidaId($row[19]);
-                $idMarca = $this->getMarcaId($row[20]);
-                $idIndustria = $this->getIndustriaId($row[21]);
+                $idCategoria = $this->getCategoriaId($row[2]);
+                $idProveedor = $this->getProveedorId($row[3]);
+                $idMarca = $this->getMarcaId($row[4]);
 
                 if (!$idCategoria) {
-                    $rowErrors[] = "Error fila $rowNumber: No existe 'Linea $row[16]'";
-                }
-                if (!$idGrupo) {
-                    $rowErrors[] = "Error fila $rowNumber: No existe 'Grupo $row[17]'";
+                    $rowErrors[] = "Error fila $rowNumber: No existe 'Linea $row[2]'";
                 }
                 if (!$idProveedor) {
-                    $rowErrors[] = "Error fila $rowNumber: El proveedor '$row[18]' no está registrado";
+                    $rowErrors[] = "Error fila $rowNumber: El proveedor '$row[3]' no está registrado";
                 }
-                if (!$idMedida) {
-                    $rowErrors[] = "Error fila $rowNumber: La medida '$row[19]' no está registrada en la base de datos";
-                }
+
                 if (!$idMarca) {
-                    $rowErrors[] = "Error fila $rowNumber: No existe 'Marca $row[20]'";
-                }
-                if (!$idIndustria) {
-                    $rowErrors[] = "Error fila $rowNumber: No existe 'Industria $row[21]'";
+                    $rowErrors[] = "Error fila $rowNumber: No existe 'Marca $row[4]'";
                 }
 
                 try {
                     Articulo::create([
                         'codigo' => $row[0],
                         'nombre' => $row[1],
-                        'nombre_generico' => $row[2],
-                        'descripcion' => $row[3],
-                        'unidad_envase' => $row[4],
-                        'precio_list_unid' => $row[5],
+                        'unidad_envase' => $row[5],
                         'precio_costo_unid' => $row[6],
                         'precio_costo_paq' => $row[7],
-                        'precio_venta' => $row[8],
-                        'precio_uno' => $row[9],
-                        'precio_dos' => $row[10],
-                        'precio_tres' => $row[11],
-                        'precio_cuatro' => $row[12],
-                        'costo_compra' => $row[13],
-                        'stock' => $row[14],
-                        'condicion' => $row[15],
+                        'precio_uno' => $row[8],
+                        'precio_dos' => $row[9],
+                        'stock' => 10,
+                        'condicion' => 1,
                         'fotografia' => null,
                         'idcategoria' => $idCategoria,
-                        'idgrupo' => $idGrupo,
                         'idproveedor' => $idProveedor,
-                        'idmedida' => $idMedida,
+                        'idmedida' => 1,
                         'idmarca' => $idMarca,
-                        'idindustria' => $idIndustria,
                     ]);
 
                     //dd($row[9]);

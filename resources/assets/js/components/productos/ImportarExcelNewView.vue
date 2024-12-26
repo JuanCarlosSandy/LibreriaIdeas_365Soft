@@ -93,15 +93,10 @@
                             <tr v-for="(row, rowIndex) in previewCsv" :key="rowIndex">
                                 <td v-for="(cell, cellIndex) in row" :key="cellIndex">
                                     {{
-                                    [5, 6, 7, 8, 9, 10, 11, 12, 13].includes(cellIndex) ?
+                                    [6, 7, 8, 9].includes(cellIndex) ?
                                     cell + " " + monedaSeleccionada.simbolo : cell
                                     }}
                                 </td>
-                                <td>{{ row[0] }}</td> <!-- Código -->
-                                <td>{{ row[1] }}</td> <!-- Nombre -->
-                                <td>{{ row[2] }}</td> <!-- Nombre genérico -->
-                                <td>{{ row[3] }}</td> <!-- Descripción -->
-                                <td>{{ row[4] }}</td> <!-- Unidad envase -->
                             </tr>
                         </tbody>
                     </table>
@@ -241,26 +236,14 @@ export default {
             headersOrigin: [
                 "Codigo",
                 "Nombre",
-                "Nombre generico",
-                "Descripciòn",
-                "Unidad envase",
-                "Precio List unidad",
+                "Nombre Categoria",
+                "Nombre Proveedor",
+                "Nombre Marca",
+                "Unidad x paquete",
                 "Precio costo unidad",
                 "Precio costo paquete",
-                "Precio venta",
-                "Precio uno",
-                "Precio dos",
-                "Precio tres",
-                "Precio cuatro",
-                "Costo compra",
-                "Stock minimo",
-                "Estado",
-                "Linea",
-                "Grupo",
-                "Proveedor",
-                "Medida",
-                "Marca",
-                "Industria",
+                "Precio NORMAL",
+                "Precio FACTURA",
             ],
             previewCsvObject: [],
             previewCsvObjectColumns : [],
