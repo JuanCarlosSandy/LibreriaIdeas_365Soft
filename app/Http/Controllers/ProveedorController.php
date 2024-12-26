@@ -113,9 +113,10 @@ class ProveedorController extends Controller
     {
         if (!$request->ajax())
             return redirect('/');
-
+    
         try {
             DB::beginTransaction();
+            
             $persona = new Persona();
             $persona->nombre = $request->nombre;
             $persona->usuario = Auth::user()->id;
@@ -125,22 +126,32 @@ class ProveedorController extends Controller
             $persona->telefono = $request->telefono;
             $persona->email = $request->email;
             $persona->save();
-
+    
             $proveedor = new Proveedor();
             $proveedor->contacto = $request->contacto;
             $proveedor->telefono_contacto = $request->telefono_contacto;
             $proveedor->id = $persona->id;
             $proveedor->save();
-
+    
             DB::commit();
-
+    
+            // Retornar una respuesta JSON
+            return response()->json([
+                'message' => 'Proveedor registrado exitosamente',
+                'data' => $persona,
+            ], 201);
+    
         } catch (Exception $e) {
             DB::rollBack();
+    
+            // Enviar un mensaje de error en caso de fallo
+            return response()->json([
+                'message' => 'Error al registrar proveedor',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-
-
     }
+    
 
     public function update(Request $request)
     {

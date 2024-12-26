@@ -14,7 +14,7 @@
                         <ul class="nav-dropdown-items">
                         -->
                             <li @click="menu=5" class="nav-item">
-                                <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Ventas</a>
+                                <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Vender Normal</a>
                             </li>
                             <li @click="menu=29" class="nav-item">
                                 <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Vender Campaña</a>

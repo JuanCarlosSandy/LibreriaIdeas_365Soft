@@ -122,12 +122,12 @@
                     <li @click="menu=19" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-tags" style="font-size: 19px;"></i> Categoria</a>
                     </li>
-                    <li @click="menu=20" class="nav-item">
+                    <!--<li @click="menu=20" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-industry" style="font-size: 19px;"></i> Industria</a>
-                    </li>
-                    <!--<li @click="menu=27" class="nav-item">
-                        <a class="nav-link" href="#"><i class="fa fa-arrows-alt" style="font-size: 19px;"></i> Medidas</a>
                     </li>-->
+                    <li @click="menu=27" class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-arrows-alt" style="font-size: 19px;"></i> Medidas</a>
+                    </li>
                 </ul>
             </li>
 
@@ -150,10 +150,10 @@
 
                     <!--<li @click="menu=49" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-list" style="font-size: 11px;"></i> Inventarios</a>
-                    </li>-->
+                    </li>
                     <li @click="menu=51" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-file-text-o" style="font-size: 19px;"></i> Kardex Fisico Valorado</a>
-                    </li>
+                    </li>-->
                     <li @click="menu=52" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-file-o" style="font-size: 19px;"></i> Kardex Fisico</a>
                     </li>
@@ -163,12 +163,12 @@
                     <li @click="menu=60" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-exchange" style="font-size: 19px;"></i> Detallado Fisico de Movimientos</a>
                     </li>
-                    <li @click="menu=63" class="nav-item">
+                    <!--<li @click="menu=63" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-archive" style="font-size: 19px;"></i> Inventario Fisico Valorado</a>
                     </li>
                     <li @click="menu=64" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-cubes" style="font-size: 19px;"></i> Inventario Fisico</a>
-                    </li>
+                    </li>-->
                 </ul>
             </li>
 
@@ -196,9 +196,9 @@
                 <a class="nav-link nav-dropdown-toggle" href="#"><i class="fa fa-line-chart"></i> REPORTE CLIENTES</a>
                 <ul class="nav-dropdown-items">
 
-                    <li @click="menu=10" class="nav-item">
+                    <!--<li @click="menu=10" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-users" style="font-size: 19px;"></i> Reporte Usuarios</a>
-                    </li>
+                    </li>-->
                     <li @click="menu=50" class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-user-circle" style="font-size: 19px;"></i> Resumen de clientes</a>
                     </li>

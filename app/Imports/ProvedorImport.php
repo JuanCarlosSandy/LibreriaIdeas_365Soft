@@ -35,18 +35,15 @@ class ProvedorImport implements ToCollection
                 $persona = Persona::create([
                     'nombre' => $row[0],
                     'usuario' =>  Auth::user()->id,
-                    'tipo_documento' => $row[1],
-                    'num_documento' => $row[2],
-                    'direccion' => $row[3],
-                    'telefono' => $row[4],
-                    'email' => $row[5],
+                    'direccion' => $row[1],
+                    'telefono' => $row[3],
                 ]);
                 
 
                 // Crear el proveedor asociando el ID de la persona
                 Proveedor::create([
-                    'contacto' => $row[6],
-                    'telefono_contacto' =>  $row[7],
+                    'contacto' => $row[2],
+                    'telefono_contacto' =>  $row[3],
                     'id' => $persona->id 
                 ]);
 

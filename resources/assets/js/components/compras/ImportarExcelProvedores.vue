@@ -217,11 +217,7 @@ export default {
 
             headersOrigin: [
                 "Nombre",
-                "Tipo Documento",
-                "Número",
                 "Dirección",
-                "Teléfono",
-                "Email",
                 "Contacto",
                 "Teléfono de contacto",
             ],
