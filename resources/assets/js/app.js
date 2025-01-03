@@ -303,6 +303,8 @@ Vue.component(
 Vue.component("mayoreo", require("./components/OfertasEspecialesMayoreo.vue"));
 
 Vue.component("nuevacompra", require("./components/compras/NuevaCompra.vue"));
+Vue.component("venta2", require("./components/VentaModelo2.vue"));
+
 Vue.component(
   "comprascredito",
   require("./components/ComprasCredito/ComprasCredito.vue"),

@@ -640,9 +640,13 @@ public function indexRecibo(Request $request)
 
     private function validarCajaAbierta()
     {
-        $ultimaCaja = Caja::latest()->first();
-        return $ultimaCaja && $ultimaCaja->estado == '1';
+        $usuario = auth()->user(); // Obtener el usuario logueado
+        $ultimaCaja = Caja::where('idsucursal', $usuario->idsucursal) // Filtrar por sucursal del usuario
+                            ->latest()
+                            ->first();
+        return $ultimaCaja && $ultimaCaja->estado == '1'; // Verificar si la última caja está abierta
     }
+    
 
     private function calcularDescuentoMaximo($detalles)
     {
@@ -668,22 +672,35 @@ public function indexRecibo(Request $request)
         ]));
         $venta->idusuario = \Auth::user()->id;
         $venta->fecha_hora = now()->setTimezone('America/La_Paz');
+    
         if ($request->idtipo_venta == 2) {
             $venta->estado = 'Pendiente';
         } else {
             $venta->estado = 'Registrado';
         }
-
-        $venta->idcaja = Caja::latest()->first()->id;
+    
+        // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user(); // Usuario logueado
+        $ultimaCajaAbierta = Caja::where('idsucursal', $usuario->idsucursal)
+                                 ->where('estado', '1') // Caja abierta
+                                 ->latest()
+                                 ->first();
+    
+        if (!$ultimaCajaAbierta) {
+            throw new \Exception('No hay una caja abierta para la sucursal del usuario.');
+        }
+    
+        $venta->idcaja = $ultimaCajaAbierta->id;
         $venta->save();
-
+    
         if ($request->idtipo_venta == 2) {
             $creditoventa = $this->crearCreditoVenta($venta, $request);
             $this->registrarCuotasCredito($creditoventa, $request->cuotaspago);
         }
-
+    
         return $venta;
     }
+    
 
     private function crearVenta2($request)
     {
@@ -706,7 +723,18 @@ public function indexRecibo(Request $request)
             $venta->estado = 'Pendiente';
         }
 
-        $venta->idcaja = Caja::latest()->first()->id;
+        // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user(); // Usuario logueado
+        $ultimaCajaAbierta = Caja::where('idsucursal', $usuario->idsucursal)
+                                ->where('estado', '1') // Caja abierta
+                                ->latest()
+                                ->first();
+
+        if (!$ultimaCajaAbierta) {
+            throw new \Exception('No hay una caja abierta para la sucursal del usuario.');
+        }
+
+        $venta->idcaja = $ultimaCajaAbierta->id;
         $venta->save();
 
         if ($request->idtipo_venta == 2) {
@@ -718,25 +746,30 @@ public function indexRecibo(Request $request)
     }
 
 
+
     private function actualizarCaja($request)
     {
+        $usuario = \Auth::user(); // Obtener el usuario logueado
 
-        $ultimaCaja = Caja::latest()->first();
+        // Obtener la última caja de la sucursal del usuario logueado
+        $ultimaCaja = Caja::where('idsucursal', $usuario->idsucursal)
+                        ->latest()
+                        ->first();
+
+        if (!$ultimaCaja) {
+            throw new \Exception('No se encontró una caja en la sucursal del usuario.');
+        }
 
         if ($request->idtipo_pago == 1) {
             // Actualizar caja en ventas y ventas efectivo
-            // Código para ventas en efectivo
-
             if ($request->idtipo_venta == 2) {
                 // Sumar a ventas crédito
-                // Código para ventas a crédito
                 $ultimaCaja->ventas += $request->primer_precio_cuota;
                 $ultimaCaja->pagosEfectivoVentas += $request->primer_precio_cuota;
                 $ultimaCaja->ventasCredito += $request->primer_precio_cuota;
                 $ultimaCaja->saldoCaja += $request->primer_precio_cuota;
             } else {
                 // Sumar a ventas contado
-                // Código para ventas a contado
                 $ultimaCaja->ventasContado += $request->total;
                 $ultimaCaja->ventas += $request->total;
                 $ultimaCaja->pagosEfectivoVentas += $request->total;
@@ -744,18 +777,16 @@ public function indexRecibo(Request $request)
                 $ultimaCaja->saldototalventas += $request->total;
             }
         } elseif ($request->idtipo_pago == 7) {
-            $ultimaCaja->ventasQR = ($request->total) + ($ultimaCaja->ventasQR);
-            $ultimaCaja->saldototalventas = ($ultimaCaja->saldototalventas + $request->total) ;
+            // Actualizar ventas QR
+            $ultimaCaja->ventasQR += $request->total;
+            $ultimaCaja->saldototalventas += $request->total;
             $ultimaCaja->ventas += $request->total;
-
-
-        } elseif ($request->idtipo_pago == 2){
-            $ultimaCaja->ventasTarjeta = ($request->total) + ($ultimaCaja->ventasTarjeta);
-            $ultimaCaja->saldototalventas = ($ultimaCaja->saldototalventas + $request->total) ;
+        } elseif ($request->idtipo_pago == 2) {
+            // Actualizar ventas con tarjeta
+            $ultimaCaja->ventasTarjeta += $request->total;
+            $ultimaCaja->saldototalventas += $request->total;
             $ultimaCaja->ventas += $request->total;
-
         }
-
 
         $ultimaCaja->save();
     }
@@ -1643,7 +1674,18 @@ public function indexRecibo(Request $request)
             $ventaResivo->estado = 'Registrado';
         }
 
-        $ventaResivo->idcaja = Caja::latest()->first()->id;
+        // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user(); // Usuario logueado
+        $ultimaCajaAbierta = Caja::where('idsucursal', $usuario->idsucursal)
+                                ->where('estado', '1') // Caja abierta
+                                ->latest()
+                                ->first();
+
+        if (!$ultimaCajaAbierta) {
+            throw new \Exception('No hay una caja abierta para la sucursal del usuario.');
+        }
+
+        $ventaResivo->idcaja = $ultimaCajaAbierta->id;
         $ventaResivo->save();
 
         if ($request->idtipo_venta == 2) {
@@ -1653,6 +1695,7 @@ public function indexRecibo(Request $request)
 
         return $ventaResivo;
     }
+
 
     private function crearVentaResivo2($request)
     {
@@ -1675,7 +1718,18 @@ public function indexRecibo(Request $request)
             $ventaResivo->estado = 'Pendiente';
         }
 
-        $ventaResivo->idcaja = Caja::latest()->first()->id;
+        // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user(); // Usuario logueado
+        $ultimaCajaAbierta = Caja::where('idsucursal', $usuario->idsucursal)
+                                ->where('estado', '1') // Caja abierta
+                                ->latest()
+                                ->first();
+
+        if (!$ultimaCajaAbierta) {
+            throw new \Exception('No hay una caja abierta para la sucursal del usuario.');
+        }
+
+        $ventaResivo->idcaja = $ultimaCajaAbierta->id;
         $ventaResivo->save();
 
         if ($request->idtipo_venta == 2) {

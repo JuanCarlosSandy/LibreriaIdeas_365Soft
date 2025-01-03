@@ -163,6 +163,25 @@ class AlmacenController extends Controller
             ->select('id', 'nombre_almacen')->orderBy('nombre_almacen', 'asc')->get();
         return ['almacenes' => $almacenes];
     }
+
+    public function listarAlmacen(Request $request)
+    {
+        if (!$request->ajax())
+            return redirect('/');
+
+        $usuario = \Auth::user(); // Obtener el usuario logueado
+
+        // Filtrar los almacenes por la sucursal del usuario
+        $almacenes = Almacen::where('condicion', '=', '1')
+            ->where('sucursal', '=', $usuario->idsucursal)
+            ->select('id', 'nombre_almacen')
+            ->orderBy('nombre_almacen', 'asc')
+            ->get();
+
+        return ['almacenes' => $almacenes];
+    }
+
+
     public function selectAlmacenDestino(Request $request)
     {
         if (!$request->ajax())

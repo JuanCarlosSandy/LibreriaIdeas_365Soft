@@ -2240,7 +2240,7 @@ export default {
 
         async selectAlmacen() {
             let me = this;
-            let url = "/almacen/selectAlmacen";
+            let url = "/almacen/listarAlmacen";
             await axios
                 .get(url)
                 .then(function (response) {

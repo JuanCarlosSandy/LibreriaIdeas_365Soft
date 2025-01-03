@@ -665,6 +665,8 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::put("/almacen/editar", "AlmacenController@update");
 
         Route::get("/almacen/selectAlmacen", "AlmacenController@selectAlmacen");
+        Route::get("/almacen/listarAlmacen", "AlmacenController@listarAlmacen");
+
         Route::get(
             "/almacen/selectAlmacenDest",
             "AlmacenController@selectAlmacenDestino"

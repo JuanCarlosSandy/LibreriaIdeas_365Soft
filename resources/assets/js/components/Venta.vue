@@ -1833,7 +1833,7 @@ export default {
             this.timer = setTimeout(() => {
                 let me = this;
                 //var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + me.selectedAlmacen;
-                var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + 1;
+                var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + this.idAlmacen;
 
                 axios
                     .get(url)
@@ -2109,7 +2109,7 @@ export default {
 
         async selectAlmacen() {
             let me = this;
-            let url = "/almacen/selectAlmacen";
+            let url = "/almacen/listarAlmacen";
             await axios
                 .get(url)
                 .then(function (response) {
