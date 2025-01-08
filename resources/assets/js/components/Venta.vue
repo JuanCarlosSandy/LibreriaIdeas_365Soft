@@ -1491,6 +1491,7 @@ export default {
             const descuento = this.precioseleccionado * (this.descuentoProducto / 100);
             const precioConDescuento = this.precioseleccionado - descuento;
             const precioFinal = precioConDescuento * this.unidadPaquete * this.cantidad;
+            console.log("precio: ,", precioFinal)
             return precioFinal;
         },
         calcularDiasRestantes(fechaFinal) {
@@ -1840,6 +1841,7 @@ export default {
                     .then(function (response) {
                         let respuesta = response.data;
                         me.arraySeleccionado = respuesta.articulos[0];
+                        me.precioseleccionado = me.arraySeleccionado.precio_uno;
                         console.log(me.arraySeleccionado);
                     })
                     .catch(function (error) {
