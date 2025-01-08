@@ -649,7 +649,7 @@
                             <Column field="nombre_categoria" header="Categoría" />
                             <Column header="Precio Venta">
                                 <template #body="slotProps">
-                                    {{ (slotProps.data.precio_venta * parseFloat(monedaVenta[0])).toFixed(2) }} {{
+                                    {{ (slotProps.data.precio_uno * parseFloat(monedaVenta[0])).toFixed(2) }} {{
                                         monedaVenta[1] }}
                                 </template>
                             </Column>

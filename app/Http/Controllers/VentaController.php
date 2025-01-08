@@ -2013,7 +2013,7 @@ public function imprimirResivoRollo($id) {
             $pdf->SetFont('Courier', 'B', 12);
 
             // Encabezado
-            $pdf->Cell(0, 10, utf8_decode(strtoupper('RECIBO DE VENTA')), 0, 1, 'C');
+            $pdf->Cell(0, 10, utf8_decode(strtoupper('NOTA DE VENTA')), 0, 1, 'C');
             $pdf->SetFont('Courier', '', 8);
             $pdf->Cell(0, 5, utf8_decode(strtoupper('No. ' . $id)), 0, 1, 'C');
 
@@ -2023,9 +2023,9 @@ public function imprimirResivoRollo($id) {
             $pdf->SetFont('Courier', '', 8);
             $pdf->Cell(0, 5, utf8_decode(strtoupper($empresa->direccion)), 0, 1, 'C');
             $pdf->Cell(0, 5, utf8_decode(strtoupper('TELÉFONO: ' . $empresa->telefono)), 0, 1, 'C');
-            $pdf->Cell(0, 5, utf8_decode(strtoupper('EMAIL: ' . $empresa->email)), 0, 1, 'C');
-            $pdf->Cell(0, 5, utf8_decode(strtoupper('NIT: ' . $empresa->nit)), 0, 1, 'C');
-            $pdf->Cell(0, 5, utf8_decode(strtoupper('LICENCIA: ' . $empresa->licencia)), 0, 1, 'C');
+            //$pdf->Cell(0, 5, utf8_decode(strtoupper('EMAIL: ' . $empresa->email)), 0, 1, 'C');
+            //$pdf->Cell(0, 5, utf8_decode(strtoupper('NIT: ' . $empresa->nit)), 0, 1, 'C');
+            //$pdf->Cell(0, 5, utf8_decode(strtoupper('LICENCIA: ' . $empresa->licencia)), 0, 1, 'C');
 
             $pdf->Ln(5);
 

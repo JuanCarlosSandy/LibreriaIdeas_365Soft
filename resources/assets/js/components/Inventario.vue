@@ -64,7 +64,7 @@
                                 <th>Product</th>
                                 <th>Unidad X Paq.</th>
                                 <th>Saldo_stock_total</th>
-                                <th>Cantidad</th>
+                                <!--<th>Cantidad</th>-->
                                 <th>Almacen</th>
                             </tr>
                         </thead>
@@ -74,7 +74,7 @@
                                 <td v-text="inventario.nombre_producto"></td>
                                 <td v-text="inventario.unidad_envase"></td>
                                 <td v-text="inventario.saldo_stock_total"></td>
-                                <td v-text="inventario.cantidad"></td>
+                                <!--<td v-text="inventario.cantidad"></td>-->
                                 <td v-text="inventario.nombre_almacen"></td>
 
                             </tr>
