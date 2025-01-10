@@ -196,7 +196,7 @@
 
                     </div>
                 </div>
-                <div class="form-group row">
+                <!--<div class="form-group row">
                     <div class="col-md-6">
                         <label class="font-weight-bold" for="costocompra">Costo compra <span class="text-danger">*</span></label>
                         <div class="p-inputgroup">
@@ -216,7 +216,7 @@
 
                     </div>
 
-                </div>
+                </div>-->
                 <div class="form-group row">
 
                     <div v-show="tipoAccion == 1" class="col-md-6 switch-container">
@@ -807,6 +807,7 @@ export default {
                 try {
                     await esquemaInventario.validate(this.datosFormularioInventario, { abortEarly: false });
                     console.log("Validación de esquemaInventario exitosa");
+                    console.log("tipoAccion nose que es: ", this.tipoAccion);
                 } catch (error) {
                     validacionInventarioExitosa = false;
                     const erroresValidacionInventario = {};
@@ -829,6 +830,7 @@ export default {
                     }
                     await this.actualizarArticulo(this.datosFormulario);
                     console.log("Actualización de artículo exitosa");
+                    console.log("tipoAccion actualizar: ", this.tipoAccion);
                 } catch (error) {
                     console.error("Error al actualizar el artículo: ", error);
                 }
@@ -843,6 +845,8 @@ export default {
 
                 try {
                     await this.registrarArticulo(this.datosFormulario);
+                    console.log("tipoAccion registrar: ", this.tipoAccion);
+
                     console.log("Registro de artículo exitoso",this.datosFormulario);
                 } catch (error) {
                     console.error("Error al registrar el artículo: ", error);
@@ -1197,6 +1201,7 @@ export default {
                                     this.dialogVisible = true;
                                     this.tituloModal = 'Actualizar Artículo';
                                     this.tipoAccion = 2;
+                                    console.log(this.tipoAccion);
                                     this.datosFormulario = {
                                         nombre: data['nombre'],
                                         descripcion: data['descripcion'],

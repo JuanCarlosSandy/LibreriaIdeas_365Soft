@@ -152,7 +152,7 @@ export const esquemaArticulos = yup.object().shape({
     .required("El nombre es obligatorio")
     .max(80, "El nombre no puede tener más de 80 caracteres"),
   descripcion: yup.string().required("La descripción es obligatoria"),
-  nombre_generico: yup.string().required("El nombre generico es obligatorio"),
+  //nombre_generico: yup.string().required("El nombre generico es obligatorio"),
   unidad_envase: yup
     .number()
     .required("La cantidad de unidades por paquete es obligatoria")
@@ -206,8 +206,8 @@ export const esquemaArticulos = yup.object().shape({
   descripcion_fabrica: yup.string(),
   idcategoria: yup.number().required("El campo Línea es obligatorio"),
   idmarca: yup.number().required("El campo Marca es obligatorio"),
-  idindustria: yup.number().required("El campo Industria es obligatorio"),
-  idgrupo: yup.number().required("El campo Grupo o Familia es obligatorio"),
+  //idindustria: yup.number().required("El campo Industria es obligatorio"),
+  //idgrupo: yup.number().required("El campo Grupo o Familia es obligatorio"),
   idproveedor: yup.number().required("El campo Proveedor es obligatorio"),
   idmedida: yup.number().required("El campo Medida es obligatorio"),
   
