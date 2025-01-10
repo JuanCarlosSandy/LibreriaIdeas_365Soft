@@ -2015,7 +2015,7 @@ public function imprimirResivoRollo($id) {
             // Encabezado
             $pdf->Cell(0, 10, utf8_decode(strtoupper('NOTA DE VENTA')), 0, 1, 'C');
             $pdf->SetFont('Courier', '', 8);
-            $pdf->Cell(0, 5, utf8_decode(strtoupper('No. ' . $id)), 0, 1, 'C');
+            $pdf->Cell(0, 5, utf8_decode(strtoupper('No. ' . $venta->nun_comprobante)), 0, 1, 'C');
 
             // Información de la empresa
             $pdf->SetFont('Courier', 'B', 8);
