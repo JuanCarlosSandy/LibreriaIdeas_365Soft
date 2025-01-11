@@ -1899,7 +1899,7 @@ export default {
         },
 
         verificarFactura(cuf, numeroFactura){
-            var url = 'https://siat.impuestos.gob.bo/consulta/QR?nit=7975816018&cuf='+cuf+'&numero='+numeroFactura+'&t=2';
+            var url = 'https://pilotosiat.impuestos.gob.bo/consulta/QR?nit=5153610012&cuf='+cuf+'&numero='+numeroFactura+'&t=2';
             window.open(url);        
         },
 
@@ -2584,7 +2584,7 @@ export default {
         var factura = [];
         factura.push({
             cabecera: {
-                nitEmisor: "7975816018",
+                nitEmisor: "5153610012",
                 razonSocialEmisor: "JHENRY EDSON CASTRO CAMACHO",
                 municipio: "Quillacollo",
                 telefono: "60720509",
