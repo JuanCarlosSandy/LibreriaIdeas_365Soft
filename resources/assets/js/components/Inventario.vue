@@ -14,18 +14,34 @@
                     </button>
                 </div>
                 <div class="row">
+                    <div class="row align-items-center g-2">
+    <!-- Selector de Almacén -->
+    <div class="col-lg-3 col-md-4 col-sm-12">
+        <label for="almacenSeleccionado" class="form-label">ALMACÉN DE TRABAJO</label>
+        <select id="almacenSeleccionado" class="form-control" v-model="AlmacenSeleccionado" @change="getDatosAlmacen">
+            <option value="0" disabled>Seleccione</option>
+            <option v-for="opcion in arrayAlmacenes" :key="opcion.id" :value="opcion.id">
+                {{ opcion.nombre_almacen }}
+            </option>
+        </select>
+    </div>
+
+    <!-- Búsqueda -->
+    <div class="col-lg-9 col-md-8 col-sm-12">
+        <label for="buscar" class="form-label">BÚSQUEDA</label>
+        <div class="input-group">
+            <input id="buscar" type="text" v-model="buscar" @keyup="listarInventario(1, buscar, '')"
+                class="form-control" placeholder="Texto a buscar">
+            <button type="button" @click="listarInventario(1, buscar, '')" class="btn btn-primary">
+                <i class="fa fa-search"></i> Buscar
+            </button>
+        </div>
+    </div>
+</div>
+
+
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label> ALMACEN DE TRABAJO </label>
-                            <select class="form-control" v-model="AlmacenSeleccionado" @change="getDatosAlmacen">
-                                <option value="0" disabled>Seleccione</option>
-                                <option v-for="opcion in arrayAlmacenes" :key="opcion.id" :value="opcion.id">{{
-                        opcion.nombre_almacen }}</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="d-flex flex-column">
+                        <!--<div class="d-flex flex-column">
                             <label class="mb-1"> MODO VISTA </label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" v-model="tipoSeleccionado" value="item"
@@ -37,45 +53,33 @@
                                     @change="cambiarTipo">
                                 <label class="form-check-label ms-2">Por Lote</label>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <select class="form-control col-md-3" v-model="criterio">
-                                <option value="nombre">Nombre Producto</option>
-                                <!-- <option value="descripcion">Descripción</option> -->
-                            </select>
-                            <input type="text" v-model="buscar" @keyup="listarInventario(1, buscar, criterio)"
-                                class="form-control" placeholder="Texto a buscar">
-                            <button type="button" @click="listarInventario" class="btn btn-primary"><i
-                                    class="fa fa-search"></i> Buscar</button>
-                        </div>
-                    </div>
-                </div>
+                
                 <div v-if="tipoSeleccionado == 'item'" class="table-responsive">
                     <table class="table table-bordered table-striped table-sm">
                         <thead>
                             <tr>
-                                <!-- <th>Opciones</th> -->
-                                <th>Product</th>
-                                <th>Unidad X Paq.</th>
-                                <th>Saldo_stock_total</th>
+                                <th>Codigo</th>
+                                <th>Articulo</th>
+                                <!--<th>Unidad X Paq.</th>-->
+                                <th>Stock Actual</th>
+                                <th>Proveedor</th>
                                 <!--<th>Cantidad</th>-->
-                                <th>Almacen</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="inventario in arrayInventario" :key="inventario.id">
-
+                                <td v-text="inventario.codigo"></td>
                                 <td v-text="inventario.nombre_producto"></td>
-                                <td v-text="inventario.unidad_envase"></td>
+                                <!--<td v-text="inventario.unidad_envase"></td>-->
                                 <td v-text="inventario.saldo_stock_total"></td>
+                                <td v-text="inventario.nombre"></td>
+
                                 <!--<td v-text="inventario.cantidad"></td>-->
-                                <td v-text="inventario.nombre_almacen"></td>
 
                             </tr>
                         </tbody>
@@ -179,7 +183,7 @@ export default {
                 to: 0,
             },
             offset: 3,
-            criterio: 'nombre',
+            criterio: '',
             buscar: ''
         }
     },
@@ -219,7 +223,7 @@ export default {
         },
         cerrarModalImportar() {
             this.modalImportar = 0;
-            this.listarInventario(1, '', 'nombre');
+            this.listarInventario(1, '', '');
         },
         cambiarPagina(page, buscar, criterio) {
             let me = this;
@@ -263,7 +267,7 @@ export default {
                 me.almacenSeleccionado = me.AlmacenSeleccionado; // Almacenar el valor seleccionado
                 me.idalmacen = Number(me.AlmacenSeleccionado);
                 console.log('IDalmacen: ' + me.idalmacen);
-                me.listarInventario(1, '', 'nombre');
+                me.listarInventario(1, '', '');
             }
         },
         cambiarTipo() {
@@ -276,7 +280,7 @@ export default {
         //this.listarInventario(1,this.buscar,this.criterio);
         this.getDatosAlmacen();
         //this.listarInventario(1,this.buscar,this.criterio);
-        this.listarInventario(1, '', 'nombre');
+        this.listarInventario(1, '', '');
         this.selectAlmacen();
     },
 }

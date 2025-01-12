@@ -355,7 +355,7 @@ export default {
     },
     data() {
         return {
-            criterio: 'nombre',
+            criterio: '',
             buscar: '',
             arrayArticulo: [], // Datos del artículo
             dialogVisible: false,
@@ -701,7 +701,7 @@ export default {
                     break;
                 case 'Importar':
                     this.mostrarDialogoImportar = false;
-                    this.listarArticulo(1, '', 'nombre');
+                    this.listarArticulo(1, '', '');
                     break;
             }
             this.dialogVisible = true;
@@ -942,7 +942,9 @@ export default {
         },
         onPageChange(event) {
             const page = Math.floor(event.first / this.pagination.per_page) + 1;
-            this.cambiarPagina(page, '', ''); // Ajusta los parámetros según tu lógica
+            const bus = this.buscar;
+            const cri = this.criterio;
+            this.cambiarPagina(page, bus, cri); // Ajusta los parámetros según tu lógica
         },
         cargarPdf() {
             window.open('/articulo/listarPdf', '_blank');
@@ -975,7 +977,7 @@ export default {
                 me.idarticulo = respuesta.idArticulo;
                 console.log("respuesta = ", me.idarticulo)
                 me.cerrarModal();
-                me.listarArticulo(1, '', 'nombre');
+                me.listarArticulo(1, '', '');
                 me.toastSuccess("Articulo registrado correctamente");
                 console.log("stock ???",me.agregarStock);
                 if (me.agregarStock == true) {
@@ -1021,7 +1023,7 @@ export default {
                 console.log("respuesta = ",respuesta)
                 console.log("foto ",data)
                 me.cerrarModal();
-                me.listarArticulo(1, '', 'nombre');
+                me.listarArticulo(1, '', '');
                 me.toastSuccess("Articulo actualizado correctamente")
             }).catch(function (error) {
                 console.log(error);
@@ -1048,7 +1050,7 @@ export default {
                     axios.put('/articulo/desactivar', {
                         'id': id
                     }).then(function (response) {
-                        me.listarArticulo(1, '', 'nombre');
+                        me.listarArticulo(1, '', '');
                         swal(
                             'Desactivado!',
                             'El registro ha sido desactivado con éxito.',
@@ -1087,7 +1089,7 @@ export default {
                     axios.put('/articulo/activar', {
                         'id': id
                     }).then(function (response) {
-                        me.listarArticulo(1, '', 'nombre');
+                        me.listarArticulo(1, '', '');
                         swal(
                             'Activado!',
                             'El registro ha sido activado con éxito.',

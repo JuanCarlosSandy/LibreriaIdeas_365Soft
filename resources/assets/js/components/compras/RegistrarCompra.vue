@@ -7,7 +7,7 @@
                     <div class="step" :class="{ active: step === 1, completed: step > 1 }">
                         <span class="step-number" v-if="step > 1">✔</span>
                         <span class="step-number" v-else>1</span>
-                        <span class="step-name">Cliente</span>
+                        <span class="step-name">Proveedor</span>
                     </div>
                     <div class="step-line" v-if="step >= 2"></div>
                 </div>
@@ -46,7 +46,7 @@
                             </div>
 
                             <!-- Tipo comprobante -->
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="" class="font-weight-bold">Tipo comprobante <span
                                             class="text-danger">*</span></label>
@@ -59,19 +59,8 @@
                                 </div>
                             </div>
 
-                            <!-- Serie comprobante -->
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="" class="font-weight-bold">Serie comprobante <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" v-model="serie_comprobante"
-                                        placeholder="000x" ref="serieComprobanteRef">
-                                    <label class="small" for="serieComprobante">Shift + W</label>
-                                </div>
-                            </div>
-
                             <!-- Número comprobante -->
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="" class="font-weight-bold">N° Comprobante <span
                                             class="text-danger">*</span></label>
@@ -127,8 +116,6 @@
                                         disabled>...</button>
                                     <button @click="abrirArticulos()" class="btn btn-primary" v-else>...</button>
                                     <label class="small light-gray-text" for="">Shift + R</label>
-
-                                    <!-- <input type="text" readonly class="form-control" v-model="articulo"> -->
                                 </div>
                             </div>
                         </div>
@@ -170,31 +157,12 @@
                     <div class="row">
                         <div class="m-1 p-1"></div>
 
-
-
                         <div class="col-md-2">
                             <div class="form-group" v-if="arrayArticuloSeleccionado.id">
                                 <label for="campo1">{{ tipoUnidadSeleccionada }}:
                                     <i class="fa fa-exchange small" @click="cambiarTipoUnidad()"></i>
-
-
                                 </label>
-
-
-
                                 <input type="number" class="form-control" v-model="cantidad">
-                            </div>
-                        </div>
-                        <div class="col-md-2" v-if="arrayArticuloSeleccionado.id">
-                            <div class="form-group">
-                                <label for="campo2">Fecha vencimiento</label>
-                                <input v-if="arrayArticuloSeleccionado.vencimiento == 0" type="date"
-                                    class="form-control" v-model="fechaPorDefecto" readonly>
-                                <input v-if="arrayArticuloSeleccionado.vencimiento == null" type="date"
-                                    class="form-control" v-model="fechavencimiento">
-                                <input v-if="arrayArticuloSeleccionado.vencimiento == 1" type="date"
-                                    class="form-control" v-model="fechavencimiento">
-
                             </div>
                         </div>
 
@@ -215,7 +183,7 @@
                             </div>
                         </div>
                         <div class="col-md-3"
-                            v-if="arrayArticuloSeleccionado.id && valuacionInventario === 'costo_reposicion'">
+                            v-if="arrayArticuloSeleccionado.id">
                             <div class="form-group">
                                 <label for="campo2">Editar precio</label>
 
@@ -230,6 +198,8 @@
                                     <input v-else type="number" class="form-control" v-model="nuevoPrecio" min="0">
                                     <button @click="editarPrecio" class="btn btn-success"><i
                                             class="bi bi-check2"></i></button>
+                                            <label class="small light-gray-text" for="">Shift + T</label>
+
                                 </div>
 
                             </div>
@@ -242,19 +212,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="form-group row ">
-       
-            <div class="container mt-4">
 
-</div>
-
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label>Precio </label>
-                    <input type="number" value="0" step="any" class="form-control" v-model="precio" ref="precioRef">
-                    <label for="">Shift + T</label>
-                </div>
-            </div>-->
             </div>
             <div v-show="step === 3" class="step-content">
                 <div class="form-group row ">
@@ -272,8 +230,6 @@
                                     <th>Paquetes</th>
 
                                     <th>Unidades</th>
-
-                                    <th>Fecha vencimiento</th>
 
                                     <th>Subtotal</th>
                                 </tr>
@@ -302,9 +258,6 @@
                                         <input v-model="detalle.cantidad" type="number" value="2" class="form-control">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control" v-model="detalle.fecha_vencimiento">
-                                    </td>
-                                    <td>
                                         {{ ((detalle.precio * detalle.cantidad) *
                         parseFloat(monedaCompra[0])).toFixed(2) }}
                                         {{
@@ -313,7 +266,7 @@
                                     </td>
                                 </tr>
                                 <tr style="background-color: #CEECF5;">
-                                    <td colspan="8" align="right"><strong>Total Parcial:</strong></td>
+                                    <td colspan="7" align="right"><strong>Total Parcial:</strong></td>
                                     <td>
                                         {{ ((totalParcial = (total - totalImpuesto)) *
                         parseFloat(monedaCompra[0])).toFixed(2)
@@ -323,7 +276,7 @@
                                     </td>
                                 </tr>
                                 <tr style="background-color: #CEECF5;">
-                                    <td colspan="8" align="right"><strong>Total Impuesto:</strong></td>
+                                    <td colspan="7" align="right"><strong>Total Impuesto:</strong></td>
                                     <td>
                                         {{ ((totalImpuesto = ((total * impuesto) / (1 + impuesto)))
                         * parseFloat(monedaCompra[0])).toFixed(2) }} {{ monedaCompra[1] }}
@@ -331,7 +284,7 @@
                                     </td>
                                 </tr>
                                 <tr style="background-color: #CEECF5;">
-                                    <td colspan="8" align="right"><strong>Total Neto:</strong></td>
+                                    <td colspan="7" align="right"><strong>Total Neto:</strong></td>
                                     <td>
                                         {{ ((total = calcularTotal) * parseFloat(monedaCompra[0])).toFixed(2) }} {{
                         monedaCompra[1]
@@ -342,7 +295,7 @@
                             </tbody>
                             <tbody v-else>
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="8">
                                         No hay articulos agregados
                                     </td>
                                 </tr>
@@ -405,7 +358,7 @@ export default {
     },
     data() {
         return {
-            editarPrecios: '',
+            editarPrecios: '1',
             nuevoPrecio: 0,
             nuevoCostoUnidad: 0,
             nuevoCostoPaquete: 0,
@@ -419,7 +372,6 @@ export default {
             actualizarIva: null,
             proveedorSeleccionado: "",
             tipoUnidadSeleccionada: "Unidades",
-            fechavencimiento: null,
             arrayArticuloSeleccionadoLocal: {},
             AlmacenSeleccionado: '1',
             arrayAlmacenes: [],
@@ -428,7 +380,6 @@ export default {
             proveedor: '',
             nombre: '',
             tipo_comprobante: 'BOLETA',
-            serie_comprobante: '',
             num_comprobante: '',
             impuesto: 0.18,
             total: 0.0,
@@ -506,33 +457,32 @@ export default {
             }
             return resultado;
         },
-        fechaPorDefecto() {
-            if (this.arrayArticuloSeleccionado.vencimiento == 0) {
-                this.fechavencimiento = '2099-12-31';
-            } else {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0'); // Los meses son indexados desde 0
-                const day = String(today.getDate()).padStart(2, '0');
-                this.fechavencimiento = `${year}-${month}-${day}`;
-            }
-            return this.fechavencimiento;
-        }
-
     },
     mounted() {
         this.obtenerIva();
         this.listarPrecio();
         this.datosConfiguracion();
+        window.addEventListener("keydown", this.handleKeyPress);
+    },
+    beforeUnmount() {
+        window.removeEventListener("keydown", this.handleKeyPress);
     },
     methods: {
+        handleKeyPress(event) {
+            // Detectar Shift + R
+            if (event.shiftKey && event.key === "R") {
+                this.abrirArticulos();
+            }
+            if (event.shiftKey && event.key === "T") {
+            this.editarPrecio();
+            }
+        },
         validarYAvanzar() {
             const errores = [];
 
             if (this.step === 1) {
                 if (this.idproveedor === 0) errores.push('Seleccione un proveedor');
                 if (this.tipo_comprobante === '0') errores.push('Seleccione un tipo de comprobante');
-                if (!this.serie_comprobante) errores.push('Ingrese la serie del comprobante');
                 if (!this.num_comprobante) errores.push('Ingrese el número de comprobante');
             } else if (this.step === 2) {
                 if (this.AlmacenSeleccionado === '0' || this.AlmacenSeleccionado === 0) errores.push('Seleccione un almacén');
@@ -740,7 +690,7 @@ export default {
                         precio_cuatro: me.precio_cuatro
                     }).then(response => {
                         me.nuevoPrecio = '',
-                            me.editarPrecios = ''
+                            me.editarPrecios = '1'
                     }).catch(error => {
                         console.error(error);
                     })
@@ -797,7 +747,6 @@ export default {
             axios.post('/ingreso/registrar', {
                 'idproveedor': this.idproveedor,
                 'tipo_comprobante': this.tipo_comprobante,
-                'serie_comprobante': this.serie_comprobante,
                 'num_comprobante': this.num_comprobante,
                 'impuesto': this.impuesto,
                 'total': this.total,
@@ -811,7 +760,6 @@ export default {
                     me.cerrarFormulario();
                     me.idproveedor = 0;
                     me.tipo_comprobante = 'BOLETA';
-                    me.serie_comprobante = '';
                     me.num_comprobante = '';
                     me.impuesto = 0.18;
                     me.total = 0.0;
@@ -895,12 +843,7 @@ export default {
 
             if (me.arrayArticuloSeleccionado.length == 0 || me.cantidad == 0 || me.AlmacenSeleccionado == 0) {
                 console.log("Seleccione un producto, verifique la cantidad o almacén");
-            } else if (me.fechavencimiento == null) {
-                swal({
-                    type: 'error',
-                    title: 'Error...',
-                    text: 'No se ingresó fecha de vencimiento!',
-                });
+
             } else {
                 if (me.encuentra(me.arrayArticuloSeleccionado.id)) {
                     swal({
@@ -917,7 +860,6 @@ export default {
                             articulo: me.arrayArticuloSeleccionado.nombre,
                             precio: me.arrayArticuloSeleccionado.precio_costo_unid,
                             unidad_x_paquete: me.arrayArticuloSeleccionado.unidad_envase,
-                            fecha_vencimiento: me.fechavencimiento,
                             cantidad: me.cantidad * me.arrayArticuloSeleccionado.unidad_envase,
                         });
                     } else {
@@ -928,7 +870,6 @@ export default {
                             articulo: me.arrayArticuloSeleccionado.nombre,
                             precio: me.arrayArticuloSeleccionado.precio_costo_unid,
                             unidad_x_paquete: me.arrayArticuloSeleccionado.unidad_envase,
-                            fecha_vencimiento: me.fechavencimiento,
                             cantidad: me.cantidad,
                         });
                     }
@@ -946,7 +887,6 @@ export default {
                     me.articulo = '';
                     me.cantidad = 1;
                     me.precio = 0;
-                    me.fechavencimiento = null;
                 }
             }
         }

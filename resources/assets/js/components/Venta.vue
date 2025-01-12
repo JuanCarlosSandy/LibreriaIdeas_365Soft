@@ -177,7 +177,7 @@
                         </div>
                     </div>
 
-                    <div v-if="step === 1" class="step-content p-fluid">
+                    <div v-if="step === 2" class="step-content p-fluid">
                         <div class="p-grid p-formgrid p-mb-3">
                             <div class="p-col-12 p-md-4">
                                 <span class="p-float-label">
@@ -214,7 +214,7 @@
                         <InputText v-model="num_comprob" type="hidden" disabled />
                     </div>
 
-                    <div v-if="step === 2" class="step-content">
+                    <div v-if="step === 1" class="step-content">
                         <div class="p-fluid p-grid">
                             <div class="p-col-12 p-md-6">
                                 <label class="p-d-block">Almacen <span class="p-error">*</span></label>
@@ -224,7 +224,7 @@
                             </div>
 
                             <div class="p-col-12 p-md-6">
-                                <label class="p-d-block">Buscar articulo</label>
+                                <label class="p-d-block">Buscar articulo   Shoft + B</label>
                                 <div class="p-inputgroup">
                                     <InputText v-model="codigo" placeholder="Codigo del articulo"
                                         :disabled="!selectedAlmacen" @keyup="buscarArticulo()" />
@@ -977,6 +977,12 @@ export default {
     },
 
     methods: {
+        handleKeyPress(event) {
+            // Detectar Shift + R
+            if (event.shiftKey && event.key === "B") {
+                this.abrirModal();
+            }
+        },
 
         generarCuotas() {
             this.cuotas = [];
@@ -3072,7 +3078,10 @@ export default {
         this.ejecutarSecuencial();
         //this.obtenerNumeroFactura();
         document.addEventListener('keypress', this.handleKeyPress);
-
+        window.addEventListener("keydown", this.handleKeyPress);
+    },
+    beforeUnmount() {
+        window.removeEventListener("keydown", this.handleKeyPress);
     },
     beforeDestroy() {
         document.removeEventListener('keypress', this.handleKeyPress);

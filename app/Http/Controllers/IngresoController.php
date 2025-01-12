@@ -154,7 +154,7 @@ class IngresoController extends Controller
                     "descuento_global"
                 )
                 ->orderBy("ingresos.id", "desc")
-                ->paginate(8);
+                ->paginate(10);
         } else {
             $ingresos = Ingreso::join(
                 "personas",
@@ -178,7 +178,7 @@ class IngresoController extends Controller
                 )
                 ->where("ingresos." . $criterio, "like", "%" . $buscar . "%")
                 ->orderBy("ingresos.id", "desc")
-                ->paginate(3);
+                ->paginate(10);
         }
 
         return [
@@ -287,8 +287,6 @@ class IngresoController extends Controller
             $ingreso->tipo_comprobante =
                 $request->form["tipo_comprobante"]["nombre"] ??
                 "No especificado";
-            $ingreso->serie_comprobante =
-                $request->form["serie_comprobante"] ?? "No especificado";
             $ingreso->num_comprobante =
                 $request->form["num_comprobante"] ?? "No especificado";
             $ingreso->fecha_hora = now();
@@ -400,7 +398,6 @@ class IngresoController extends Controller
                 $ingreso->idproveedor = $request->idproveedor;
                 $ingreso->idusuario = \Auth::user()->id;
                 $ingreso->tipo_comprobante = $request->tipo_comprobante;
-                $ingreso->serie_comprobante = $request->serie_comprobante;
                 $ingreso->num_comprobante = $request->num_comprobante;
                 $ingreso->fecha_hora = now()->setTimezone("America/La_Paz");
                 $ingreso->impuesto = $request->impuesto;

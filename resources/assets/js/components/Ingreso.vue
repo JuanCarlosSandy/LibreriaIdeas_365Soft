@@ -33,12 +33,9 @@
                                 <th class="d-none d-md-table-cell">Usuario</th>
                                 <th>Proveedor</th>
                                 <th class="d-none d-md-table-cell">Tipo Comprobante</th>
-                                <th class="d-none d-md-table-cell">Serie Comprobante</th>
                                 <th class="d-none d-md-table-cell">Número Comprobante</th>
                                 <th>Fecha Hora</th>
                                 <th>Total</th>
-
-                                <th class="d-none d-md-table-cell">Estado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,15 +61,12 @@
                                 <td class="d-none d-md-table-cell" v-text="ingreso.usuario"></td>
                                 <td v-text="ingreso.nombre"></td>
                                 <td class="d-none d-md-table-cell" v-text="ingreso.tipo_comprobante"></td>
-                                <td class="d-none d-md-table-cell" v-text="ingreso.serie_comprobante"></td>
                                 <td class="d-none d-md-table-cell" v-text="ingreso.num_comprobante"></td>
                                 <td v-text="ingreso.fecha_hora"></td>
                                 <td>
                                     {{ (ingreso.total * parseFloat(monedaCompra[0])).toFixed(2) }} {{
                                         monedaCompra[1] }}
-
                                 </td>
-                                <td class="d-none d-md-table-cell" v-text="ingreso.estado"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -112,12 +106,7 @@
                                 <p v-text="tipo_comprobante"></p>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Serie Comprobante</label>
-                                <p v-text="serie_comprobante"></p>
-                            </div>
-                        </div>
+
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Número Comprobante</label>

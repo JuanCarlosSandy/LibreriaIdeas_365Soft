@@ -72,8 +72,6 @@
                         <td>{{ $ingreso->tipo_comprobante }}</td>
                     </tr>
                     <tr>
-                        <td><strong>Serie:</strong></td>
-                        <td>{{ $ingreso->serie_comprobante }}</td>
                         <td><strong>Número:</strong></td>
                         <td>{{ $ingreso->num_comprobante }}</td>
                     </tr>

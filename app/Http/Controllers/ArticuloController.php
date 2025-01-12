@@ -31,28 +31,17 @@ class ArticuloController extends Controller
             $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
                 ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
                 ->join('personas', 'proveedores.id', '=', 'personas.id')
-                //->join('industrias', 'articulos.idindustria', '=', 'industrias.id')
                 ->join('marcas', 'articulos.idmarca', '=', 'marcas.id')
-                //->join('grupos', 'articulos.idgrupo', '=', 'grupos.id')
                 ->join('medidas', 'articulos.idmedida', '=', 'medidas.id')
 
                 ->select(
                     'articulos.id',
                     'articulos.idcategoria',
                     'articulos.idproveedor',
-                    //aumente 7 julio
-                    //'articulos.idindustria',
-                    //aumente 7 julio
                     'articulos.idmarca',
-                    //aumente 7 julio
-                    //'articulos.idgrupo',
-                    //aumente 7 julio
                     'articulos.idmedida',
                     'articulos.codigo',
                     'articulos.nombre',
-                    //'articulos.nombre_generico',
-                    'articulos.costo_compra',
-                    //aumente12julio
                     'articulos.vencimiento',
                     'articulos.unidad_envase',
                     'articulos.precio_list_unid',
@@ -60,11 +49,8 @@ class ArticuloController extends Controller
                     'articulos.precio_costo_paq',
 
                     'categorias.nombre as nombre_categoria',
-                    //'industrias.nombre as nombre_industria',
                     'marcas.nombre as nombre_marca',
-                    //'grupos.nombre_grupo',
                     'medidas.descripcion_medida',
-                    //aumente 5 julio
 
                     'articulos.precio_uno',
                     'articulos.precio_dos',
@@ -74,13 +60,10 @@ class ArticuloController extends Controller
                     'articulos.precio_venta',
                     'articulos.stock',
                     'personas.nombre as nombre_proveedor',
-                    'articulos.descripcion',
                     'articulos.condicion',
                     'articulos.fotografia',
-                    // agregado el 26.01,2024
 
                     'articulos.codigo_alfanumerico',
-                    'articulos.descripcion_fabrica'
                 )
                 ->distinct()
                 ->orderBy('articulos.id', 'desc')->paginate(6);
@@ -88,27 +71,16 @@ class ArticuloController extends Controller
             $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
                     ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
                     ->join('personas', 'proveedores.id', '=', 'personas.id')
-                    //->join('industrias', 'articulos.idindustria', '=', 'industrias.id')
                     ->join('marcas', 'articulos.idmarca', '=', 'marcas.id')
-                    //->join('grupos', 'articulos.idgrupo', '=', 'grupos.id')
                     ->join('medidas', 'articulos.idmedida', '=', 'medidas.id')
                     ->select(
                         'articulos.id',
                         'articulos.idcategoria',
                         'articulos.idproveedor',
-                        //aumente 7 julio
-                        //'articulos.idindustria',
-                        //aumente 7 julio
-                        //'articulos.idmarca',
-                        //aumente 7 julio
-                        'articulos.idgrupo',
-                        //aumente 7 julio
+
                         'articulos.idmedida',
                         'articulos.codigo',
                         'articulos.nombre',
-                        //'articulos.nombre_generico',
-                        'articulos.costo_compra',
-                        //aumente12julio
                         'articulos.vencimiento',
                         'articulos.unidad_envase',
                         'articulos.precio_list_unid',
@@ -116,12 +88,8 @@ class ArticuloController extends Controller
                         'articulos.precio_costo_paq',
     
                         'categorias.nombre as nombre_categoria',
-                        //'industrias.nombre as nombre_industria',
                         'marcas.nombre as nombre_marca',
-                        //'grupos.nombre_grupo',
-                        'medidas.descripcion_medida',
-                        //aumente 5 julio
-    
+                        'medidas.descripcion_medida',    
                         'articulos.precio_uno',
                         'articulos.precio_dos',
                         'articulos.precio_tres',
@@ -130,25 +98,18 @@ class ArticuloController extends Controller
                         'articulos.precio_venta',
                         'articulos.stock',
                         'personas.nombre as nombre_proveedor',
-                        'articulos.descripcion',
                         'articulos.condicion',
-                        'articulos.fotografia',
-                        // agregado el 26.01,2024
-    
+                        'articulos.fotografia',    
                         'articulos.codigo_alfanumerico',
-                        'articulos.descripcion_fabrica'
                 )
                 ->where('articulos.nombre', 'like', '%' . $buscar . '%')
-                ->orWhere('articulos.descripcion', 'like', '%' . $buscar . '%')
                 ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('articulos.codigo', 'like', '%' . $buscar . '%')
                 ->orWhere('categorias.nombre', 'like', '%' . $buscar . '%')
-                //->orWhere('industrias.nombre', 'like', '%' . $buscar . '%')
                 ->orWhere('marcas.nombre', 'like', '%' . $buscar . '%')
                 ->distinct()
                 ->orderBy('articulos.id', 'desc')->paginate(6);
         }
-
-
         return [
             'pagination' => [
                 'total' => $articulos->total(),
@@ -159,120 +120,6 @@ class ArticuloController extends Controller
                 'to' => $articulos->lastItem(),
             ],
             'articulos' => $articulos
-        ];
-    }
-    public function index2(Request $request)
-    {
-        if (!$request->ajax())
-            return redirect('/');
-
-        $buscar = $request->buscar;
-        $criterio = $request->criterio;
-
-        if ($buscar == '') {
-            $articulos = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
-                ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
-                ->join('personas', 'proveedores.id', '=', 'personas.id')
-                ->join('industrias', 'articulos.idindustria', '=', 'industrias.id')
-                ->join('marcas', 'articulos.idmarca', '=', 'marcas.id')
-                ->join('grupos', 'articulos.idgrupo', '=', 'grupos.id')
-                ->join('medidas', 'articulos.idmedida', '=', 'medidas.id')
-
-                ->select(
-                    'articulos.id',
-                    'articulos.idcategoria',
-                    'articulos.idproveedor',
-                    //aumente 7 julio
-                    'articulos.idindustria',
-                    //aumente 7 julio
-                    'articulos.idmarca',
-                    //aumente 7 julio
-                    'articulos.idgrupo',
-                    //aumente 7 julio
-                    'articulos.idmedida',
-                    'articulos.codigo',
-                    'articulos.nombre',
-                    'articulos.nombre_generico',
-                    'articulos.costo_compra',
-                    //aumente12julio
-                    'articulos.vencimiento',
-                    'articulos.unidad_envase',
-                    'articulos.precio_list_unid',
-                    'articulos.precio_costo_unid',
-                    'articulos.precio_costo_paq',
-
-                    'categorias.nombre as nombre_categoria',
-                    'industrias.nombre as nombre_industria',
-                    'marcas.nombre as nombre_marca',
-                    'grupos.nombre_grupo',
-                    'medidas.descripcion_medida',
-                    //aumente 5 julio
-
-                    'articulos.precio_uno',
-                    'articulos.precio_dos',
-                    'articulos.precio_tres',
-                    'articulos.precio_cuatro',
-
-                    'articulos.precio_venta',
-                    'articulos.stock',
-                    'personas.nombre as nombre_proveedor',
-                    'articulos.descripcion',
-                    'articulos.condicion',
-                    'articulos.fotografia',
-                    // agregado el 26.01,2024
-
-                    'articulos.codigo_alfanumerico',
-                    'articulos.descripcion_fabrica'
-                )
-                ->distinct()
-                ->orderBy('articulos.id', 'desc');
-        } else {
-            $articulos = Articulo::join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
-                ->join('personas', 'proveedores.id', '=', 'personas.id')
-                ->join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
-                ->join('industrias', 'articulos.idindustria', '=', 'industrias.id')
-                ->join('marcas', 'articulos.idmarca', '=', 'marcas.id')
-                ->join('grupos', 'articulos.idgrupo', '=', 'grupos.id')
-                ->select(
-                    'articulos.id',
-                    'articulos.idcategoria',
-                    'articulos.codigo',
-                    'articulos.nombre',
-
-                    'articulos.unidad_envase',
-                    'articulos.precio_list_unid',
-                    'articulos.precio_costo_unid',
-                    'articulos.precio_costo_paq',
-
-                    'categorias.nombre as nombre_categoria',
-                    'industrias.nombre as nombre_industria',
-                    'marcas.nombre as nombre_marca',
-                    'grupos.nombre_grupo',
-                    //aumente 5 julio
-
-                    'articulos.precio_uno',
-                    'articulos.precio_dos',
-                    'articulos.precio_tres',
-                    'articulos.precio_cuatro',
-
-                    'articulos.precio_venta',
-                    'articulos.stock',
-                    'personas.nombre as nombre_proveedor',
-                    'articulos.descripcion',
-                    'articulos.condicion',
-                    'articulos.fotografia',
-                    // agregado el 26.01,2024
-
-                    'articulos.codigo_alfanumerico',
-                    'articulos.descripcion_fabrica'
-                )
-                ->where('articulos.' . $criterio, 'like', '%' . $buscar . '%')
-                ->distinct()
-                ->orderBy('articulos.id', 'desc');
-        }
-        $articulos=$articulos->get();
-
-        return ['articulos' => $articulos
         ];
     }
 
@@ -397,52 +244,9 @@ class ArticuloController extends Controller
         $idAlmacen = $request->idAlmacen;
         $fechaActual = now();
 
-        /*$query = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
-            ->join('medidas', 'articulos.idmedida', '=', 'medidas.id')
-            ->select(
-                'articulos.id',
-                'medidas.descripcion_medida',
-                'articulos.idcategoria',
-                'articulos.codigo',
-                'articulos.nombre',
-                'categorias.nombre as nombre_categoria',
-                'articulos.precio_venta',
-                'articulos.descripcion',
-                'articulos.condicion',
-                'articulos.precio_uno',
-                'articulos.precio_dos',
-                'articulos.precio_tres',
-                'articulos.precio_cuatro',
-                'articulos.fotografia',
-                'articulos.unidad_envase'
-                // 'articulos.precio_costo_unid',
-                // 'articulos.precio_costo_paq',
-            )
-            ->where('articulos.stock', '>', '0');
-
-        if ($buscar != '') {
-            $query->where('articulos.' . $criterio, 'like', '%' . $buscar . '%');
-        }
-
-        $articulos = $query->get();
-
-        $articulosConSaldo = [];
-
-        foreach ($articulos as $articulo) {
-            $saldoStock = Inventario::where('idarticulo', $articulo->id)
-                ->where('idalmacen', $idAlmacen)
-                ->where('fecha_vencimiento', '>', $fechaActual)
-                ->sum('saldo_stock');
-
-            if ($saldoStock > 0) {
-                $articulo->saldo_stock = $saldoStock;
-                $articulosConSaldo[] = $articulo;
-            }
-        }*/
         $subquery = DB::table('inventarios')
             ->join('almacens', 'inventarios.idalmacen', '=', 'almacens.id')
             ->select('inventarios.idarticulo', 'inventarios.idalmacen', DB::raw('SUM(inventarios.saldo_stock) as saldo_stock'))
-            ->where('inventarios.fecha_vencimiento', '>', $fechaActual)
             ->where('inventarios.idalmacen', '=', $idAlmacen)
             ->where('inventarios.saldo_stock', '>', 0)
             ->groupBy('inventarios.idarticulo', 'inventarios.idalmacen');
@@ -539,15 +343,13 @@ class ArticuloController extends Controller
 
                 'categorias.nombre as nombre_categoria',
                 'unidad_envase',
-                'inventarios.fecha_vencimiento',
-                DB::raw('(SELECT SUM(inventarios.saldo_stock) FROM inventarios WHERE inventarios.idarticulo = articulos.id AND inventarios.fecha_vencimiento > NOW() AND inventarios.idalmacen = ?) as saldo_stock')
+                DB::raw('(SELECT SUM(inventarios.saldo_stock) FROM inventarios WHERE inventarios.idarticulo = articulos.id AND inventarios.idalmacen = ?) as saldo_stock')
 
             )
             ->where('articulos.codigo', '=', $filtro)
             ->where('inventarios.idalmacen', '=', $idAlmacen)
             // ->where('inventarios.saldo_stock', '>', 0)
-            ->whereDate('inventarios.fecha_vencimiento', '>', now()) // Filtrar los lotes no vencidos
-            ->orderBy('inventarios.fecha_vencimiento', 'asc')
+            //->orderBy('inventarios.fecha_vencimiento', 'asc')
             ->addBinding($idAlmacen, 'select')
             ->orderBy('articulos.nombre', 'asc')->take(1)->get();
         Log::info('ARTICULO:', [
@@ -831,9 +633,9 @@ class ArticuloController extends Controller
         try {
             DB::beginTransaction();
 
-            $articulo = Articulo::findOrFail($request->newData['id']);
-            $articulo->precio_costo_unid = $request->newData['precio_costo_unid'];
-            $articulo->precio_costo_paq = $request->newData['precio_costo_paq'];
+            $articulo = Articulo::findOrFail($request->id);
+            $articulo->precio_costo_unid = $request->precio_costo_unidad;
+            $articulo->precio_costo_paq = $request->precio_costo_paquete;
             $articulo->save();
 
             DB::commit();

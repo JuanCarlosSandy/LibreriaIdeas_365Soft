@@ -39,7 +39,6 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::get('/categoria/consultaActividadEconomica', 'VentaController@sincronizarActividades');
 
         Route::get("/articulo", "ArticuloController@index");
-        Route::get("/articulonewindex", "ArticuloController@index2");
         Route::post("/articulo/registrar", "ArticuloController@store");
         Route::put("/articulo/actualizar", "ArticuloController@update");
         Route::put("/articulo/desactivar", "ArticuloController@desactivar");

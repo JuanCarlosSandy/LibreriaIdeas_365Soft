@@ -22,8 +22,6 @@
 
     <div class="details">
         <p><strong>Proveedor:</strong> {{ $ingreso->nombre }}</p>
-        <p><strong>RUC/DNI:</strong> {{ $ingreso->num_documento }}</p>
-        <p><strong>Dirección:</strong> {{ $ingreso->direccion }}</p>
     </div>
 
     <table>
