@@ -271,7 +271,7 @@
 </template>
 @elseif (Auth::user()->idrol == 2)
 <template v-if="menu==0">
-    <venta></venta>
+    <venta2></venta2>
 </template>
 
 <template v-if="menu==5">
@@ -346,11 +346,11 @@
 
 @elseif (Auth::user()->idrol == 4)
 <template v-if="menu==0">
-    <dashboard></dashboard>
+    <cobrocaja></cobrocaja>
 </template>
 
-<template v-if="menu==2">
-    <articulo></articulo>
+<template v-if="menu==29">
+    <cobrocaja></cobrocaja>
 </template>
 
 <template v-if="menu==5">
@@ -363,18 +363,6 @@
 
 <template v-if="menu==11">
     <h1>Ayuda</h1>
-</template>
-
-<template v-if="menu==23">
-    <cotizacionventas></cotizacionventas>
-</template>
-
-<template v-if="menu==28">
-    <monitoreoproductos></monitoreoproductos>
-</template>
-
-<template v-if="menu==12">
-    <h1>Acerca de</h1>
 </template>
 
 <template v-if="menu==17">

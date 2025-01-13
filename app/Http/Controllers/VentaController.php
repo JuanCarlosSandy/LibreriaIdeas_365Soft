@@ -110,7 +110,7 @@ public function index(Request $request)
     ->orderBy('ventas.id', 'desc');
 
     // Filtrar por usuario si no es administrador
-    if ($usuario->idrol != 1) { // Asumiendo que el rol 1 es el de administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
     }
 
@@ -199,7 +199,7 @@ public function indexFactura(Request $request)
         ->orderBy('ventas.id', 'desc');
 
     // Filtrar por usuario si no es administrador
-    if ($usuario->idrol != 1) { // Asumiendo que el rol 1 es el de administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
     }
 
@@ -281,7 +281,269 @@ public function indexRecibo(Request $request)
         ->orderBy('ventas.id', 'desc');
 
     // Filtrar por usuario si no es administrador
-    if ($usuario->idrol != 1) { // Asumiendo que el rol 1 es el de administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
+        $query->where('ventas.idusuario', $usuario->id);
+    }
+
+    if (!empty($buscar)) {
+        $query->where(function ($q) use ($buscar) {
+            $q->where('ventas.num_comprobante', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.num_documento', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+              ->orWhere('ventas.fecha_hora', 'like', '%' . $buscar . '%')
+              ->orWhere('users.usuario', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    $ventas = $query->paginate(5);
+
+    return [
+        'pagination' => [
+            'total' => $ventas->total(),
+            'current_page' => $ventas->currentPage(),
+            'per_page' => $ventas->perPage(),
+            'last_page' => $ventas->lastPage(),
+            'from' => $ventas->firstItem(),
+            'to' => $ventas->lastItem(),
+        ],
+        'ventas' => $ventas,
+        'usuario' => $usuario,
+        'codigoPuntoVenta' => $codigoPuntoVenta,
+        'codigoSucursal' => $codigoSucursal,
+    ];
+}
+
+public function indexCobrar(Request $request)
+{
+    if (!$request->ajax()) {
+        return redirect('/');
+    }
+
+    $buscar = $request->buscar;
+    $usuario = \Auth::user();
+    $usuario = \Auth::user();
+    $idrol = $usuario->idrol;
+    $idsucursal = $usuario->idsucursal;
+
+    // Obtener el codigoPuntoVenta
+    $codigoPuntoVenta = '';
+    if (!empty($usuario->idpuntoventa)) {
+        $puntoVenta = PuntoVenta::find($usuario->idpuntoventa);
+        if ($puntoVenta) {
+            $codigoPuntoVenta = $puntoVenta->codigoPuntoVenta;
+        }
+    }
+
+    // Obtener el codigoSucursal
+    $codigoSucursal = '';
+    $sucursal = Sucursales::find($idsucursal);
+    if ($sucursal) {
+        $codigoSucursal = $sucursal->codigoSucursal;
+    }
+
+    $query = Venta::join('users', 'ventas.idusuario', '=', 'users.id')
+    ->join('personas', 'ventas.idcliente', '=', 'personas.id')
+    ->leftJoin('facturas', 'ventas.id', '=' , 'facturas.idventa')
+    ->select(
+        'ventas.tipo_comprobante as tipo_comprobante',
+        'ventas.idcliente',
+        'ventas.id',
+        'ventas.tipo_comprobante',
+        'ventas.serie_comprobante',
+        'ventas.num_comprobante',
+        'ventas.fecha_hora',
+        'ventas.impuesto',
+        'ventas.total',
+        'ventas.estado',
+        'users.usuario',
+        'personas.nombre as razonSocial',
+        'personas.num_documento as documentoid',
+        'facturas.id as idFactura',
+        'facturas.numeroFactura',
+        'facturas.cuf',
+        'facturas.cufd',
+        'facturas.codigoControl',
+        'facturas.correo',
+        'facturas.fechaEmision'
+    )
+    ->where('ventas.estado', '=', 'Pendiente') // Condición añadida
+    ->orderBy('ventas.id', 'desc');
+
+    // Filtrar por usuario si no es administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
+        $query->where('ventas.idusuario', $usuario->id);
+    }
+
+    if (!empty($buscar)) {
+        $query->where(function ($q) use ($buscar) {
+            $q->where('ventas.num_comprobante', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.num_documento', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+              ->orWhere('ventas.fecha_hora', 'like', '%' . $buscar . '%')
+              ->orWhere('users.usuario', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    $ventas = $query->paginate(5);
+
+    return [
+        'pagination' => [
+            'total' => $ventas->total(),
+            'current_page' => $ventas->currentPage(),
+            'per_page' => $ventas->perPage(),
+            'last_page' => $ventas->lastPage(),
+            'from' => $ventas->firstItem(),
+            'to' => $ventas->lastItem(),
+        ],
+        'ventas' => $ventas,
+        'usuario' => $usuario,
+        'codigoPuntoVenta' => $codigoPuntoVenta,
+        'codigoSucursal' => $codigoSucursal,
+    ];
+}
+
+public function indexFacturaCobrar(Request $request)
+{
+    if (!$request->ajax()) {
+        return redirect('/');
+    }
+
+    $buscar = $request->buscar;
+    $usuario = \Auth::user();
+    $usuario = \Auth::user();
+    $idrol = $usuario->idrol;
+    $idsucursal = $usuario->idsucursal;
+
+    // Obtener el codigoPuntoVenta
+    $codigoPuntoVenta = '';
+    if (!empty($usuario->idpuntoventa)) {
+        $puntoVenta = PuntoVenta::find($usuario->idpuntoventa);
+        if ($puntoVenta) {
+            $codigoPuntoVenta = $puntoVenta->codigoPuntoVenta;
+        }
+    }
+
+    // Obtener el codigoSucursal
+    $codigoSucursal = '';
+    $sucursal = Sucursales::find($idsucursal);
+    if ($sucursal) {
+        $codigoSucursal = $sucursal->codigoSucursal;
+    }
+
+    $query = Factura::join('ventas', 'facturas.idventa', '=', 'ventas.id')
+        ->join('users', 'ventas.idusuario', '=', 'users.id')
+        ->join('personas', 'ventas.idcliente', '=', 'personas.id')
+        //->join('facturas', 'ventas.id', '=' , 'facturas.idventa')
+        ->select(
+            'ventas.tipo_comprobante as tipo_comprobante',
+            'ventas.idcliente',
+            'ventas.id',
+            'ventas.tipo_comprobante',
+            'ventas.serie_comprobante',
+            'ventas.num_comprobante',
+            'ventas.fecha_hora',
+            'ventas.impuesto',
+            'ventas.total',
+            'ventas.estado',
+            'users.usuario',
+            'personas.nombre as razonSocial',
+            'personas.num_documento as documentoid',
+            'facturas.id as idFactura',
+            'facturas.numeroFactura',
+            'facturas.cuf',
+            'facturas.cufd',
+            'facturas.codigoControl',
+            'facturas.correo',
+            'facturas.fechaEmision'
+        )
+        ->where('ventas.estado', '=', 'Pendiente') // Condición añadida
+        ->orderBy('ventas.id', 'desc');
+
+    // Filtrar por usuario si no es administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
+        $query->where('ventas.idusuario', $usuario->id);
+    }
+
+    if (!empty($buscar)) {
+        $query->where(function ($q) use ($buscar) {
+            $q->where('ventas.num_comprobante', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.num_documento', 'like', '%' . $buscar . '%')
+              ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+              ->orWhere('ventas.fecha_hora', 'like', '%' . $buscar . '%')
+              ->orWhere('users.usuario', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    $ventas = $query->paginate(5);
+
+    return [
+        'pagination' => [
+            'total' => $ventas->total(),
+            'current_page' => $ventas->currentPage(),
+            'per_page' => $ventas->perPage(),
+            'last_page' => $ventas->lastPage(),
+            'from' => $ventas->firstItem(),
+            'to' => $ventas->lastItem(),
+        ],
+        'ventas' => $ventas,
+        'usuario' => $usuario,
+        'codigoPuntoVenta' => $codigoPuntoVenta,
+        'codigoSucursal' => $codigoSucursal,
+    ];
+}
+
+public function indexReciboCobrar(Request $request)
+{
+    if (!$request->ajax()) {
+        return redirect('/');
+    }
+
+    $buscar = $request->buscar;
+    $usuario = \Auth::user();
+    $usuario = \Auth::user();
+    $idrol = $usuario->idrol;
+    $idsucursal = $usuario->idsucursal;
+
+    // Obtener el codigoPuntoVenta
+    $codigoPuntoVenta = '';
+    if (!empty($usuario->idpuntoventa)) {
+        $puntoVenta = PuntoVenta::find($usuario->idpuntoventa);
+        if ($puntoVenta) {
+            $codigoPuntoVenta = $puntoVenta->codigoPuntoVenta;
+        }
+    }
+
+    // Obtener el codigoSucursal
+    $codigoSucursal = '';
+    $sucursal = Sucursales::find($idsucursal);
+    if ($sucursal) {
+        $codigoSucursal = $sucursal->codigoSucursal;
+    }
+
+    $query = Venta::join('users', 'ventas.idusuario', '=', 'users.id')
+        ->join('personas', 'ventas.idcliente', '=', 'personas.id')
+        ->select(
+            'ventas.tipo_comprobante as tipo_comprobante',
+            'ventas.idcliente',
+            'ventas.id',
+            'ventas.tipo_comprobante',
+            'ventas.serie_comprobante',
+            'ventas.num_comprobante',
+            'ventas.fecha_hora',
+            'ventas.impuesto',
+            'ventas.total',
+            'ventas.estado',
+            'users.usuario',
+            'personas.nombre as razonSocial',
+            'personas.num_documento as documentoid',
+
+        )
+        ->where('ventas.tipo_comprobante', '=', 'RESIVO')
+        ->where('ventas.estado', '=', 'Pendiente') // Condición añadida
+        ->orderBy('ventas.id', 'desc');
+
+    // Filtrar por usuario si no es administrador
+    if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
     }
 

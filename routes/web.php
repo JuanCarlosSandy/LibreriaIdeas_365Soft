@@ -298,6 +298,10 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::get('/ventaReporte', 'VentaController@indexRecibo');
         Route::get('/ventaReporteFactura', 'VentaController@indexFactura');
 
+        Route::get('/ventaReporteCobrar', 'VentaController@indexReciboCobrar');
+        Route::get('/ventaReporteFacturaCobrar', 'VentaController@indexFacturaCobrar');
+        Route::get("/ventaCobrar", "VentaController@indexCobrar");
+
 
         //new
         Route::post(

@@ -20,7 +20,6 @@
                         <button class="btn btn-primary" @click="cambiarTipoventa('Factura', buscar, criterio)">Factura</button>
                         <button class="btn btn-secondary" @click="cambiarTipoventa('Recibo', buscar, criterio)">Recibo</button>
                     </div>
-                    <Button @click="abrirTipoVenta" label="Nuevo" icon="pi pi-plus" class="p-button-primary" />
                 </div>
             </template>
             <!-- Listado-->
@@ -56,14 +55,14 @@
                                         class="p-button-sm p-button-primary p-mr-1" 
                                     />
 
-                                    <!-- Botón para abrir modal de pago 
+                                    <!-- Botón para abrir modal de pago -->
                                     <Button 
                                         icon="pi pi-dollar" 
                                         v-if="slotProps.data.estado === 'Pendiente'" 
                                         @click="abrirModalPago(slotProps.data.id)" 
                                         class="p-button-sm p-mr-1" 
                                         style="background-color: green; border-color: green; color: white;" 
-                                    />-->
+                                    />
 
                                     <!-- Botones para acciones de factura -->
                                     <template v-if="slotProps.data.tipo_comprobante === 'FACTURA'">
@@ -453,7 +452,7 @@
                                                     </div>
                                                     <button type="button" @click="aplicarDescuento"
                                                         class="btn btn-success btn-block">
-                                                        <i class="fa fa-check mr-2"></i> Registrar Venta
+                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
                                                     </button>
                                                 </div>
                                             </div>
@@ -491,7 +490,7 @@
                                                     </div>
                                                     <button type="button" @click="registrarVenta(7)"
                                                         class="btn btn-success btn-block">
-                                                        <i class="fa fa-check mr-2"></i> Registrar Venta
+                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
                                                     </button>
                                                 </div>
                                             </div>
@@ -675,7 +674,7 @@
                                                     </div>
                                                 </div>
                                                 <button type="button" @click="cerrarVenta(1)" class="btn btn-success btn-block">
-                                                    <i class="fa fa-check mr-2"></i> Registrar Venta
+                                                    <i class="fa fa-check mr-2"></i> Registrar Pago
                                                 </button>
                                             </div>
                                         </div>
@@ -1837,7 +1836,7 @@ export default {
         listarVenta(page, buscar, criterio) {
             let me = this;
             var url =
-                "/venta?page=" + page + "&buscar=" + buscar + "&criterio=" + criterio;
+                "/ventaCobrar?page=" + page + "&buscar=" + buscar + "&criterio=" + criterio;
             axios
                 .get(url)
                 .then(function (response) {
@@ -1853,7 +1852,7 @@ export default {
 
         listarVentaF(page, buscar, criterio) {
             let me = this;
-            var url = '/ventaReporteFactura?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+            var url = '/ventaReporteFacturaCobrar?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
                 me.arrayVenta = respuesta.ventas.data;
@@ -1868,7 +1867,7 @@ export default {
 
         listarVentaR(page, buscar, criterio) {
             let me = this;
-            var url = '/ventaReporte?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+            var url = '/ventaReporteCobrar?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
                 me.arrayVenta = respuesta.ventas.data;
