@@ -224,7 +224,7 @@
                             </div>
 
                             <div class="p-col-12 p-md-6">
-                                <label class="p-d-block">Buscar articulo   Shoft + B</label>
+                                <label class="p-d-block">Buscar articulo   ATAJO Shift + B</label>
                                 <div class="p-inputgroup">
                                     <InputText v-model="codigo" placeholder="Codigo del articulo"
                                         :disabled="!selectedAlmacen" @keyup="buscarArticulo()" />
@@ -627,12 +627,17 @@
                 <TabView>
                     <TabPanel header="Articulos">
                         <div class="p-grid">
-                            <div class="p-col-6">
-                                <div class="p-inputgroup">
-                                    <Dropdown v-model="criterioA" :options="criterioOptions" optionLabel="label"
-                                        optionValue="value" class="p-col-4" />
-                                    <InputText v-model="buscarA" placeholder="Texto a buscar"
-                                        @input="listarArticulo(buscarA, criterioA)" class="p-col-8" />
+                            <div class="p-col-12">
+                                <div class="p-field" style="width: 100%;">
+                                    <label for="buscarA" class="p-text-bold" style="display: block; margin-bottom: 8px;">Buscar:</label>
+                                    <InputText 
+                                        id="buscarA" 
+                                        v-model="buscarA" 
+                                        placeholder="Texto a buscar" 
+                                        @input="listarArticulo(buscarA)" 
+                                        class="p-inputtext-lg" 
+                                        style="width: 100%; margin: 0;" 
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -817,7 +822,7 @@ export default {
             offset: 3,
             criterio: "",
             buscar: "",
-            criterioA: "nombre",
+            criterioA: "",
             buscarA: "",
             arrayArticulo: [],
             arraySeleccionado: [],
@@ -2067,6 +2072,7 @@ export default {
             this.precioseleccionado = data.precio_uno;
 
             this.cerrarModal();
+
         },
         eliminarSeleccionado() {
             this.codigo = "";
@@ -2909,6 +2915,7 @@ export default {
         cerrarModal() {
             this.modal = 0;
             this.tituloModal = "";
+            this.buscarA = '';
         },
         abrirModal() {
 

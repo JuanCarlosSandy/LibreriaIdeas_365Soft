@@ -978,7 +978,6 @@ export default {
                 console.log("respuesta = ", me.idarticulo)
                 me.cerrarModal();
                 me.listarArticulo(1, '', '');
-                me.toastSuccess("Articulo registrado correctamente");
                 console.log("stock ???",me.agregarStock);
                 if (me.agregarStock == true) {
                     let arrayArticulos = [
@@ -994,9 +993,12 @@ export default {
                 }
                 
             }).then(function (response) {
-                if (response) {
-                    console.log(response.data);
-                }
+                swal({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Datos registrados con éxito',
+                    confirmButtonText: 'Aceptar'
+                });
             }).catch(function (error) {
                 console.error(error);
                 me.toastError("Hubo un error al registrar el articulo o inventario");
@@ -1020,11 +1022,14 @@ export default {
                 //alert("Datos actualizados con éxito");
                 //console.log("datos actuales",formData);
                 var respuesta = response.data;
-                console.log("respuesta = ",respuesta)
-                console.log("foto ",data)
+                swal({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Datos actualizados con éxito',
+                    confirmButtonText: 'Aceptar'
+                });
                 me.cerrarModal();
                 me.listarArticulo(1, '', '');
-                me.toastSuccess("Articulo actualizado correctamente")
             }).catch(function (error) {
                 console.log(error);
                 me.toastError("No se puedo actualizar el articulo")

@@ -11,18 +11,21 @@
           </div>
         </template>
         <template #content>
-          <div class="p-fluid p-formgrid p-grid">
-            <div class="p-field-sm">
-              <Dropdown v-model="criterio"  :options="criterioOptions" optionLabel="label" optionValue="value" placeholder="Seleccione criterio" />
-            </div>
-            <div class="p-field ">
-              <span class="p-input-icon-left">
+          <div class="p-fluid p-grid" style="align-items: left;">
+            <div class="p-col-10">
+              <span class="p-input-icon-left" style="width: 100%;">
                 <i class="pi pi-search" />
-                <InputText v-model="buscar" placeholder="Buscar..." @input="listarPersona(1, buscar, criterio)" />
+                <InputText 
+                  id="buscar" 
+                  v-model="buscar" 
+                  placeholder="Escriba aquí para buscar..." 
+                  @input="listarPersona(1, buscar)" 
+                  style="width: 100%;" 
+                />
               </span>
             </div>
           </div>
-  
+          
          <DataTable :value="arrayPersona" :paginator="true" :rows="10"
                      :totalRecords="pagination.total" :lazy="true"
                      @page="onPage($event)" :loading="loading"
@@ -40,11 +43,8 @@
               </template>
             </Column>
             <Column field="nombre" header="Nombre"></Column>
-            <Column field="tipo_documento" header="Tipo Documento"></Column>
-            <Column field="num_documento" header="Número"></Column>
-            <Column field="direccion" header="Dirección"></Column>
+            <Column field="num_documento" header="Num Documento"></Column>
             <Column field="telefono" header="Teléfono"></Column>
-            <Column field="email" header="Email"></Column>
             <Column field="usuario" header="Usuario"></Column>
             <Column field="rol" header="Rol"></Column>
             <Column field="sucursal" header="Sucursal"></Column>
@@ -63,25 +63,27 @@
             <InputText class="p-inputtext-sm" id="nombre" v-model="nombre" />
           </div>
           <div class="p-field p-col-12 p-md-6">
+            <label for="telefono">Teléfono</label>
+            <InputText class="p-inputtext-sm" id="telefono" v-model="telefono" />
+          </div>
+
+          <div class="p-field p-col-12 p-md-6">
             <label for="tipo_documento">Tipo documento</label>
             <Dropdown class="p-inputtext-sm" id="tipo_documento" v-model="tipo_documento" :options="tipoDocumentoOptions" optionLabel="label" optionValue="value" placeholder="Selecciona un tipo de documento" />
           </div>
+
+          <!--<div class="p-field p-col-12 p-md-6">
+            <label for="direccion">Dirección</label>
+            <InputText class="p-inputtext-sm" id="direccion" v-model="direccion" />
+          </div>-->
           <div class="p-field p-col-12 p-md-6">
             <label for="num_documento">Número documento</label>
             <InputText class="p-inputtext-sm" id="num_documento" v-model="num_documento" />
           </div>
-          <div class="p-field p-col-12 p-md-6">
-            <label for="direccion">Dirección</label>
-            <InputText class="p-inputtext-sm" id="direccion" v-model="direccion" />
-          </div>
-          <div class="p-field p-col-12 p-md-6">
-            <label for="telefono">Teléfono</label>
-            <InputText class="p-inputtext-sm" id="telefono" v-model="telefono" />
-          </div>
-          <div class="p-field p-col-12 p-md-6">
+          <!--<div class="p-field p-col-12 p-md-6">
             <label for="email">Email</label>
             <InputText class="p-inputtext-sm"  id="email" v-model="email" />
-          </div>
+          </div>-->
           <div class="p-field p-col-12 p-md-6">
             <label for="idrol">Rol</label>
             <Dropdown class="p-inputtext-sm" id="idrol" v-model="idrol" :options="arrayRol" optionLabel="nombre" optionValue="id" placeholder="Seleccione" />
@@ -95,7 +97,7 @@
             <InputText class="p-inputtext-sm" id="usuario" v-model="usuario" />
           </div>
           <div class="p-field p-col-12 p-md-6">
-            <label for="password">Clave</label>
+            <label for="password">Contraseña</label>
             <Password class="p-inputtext-sm" id="password" v-model="password" />
           </div>
           <div class="p-field p-col-12">
@@ -305,6 +307,12 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(function (response) {
+          swal({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Datos registrados con éxito',
+            confirmButtonText: 'Aceptar'
+          });
           me.cerrarModal();
           me.listarPersona(1, '', 'nombre');
         }).catch(function (error) {
@@ -330,19 +338,28 @@
         formData.append('password', this.password);
         formData.append('fotografia', this.fotografia);
         formData.append('id', this.persona_id);
-  
-        axios.post('/user/actualizar', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }).then(function (response) {
-          alert("Datos actualizados con éxito");
-          me.cerrarModal();
-          me.listarPersona(1, '', 'nombre');
-        }).catch(function (error) {
-          console.log(error);
-        });
+
+        axios
+          .post('/user/actualizar', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then(function (response) {
+            swal({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Datos actualizados con éxito',
+              confirmButtonText: 'Aceptar'
+            });
+            me.cerrarModal();
+            me.listarPersona(1, '', 'nombre');
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
+
       validarPersona() {
         this.errorPersona = 0;
         this.errorMostrarMsjPersona = [];

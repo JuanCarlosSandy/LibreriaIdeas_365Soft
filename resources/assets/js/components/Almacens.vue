@@ -221,6 +221,12 @@ export default {
       let me = this;
       axios.post("/almacen/registrar", data)
         .then(function (response) {
+          swal({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Datos registrados con éxito',
+            confirmButtonText: 'Aceptar'
+          });
           me.cerrarModal();
           me.listarAlmacenes(1, "", "nombre_almacen");
           me.$toast.add({severity:'success', summary: 'Éxito', detail: 'Almacén registrado', life: 3000});
@@ -234,6 +240,12 @@ export default {
       let me = this;
       axios.put("/almacen/editar", data)
         .then(function (response) {
+          swal({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Datos registrados con éxito',
+            confirmButtonText: 'Aceptar'
+          });
           me.cerrarModal();
           me.listarAlmacenes(1, "", "nombre_almacen");
           me.$toast.add({severity:'success', summary: 'Éxito', detail: 'Almacén actualizado', life: 3000});

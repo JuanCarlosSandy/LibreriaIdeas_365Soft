@@ -29,8 +29,7 @@
             </template>
           </Column>
           <Column field="nombre" header="Nombre"></Column>
-          <Column field="codigoProductoSin" header="Código"></Column>
-          <Column field="descripcion" header="Descripción"></Column>
+          <!--<Column field="codigoProductoSin" header="Código"></Column>-->
           <Column field="estado" header="Estado">
             <template #body="slotProps">
                 <span :class="['status-badge', slotProps.data.condicion === 1 ? 'active' : 'inactive']">
@@ -51,12 +50,12 @@
               <InputText id="nombre" v-model="nombre" required autofocus :class="{'p-invalid': nombreError}" @input="validarNombreEnTiempoReal" />
               <small class="p-error error-message" v-if="nombreError"><strong>{{ nombreError }}</strong></small>
             </div>
-            <div class="p-field input-container">
+            <!--<div class="p-field input-container">
               <label for="descripcion">Descripción</label>
               <InputText id="descripcion" v-model="descripcion" required :class="{'p-invalid': descripcionError}" @input="validarDescripcionEnTiempoReal" />
               <small class="p-error error-message" v-if="descripcionError"><strong>{{ descripcionError }}</strong></small>
             </div>
-            <!--<div class="p-field input-container">
+            <div class="p-field input-container">
                 <label for="codigo">Código</label>
                 <select v-model="codigoProductoSin" id="codigo" :class="{'p-invalid': codigoProductoSinError}" @input="validarCodigoEnTiempoReal">
                     <option value="" disabled>Seleccione el Código</option>
@@ -214,9 +213,15 @@ import axios from 'axios';
         let me = this;
         axios.post('/categoria/registrar', {
             'nombre': this.nombre,
-            'descripcion': this.descripcion,
+            //'descripcion': this.descripcion,
             'codigoProductoSin': this.codigoProductoSin
         }).then(function (response) {
+            swal({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Datos registrados con éxito',
+              confirmButtonText: 'Aceptar'
+            });
             me.cerrarModal();
             me.listarCategoria(1, '', 'nombre');
         }).catch(function (error) {
@@ -228,9 +233,6 @@ import axios from 'axios';
         this.codigoProductoSinError = '';
         this.descripcionError ='';
         this.nombreError = '';
-        if (!this.descripcion.trim()){
-          this.descripcionError = "La descripción de la linea no puede estar vacía.";
-        }
         if (this.codigoProductoSin === null || this.codigoProductoSin === undefined || String(this.codigoProductoSin).trim() === '') {
           this.codigoProductoSinError = 'El código no puede estar vacío.';
         }
@@ -245,10 +247,16 @@ import axios from 'axios';
         let me = this;
         axios.put('/categoria/actualizar', {
             'nombre': this.nombre,
-            'descripcion': this.descripcion,
+            //'descripcion': this.descripcion,
             'codigoProductoSin': this.codigoProductoSin,
             'id': this.categoria_id
         }).then(function (response) {
+            swal({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Datos actualizados con éxito',
+              confirmButtonText: 'Aceptar'
+            });
             me.cerrarModal();
             me.listarCategoria(1, '', 'nombre');
         }).catch(function (error) {
@@ -260,7 +268,6 @@ import axios from 'axios';
         var url = '/categorianewview?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
         axios.get(url).then(function (response) {
             var respuesta = response.data;
-            //consol.log('Linea',respuesta);
             me.arrayCategoria = respuesta.categorias;
             me.pagination = respuesta.pagination;
         })

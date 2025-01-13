@@ -23,19 +23,60 @@ class UserController extends Controller
             return redirect('/');
 
         $buscar = $request->buscar;
-        $criterio = $request->criterio;
 
         if ($buscar == '') {
             $personas = User::join('personas', 'users.id', '=', 'personas.id')
                 ->join('roles', 'users.idrol', '=', 'roles.id')
                 ->join('sucursales', 'users.idsucursal', '=', 'sucursales.id')
-                ->select('personas.id', 'personas.nombre', 'personas.tipo_documento', 'personas.num_documento', 'personas.direccion', 'personas.telefono', 'personas.email', 'personas.fotografia', 'users.usuario', 'users.password', 'users.condicion', 'users.idrol', 'roles.nombre as rol', 'users.idsucursal', 'sucursales.nombre as sucursal')
-                ->orderBy('personas.id', 'desc')->paginate(6);
+                ->select(
+                    'personas.id', 
+                    'personas.nombre', 
+                    'personas.tipo_documento', 
+                    'personas.num_documento', 
+                    'personas.direccion', 
+                    'personas.telefono', 
+                    'personas.email', 
+                    'personas.fotografia', 
+                    'users.usuario', 
+                    'users.password', 
+                    'users.condicion', 
+                    'users.idrol', 
+                    'roles.nombre as rol', 
+                    'users.idsucursal', 
+                    'sucursales.nombre as sucursal'
+                )
+                ->orderBy('personas.id', 'desc')
+                ->paginate(6);
         } else {
             $personas = User::join('personas', 'users.id', '=', 'personas.id')
                 ->join('roles', 'users.idrol', '=', 'roles.id')
-                ->select('personas.id', 'personas.nombre', 'personas.tipo_documento', 'personas.num_documento', 'personas.direccion', 'personas.telefono', 'personas.email', 'personas.fotografia', 'users.usuario', 'users.password', 'users.condicion', 'users.idrol', 'roles.nombre as rol', 'users.idsucursal', 'sucursales.nombre as sucursal')
-                ->where('personas.' . $criterio, 'like', '%' . $buscar . '%')->orderBy('id', 'desc')->paginate(6);
+                ->join('sucursales', 'users.idsucursal', '=', 'sucursales.id')
+                ->select(
+                    'personas.id', 
+                    'personas.nombre', 
+                    'personas.tipo_documento', 
+                    'personas.num_documento', 
+                    'personas.direccion', 
+                    'personas.telefono', 
+                    'personas.email', 
+                    'personas.fotografia', 
+                    'users.usuario', 
+                    'users.password', 
+                    'users.condicion', 
+                    'users.idrol', 
+                    'roles.nombre as rol', 
+                    'users.idsucursal', 
+                    'sucursales.nombre as sucursal'
+                )
+                ->where(function ($query) use ($buscar) {
+                    $query->where('personas.nombre', 'like', '%' . $buscar . '%')
+                        ->orWhere('personas.num_documento', 'like', '%' . $buscar . '%')
+                        ->orWhere('personas.telefono', 'like', '%' . $buscar . '%')
+                        ->orWhere('roles.nombre', 'like', '%' . $buscar . '%')
+                        ->orWhere('sucursales.nombre', 'like', '%' . $buscar . '%');
+                })
+                ->orderBy('personas.id', 'desc')
+                ->paginate(6);
         }
 
         return [
@@ -50,6 +91,7 @@ class UserController extends Controller
             'personas' => $personas
         ];
     }
+
 
     public function store(Request $request)
     {

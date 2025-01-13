@@ -197,7 +197,12 @@
                 'nombre': this.nombre,
 
             }).then(function (response) {
-                console.log("Registrado");
+                swal({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Datos registrados con éxito',
+                    confirmButtonText: 'Aceptar'
+                });
                 me.cerrarModal();
                 me.listarCategoria(1, '', 'nombre');
             }).catch(function (error) {
@@ -215,6 +220,12 @@
                 'nombre': this.nombre,
                 'id': this.categoria_id
             }).then(function (response) {
+                swal({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Datos actualizados con éxito',
+                    confirmButtonText: 'Aceptar'
+                });
                 me.cerrarModal();
                 me.listarCategoria(1, '', 'nombre');
             }).catch(function (error) {

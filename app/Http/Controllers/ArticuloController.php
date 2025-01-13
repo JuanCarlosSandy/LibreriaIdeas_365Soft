@@ -277,8 +277,10 @@ class ArticuloController extends Controller
             ->orderBy('articulos.nombre')
             ->orderBy('almacens.nombre_almacen');
         if ($buscar != '') {
-            $articulosConSaldo->where('articulos.' . $criterio, 'like', '%' . $buscar . '%');
-        }
+            $articulosConSaldo->where(function ($query) use ($criterio, $buscar) {
+                $query->where('articulos.nombre', 'like', '%' . $buscar . '%')
+                      ->orWhere('articulos.codigo', 'like', '%' . $buscar . '%');
+            });        }
         $articulosConSaldo = $articulosConSaldo->get();
         return ['articulos' => $articulosConSaldo];
     }
