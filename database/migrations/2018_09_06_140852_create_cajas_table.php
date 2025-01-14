@@ -35,6 +35,7 @@ class CreateCajasTable extends Migration
             $table->decimal('comprasCredito', 11, 2)->default('0.00');
             $table->decimal('pagosEfecivocompras', 11, 2)->default('0.00');
             $table->decimal('saldoFaltante', 11, 2)->default('0.00');
+            $table->decimal('saldoSobrante', 11, 2)->default('0.00');
             $table->decimal('PagoCuotaEfectivo', 11, 2)->default('0.00');
             $table->decimal('saldototalventas', 11, 2)->nullable();;
             $table->decimal('saldoCaja', 11, 2)->nullable();;

@@ -23,15 +23,14 @@
                             <th>Fecha Apertura</th>
                             <th>Fecha Cierre</th>
                             <th>Saldo Inicial</th>
-                            <th>Ventas al Contado</th>
+                            <th>Ventas Efectivo</th>
                             <th>Ventas QR </th>
                             <th>Ventas Totales</th>
-                            <th>Saldo de faltante </th>
                             <th>Depósitos Extras</th>
                             <th>Salidas Extras</th>
                             <th>Saldo Caja</th>
                             <th>Saldo Faltante</th>
-
+                            <th>Saldo Sobrante</th>
                             <th>Estado</th>
                             <th>Acciones</th>
 
@@ -43,16 +42,19 @@
                             <td v-text="caja.fechaApertura" width="90"></td>
                             <td v-text="caja.fechaCierre"></td>
                             <td v-text="caja.saldoInicial"></td>
-                          
-                            <td v-text="caja.ventasContado"></td>
-                            <td v-text="caja.ventasQR"></td>
-                            <td v-text="caja.saldototalventas"></td>
-
-                            <td v-text="caja.saldoFaltante"></td>
-                            <td v-text="caja.depositos"></td>
-                            <td v-text="caja.salidas"></td>
-                            <td v-text="caja.saldoCaja"></td>
-                            <td v-text="caja.saldoFaltante"></td>
+                            <template v-if="!caja.estado">
+                                <td v-text="caja.ventasContado"></td>
+                                <td v-text="caja.ventasQR"></td>
+                                <td v-text="caja.saldototalventas"></td>
+                                <td v-text="caja.depositos"></td>
+                                <td v-text="caja.salidas"></td>
+                                <td v-text="caja.saldoCaja"></td>
+                                <td v-text="caja.saldoFaltante"></td>
+                                <td v-text="caja.saldoSobrante"></td>
+                            </template>
+                            <template v-else>
+                                <td colspan="8">Datos no disponibles</td>
+                            </template>
 
                             <td>
                                 <div v-if="caja.estado">
@@ -542,6 +544,7 @@ data (){
         comprasContado : '',
         comprasCredito : '',
         saldoFaltante : '',
+        saldoSobrante : '',
         PagoCuotaEfectivo : '',
         saldoCaja : '',
         arqueo_id: 0,
@@ -791,7 +794,8 @@ methods : {
 
             axios.put('/caja/cerrar',{
                 'id': id,
-                'saldoFaltante':total
+                'saldoFaltante':total,
+                'saldoSobrante':total
             }).then(function (response) {
                 me.listarCaja(1,'','id');
                 swal(
@@ -799,6 +803,7 @@ methods : {
                 'La caja fue cerrada con éxito.',
                 'success'
                 )
+                me.mostrarBotonesSecundarios = false;
             }).catch(function (error) {
                 console.log(error);
             });

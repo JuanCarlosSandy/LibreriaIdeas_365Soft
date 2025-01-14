@@ -777,7 +777,7 @@
                             <Column field="nombre_categoria" header="Categoría" />
                             <Column header="Precio Venta">
                                 <template #body="slotProps">
-                                    {{ (slotProps.data.precio_venta * parseFloat(monedaVenta[0])).toFixed(2) }} {{
+                                    {{ (slotProps.data.precio_uno * parseFloat(monedaVenta[0])).toFixed(2) }} {{
                                         monedaVenta[1] }}
                                 </template>
                             </Column>
@@ -1982,6 +1982,7 @@ export default {
                     .then(function (response) {
                         let respuesta = response.data;
                         me.arraySeleccionado = respuesta.articulos[0];
+                        me.precioseleccionado = me.arraySeleccionado.precio_uno;
                         console.log(me.arraySeleccionado);
                     })
                     .catch(function (error) {

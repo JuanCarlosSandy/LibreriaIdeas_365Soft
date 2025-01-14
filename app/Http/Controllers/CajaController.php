@@ -33,7 +33,8 @@ class CajaController extends Controller
              'ventasCredito',
              'pagosEfectivoVentas', 
              'pagosEfecivocompras', 
-             'compras', 
+             'compras',
+             'saldoSobrante', 
              'comprasContado',
              'saldoFaltante', 
              'PagoCuotaEfectivo', 
@@ -137,10 +138,17 @@ class CajaController extends Controller
     public function cerrar(Request $request)
     {
         if (!$request->ajax()) return redirect('/');
+
         $caja = Caja::findOrFail($request->id);
         $caja->fechaCierre = now()->setTimezone('America/La_Paz');
         $caja->estado = '0';
-        $caja->saldoFaltante = ($request->saldoFaltante)-($caja->saldoCaja);
+
+        if ($request->saldoFaltante > $caja->saldoCaja) {
+            $caja->saldoSobrante = $request->saldoFaltante - $caja->saldoCaja;
+        } else {
+            $caja->saldoFaltante = $request->saldoFaltante - $caja->saldoCaja;
+        }
+
         $caja->save();
     }
 
