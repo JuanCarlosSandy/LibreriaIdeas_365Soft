@@ -13,7 +13,7 @@ class CreateTipobajasTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipobajas', function (Blueprint $table) {
+        Schema::create('tipo_bajas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre');
             $table->timestamps();

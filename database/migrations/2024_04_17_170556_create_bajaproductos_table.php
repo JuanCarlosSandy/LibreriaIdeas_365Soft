@@ -13,13 +13,14 @@ class CreateBajaproductosTable extends Migration
      */
     public function up()
     {
-        Schema::create('bajaproductos', function (Blueprint $table) {
+        Schema::create('ajuste_invetarios', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('numeroFactura');
-            $table->string('almacen');
-            $table->integer('numeroComprobante');
+            $table->integer('producto');
+            $table->string('almacen', 191);
+            $table->integer('cantidad');
+            $table->string('tipoAjuste', 45)->nullable();
             $table->integer('idtipobajas')->unsigned();
-            $table->foreign('idtipobajas')->references('id')->on('tipobajas');
+            $table->foreign('idtipobajas')->references('id')->on('tipo_bajas');
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ class CreateBajaproductosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bajaproductos');
+        Schema::dropIfExists('ajuste_invetarios');
     }
 }

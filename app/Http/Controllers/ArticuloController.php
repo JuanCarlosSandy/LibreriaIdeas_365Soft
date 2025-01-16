@@ -123,6 +123,94 @@ class ArticuloController extends Controller
         ];
     }
 
+    public function indexAjusteInven(Request $request)
+{
+    if (!$request->ajax()) {
+        return redirect('/');
+    }
+
+    $buscar = $request->buscar;
+
+    $query = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
+        ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
+        ->join('personas', 'proveedores.id', '=', 'personas.id')
+        ->join('marcas', 'articulos.idmarca', '=', 'marcas.id')
+        ->join('medidas', 'articulos.idmedida', '=', 'medidas.id')
+        ->join('inventarios', 'articulos.id', '=', 'inventarios.idarticulo')
+        ->select(
+            'articulos.id',
+            'articulos.idcategoria',
+            'articulos.idproveedor',
+            'articulos.idmarca',
+            'articulos.idmedida',
+            'articulos.codigo',
+            'articulos.nombre',
+            'articulos.unidad_envase',
+            'articulos.precio_list_unid',
+            'articulos.precio_costo_unid',
+            'articulos.precio_costo_paq',
+            'categorias.nombre as nombre_categoria',
+            'marcas.nombre as nombre_marca',
+            'medidas.descripcion_medida',
+            'articulos.precio_uno',
+            'articulos.precio_dos',
+            'articulos.precio_venta',
+            'articulos.stock',
+            'personas.nombre as nombre_proveedor',
+            'articulos.condicion',
+            'articulos.fotografia',
+            DB::raw('SUM(inventarios.saldo_stock) as stock_total')
+        )
+        ->groupBy(
+            'articulos.id',
+            'articulos.idcategoria',
+            'articulos.idproveedor',
+            'articulos.idmarca',
+            'articulos.idmedida',
+            'articulos.codigo',
+            'articulos.nombre',
+            'articulos.unidad_envase',
+            'articulos.precio_list_unid',
+            'articulos.precio_costo_unid',
+            'articulos.precio_costo_paq',
+            'categorias.nombre',
+            'marcas.nombre',
+            'medidas.descripcion_medida',
+            'articulos.precio_uno',
+            'articulos.precio_dos',
+            'articulos.precio_venta',
+            'articulos.stock',
+            'personas.nombre',
+            'articulos.condicion',
+            'articulos.fotografia'
+        );
+
+    if ($buscar != '') {
+        $query->where(function($query) use ($buscar) {
+            $query->where('articulos.nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('articulos.codigo', 'like', '%' . $buscar . '%')
+                ->orWhere('categorias.nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('marcas.nombre', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    $articulos = $query->orderBy('articulos.id', 'desc')->paginate(6);
+
+    return [
+        'pagination' => [
+            'total' => $articulos->total(),
+            'current_page' => $articulos->currentPage(),
+            'per_page' => $articulos->perPage(),
+            'last_page' => $articulos->lastPage(),
+            'from' => $articulos->firstItem(),
+            'to' => $articulos->lastItem(),
+        ],
+        'articulos' => $articulos
+    ];
+}
+
+
     public function buscadorGlobal(Request $request)
     {
         if (!$request->ajax()) {

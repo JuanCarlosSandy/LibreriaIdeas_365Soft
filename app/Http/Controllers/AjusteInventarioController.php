@@ -20,20 +20,24 @@ class AjusteInventarioController extends Controller
         if ($buscar==''){
             $ajuste = AjusteInvetario::join('articulos', 'ajuste_invetarios.producto', '=', 'articulos.id')
             ->join('tipo_bajas', 'ajuste_invetarios.idtipobajas', '=', 'tipo_bajas.id')
+            ->join('almacens', 'ajuste_invetarios.almacen', '=', 'almacens.id')
             ->select(
                 'ajuste_invetarios.*',
                 'articulos.nombre as nombre',
-                'tipo_bajas.nombre as tipo'
+                'tipo_bajas.nombre as tipo',
+                'almacens.nombre_almacen as nombre_almacen'
             )
             ->orderBy('id', 'desc')->paginate(10);
         }
         else{
             $ajuste = AjusteInvetario::join('articulos', 'ajuste_invetarios.producto', '=', 'articulos.id')
             ->join('tipo_bajas', 'ajuste_invetarios.idtipobajas', '=', 'tipo_bajas.id')
+            ->join('almacens', 'ajuste_invetarios.almacen', '=', 'almacens.id')
             ->select(
                 'ajuste_invetarios.*',
                 'articulos.nombre as nombre',
-                'tipo_bajas.nombre as tipo'
+                'tipo_bajas.nombre as tipo',
+                'almacens.nombre_almacen as nombre_almacen'
             )
             ->where($criterio, 'like', '%'. $buscar . '%')
             ->orderBy('id', 'desc')->paginate(6);
@@ -107,7 +111,6 @@ class AjusteInventarioController extends Controller
         $fechaActual = now();
         $inventarios = Inventario::where('idalmacen', $idAlmacen)
             ->where('idarticulo', $detalle['idarticulo'])
-            ->where('fecha_vencimiento', '>', $fechaActual)
             ->orderBy('id')
             ->get();
 

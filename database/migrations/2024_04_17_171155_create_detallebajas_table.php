@@ -17,7 +17,7 @@ class CreateDetallebajasTable extends Migration
             $table->increments('id');
             $table->integer('cantidad');
             $table->integer('idbajaproductos')->unsigned();
-            $table->foreign('idbajaproductos')->references('id')->on('bajaproductos');
+            $table->foreign('idbajaproductos')->references('id')->on('ajuste_invetarios');
             $table->integer('idarticulos')->unsigned();
             $table->foreign('idarticulos')->references('id')->on('articulos');
             
