@@ -92,7 +92,7 @@ class AjusteInventarioController extends Controller
         $ajuste->cantidad = $request->cantidad;
         $ajuste->idtipobajas = $request->idtipobaja;
         $ajuste->producto = $request->producto;
-        $ajuste->almacen = 1;
+        $ajuste->almacen = $request->idAlmacenSeleccionado;
 
         $ajuste->save();
 
@@ -106,30 +106,35 @@ class AjusteInventarioController extends Controller
     }
 
     private function actualizarInventario($idAlmacen, $detalle)
-    {
-        $cantidadRestante = $detalle['cantidad'];
-        $fechaActual = now();
-        $inventarios = Inventario::where('idalmacen', $idAlmacen)
-            ->where('idarticulo', $detalle['idarticulo'])
-            ->orderBy('id')
-            ->get();
+{
+    $cantidadRestante = $detalle['cantidad'];
+    $fechaActual = now();
+    $inventarios = Inventario::where('idalmacen', $idAlmacen)
+        ->where('idarticulo', $detalle['idarticulo'])
+        ->orderBy('id')
+        ->get();
 
-        foreach ($inventarios as $inventario) {
-            if ($cantidadRestante <= 0) {
-                break;
-            }
-
-            if ($inventario->saldo_stock >= $cantidadRestante) {
-                $inventario->saldo_stock -= $cantidadRestante;
-                $cantidadRestante = 0;
-            } else {
-                $cantidadRestante -= $inventario->saldo_stock;
-                $inventario->saldo_stock = 0;
-            }
-
-            $inventario->save();
+    foreach ($inventarios as $inventario) {
+        if ($cantidadRestante <= 0) {
+            break;
         }
+
+        if ($inventario->saldo_stock >= $cantidadRestante) {
+            $inventario->saldo_stock -= $cantidadRestante;
+            $cantidadRestante = 0;
+        } else {
+            $cantidadRestante -= $inventario->saldo_stock;
+            $inventario->saldo_stock = 0;
+        }
+
+        // Cambiar el campo 'verificado' a 'STOCK VERIFICADO'
+        $inventario->verificado = 'STOCK VERIFICADO';
+
+        // Guardar los cambios en el inventario
+        $inventario->save();
     }
+}
+
 
     public function registrarMotivo(Request $request)
     {

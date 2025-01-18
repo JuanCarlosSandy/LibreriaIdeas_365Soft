@@ -962,7 +962,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .card-error {
     margin-bottom: 10px;
     width: 100%;

@@ -173,38 +173,139 @@
                         <div class="step-indicators">
                             <span :class="['step', { 'active': step === 1, 'completed': step > 1 }]">1</span>
                             <span :class="['step', { 'active': step === 2, 'completed': step > 2 }]">2</span>
-                            <span :class="['step', { 'active': step === 3 }]">3</span>
                         </div>
                     </div>
 
                     <div v-if="step === 2" class="step-content p-fluid">
-                        <div class="p-grid p-formgrid p-mb-3">
-                            <div class="p-col-12 p-md-4">
-                                <span class="p-float-label">
-                                    <InputText id="documento" v-model="documento"
-                                        @keyup.enter="buscarClientePorDocumento" />
-                                    <label for="documento">Documento <span class="p-error">*</span></label>
-                                </span>
+                        <div class="p-grid p-formgrid align-items-start">
+                            <!-- Columna para Datos del Cliente -->
+                            <div class="p-col-12 p-md-6 d-flex flex-column justify-content-start">
+                                <h5 class="mb-3" style="font-size: 1.5rem; font-weight: bold; text-align: center;">DATOS DEL CLIENTE</h5>
+                                <div style="width: 100%;">
+                                    <div class="p-mb-3">
+                                        <span class="p-float-label">
+                                            <InputText id="documento" v-model="documento" @keyup.enter="buscarClientePorDocumento"style="margin-top: 8px;" />
+                                            <label for="documento">Documento <span class="p-error">*</span></label>
+                                        </span>
+                                    </div>
+                                    <div class="p-mb-3">
+                                        <span class="p-float-label">
+                                            <InputText id="nombreCliente" v-model="nombreCliente" :disabled="!nombreClienteEditable" />
+                                            <label for="nombreCliente">Cliente <span class="p-error">*</span></label>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="p-col-12 p-md-4">
-                                <span class="p-float-label">
-                                    <InputText id="nombreCliente" v-model="nombreCliente"
-                                        :disabled="!nombreClienteEditable" />
-                                    <label for="nombreCliente">Cliente <span class="p-error">*</span></label>
-                                </span>
-                            </div>
+                            <!-- Columna para las opciones de pago -->
+                            <div class="p-col-12 p-md-6 d-flex flex-column justify-content-start">
+                                <div v-if="tipoVenta === 'contado'">
+                                    <!-- Botones de pago -->
+                                    <div class="d-flex justify-content-center mb-1">
+                                        <!-- Ajustado margen inferior de botones -->
+                                        <div class="form-group">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary" @click="opcionPago = 'efectivo'">
+                                                    <i class="fa fa-money mr-2" aria-hidden="true"></i>
+                                                    Efectivo
+                                                </button>
+                                                <button class="btn btn-primary" @click="opcionPago = 'qr'">
+                                                    <i class="fa fa-qrcode mr-2" aria-hidden="true"></i>
+                                                    QR
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            <div class="p-col-12 p-md-4">
-                                <span class="p-float-label">
-                                    <Dropdown id="tipoComprobante" v-model="tipo_comprobante"
-                                        :options="tipoComprobanteOptions" optionLabel="name" optionValue="code" />
-                                    <label for="tipoComprobante">Tipo de comprobante <span
-                                            class="p-error">*</span></label>
-                                </span>
+                                    <!-- Sección para pago en efectivo -->
+                                    <div v-if="opcionPago === 'efectivo'" style="margin-top: -5px;">
+                                        <!-- Primera Card -->
+                                        <div class="card mb-2" style="font-size: 0.75rem;">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <label for="montoEfectivo" class="mb-0 mr-2"><i class="fa fa-money mr-2"></i> Monto Recibido:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">{{ monedaVenta[1] }}</span>
+                                                        </div>
+                                                        <input type="number" class="form-control" id="montoEfectivo" v-model="recibido" placeholder="Ingrese el monto recibido" />
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center ml-3">
+                                                    <label for="cambioRecibir" class="mb-0 mr-2"><i class="fa fa-exchange mr-2"></i> Cambio a Entregar:</label>
+                                                    <input type="text" class="form-control" id="cambioRecibir" :value="recibido - calcularTotal * parseFloat(monedaVenta[0])" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Segunda Card -->
+                                        <div class="card" style="font-size: 0.75rem;">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                                <div class="d-flex flex-column">
+                                                    <h5 class="mb-0" style="font-size: 0.95rem;">Detalle de Venta</h5>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fa fa-money mr-2" style="font-size: 0.75rem;"></i>
+                                                            <span style="font-size: 0.75rem;">Total a Pagar:&nbsp;&nbsp;</span>
+                                                        </div>
+                                                        <span class="font-weight-bold h5 mb-0" style="font-size: 0.95rem; line-height: 1;">{{ (calcularTotal * parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1] }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!--<div class="ml-3">
+                                                    <button class="btn btn-light" @click="aplicarDescuentoRecibo(1)">
+                                                        <img src="/img/Librerialogin.png" alt="Botón Imagen" class="img-fluid" style="height: 24px;">
+                                                    </button>
+                                                </div>-->
+                                                <button type="button" @click="aplicarDescuento"
+                                                        class="btn btn-success btn-block">
+                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sección para pago con QR -->
+                                    <div v-else-if="opcionPago === 'qr'"style="margin-top: -5px;">
+                                        <div class="card">
+                                            <div class="card-body d-flex justify-content-between align-items-center">
+                                            <!--<div class="card-body">-->
+                                                <div class="form-group">
+                                                    <h5 class="mb-0" style="font-size: 0.95rem;">Detalle de Venta</h5>
+                                                    <label for="montoEfectivo">Total a pagar:</label>
+                                                    <span class="font-weight-bold">{{ montoEfectivo = (calcularTotal).toFixed(2) }}</span>
+                                                </div>
+                                                <!--<button class="btn btn-primary mb-2" @click="generarQr">Generar QR</button>
+                                                <div v-if="qrImage" class="mb-2 text-center">
+                                                    <img :src="qrImage" alt="Código QR" class="img-fluid" />
+                                                </div>
+                                                <button class="btn btn-secondary mb-2" @click="verificarEstado" v-if="qrImage">Verificar Estado de Pago</button>
+                                                <div v-if="estadoTransaccion" class="card p-2">
+                                                    <div class="font-weight-bold">Estado Actual:</div>
+                                                    <div>
+                                                        <span :class="'badge badge-' + badgeSeverity">{{ estadoTransaccion.objeto.estadoActual }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <button class="btn btn-light" @click="aplicarDescuentoRecibo(7)">
+                                                        <img src="/img/Librerialogin.png" alt="Botón Imagen" class="img-fluid" style="height: 24px;">
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <button type="button" @click="aplicarDescuento(7)" class="btn btn-success">
+                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
+                                                    </button>
+                                                </div>-->
+                                                <button type="button" @click="aplicarDescuento(7)"
+                                                        class="btn btn-success btn-block">
+                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                         <InputText v-model="idcliente" type="hidden" />
                         <InputText v-model="tipo_documento" type="hidden" />
                         <InputText v-model="complemento_id" type="hidden" />
@@ -233,79 +334,6 @@
                             </div>
                         </div>
 
-                        <div v-if="arraySeleccionado && arraySeleccionado.id" class="p-grid">
-                            <div class="p-col-12">
-                                <Card>
-                                    <template #content>
-                                        <div class="p-grid">
-                                            <div class="p-col-12 p-md-4">
-                                                <h3>{{ arraySeleccionado.nombre }}</h3>
-                                                <Tag :value="'Medida: ' + arraySeleccionado.medida" class="p-mr-2" />
-                                                <Tag :value="'Línea: ' + arraySeleccionado.nombre_categoria" />
-                                                <img v-if="arraySeleccionado.fotografia"
-                                                    :src="'img/articulo/' + arraySeleccionado.fotografia + '?t=' + new Date().getTime()"
-                                                    width="150" height="150" class="p-mt-3" />
-                                                <img v-else src="img/productoSinImagen.png" alt="Imagen del Card"
-                                                    width="150" height="150" class="p-mt-3" />
-                                                <Message :severity="calcularStockDisponible > 0 ? 'success' : 'warn'"
-                                                    class="p-mt-3">
-                                                    <p>Stock disponible</p>
-                                                    <b>{{ calcularStockDisponible }} Unidades</b>
-                                                </Message>
-                                            </div>
-                                            <div class="p-col-12 p-md-8">
-                                                <div class="p-field">
-                                                    <label>Tipo de venta <span class="p-error">*</span></label>
-                                                    <Dropdown v-model="unidadPaquete" :options="[
-                                                        { label: 'Por unidad', value: 1 },
-                                                        { label: 'Por paquete', value: arraySeleccionado.unidad_envase }
-                                                    ]" optionLabel="label" optionValue="value" />
-                                                </div>
-                                                <div class="p-field">
-                                                    <label>Cantidad <span class="p-error">*</span></label>
-                                                    <div class="p-inputgroup">
-                                                        <Button icon="pi pi-minus"
-                                                            @click="cantidad = Math.max(1, cantidad - 1)" />
-                                                            <InputNumber v-model="cantidad" :min="1" />
-                                                        <Button icon="pi pi-plus" @click="cantidad++" />
-
-                                                    </div>
-                                                </div>
-                                                <div class="p-field">
-                                                    <h3 v-if="arrayPromocion && arrayPromocion.id">
-                                                        <span v-if="arrayPromocion.porcentaje == 100">GRATIS</span>
-                                                        <span v-else>
-                                                            {{ (calcularPrecioConDescuento(resultadoMultiplicacion,
-                                                                arrayPromocion.porcentaje) *
-                                                                parseFloat(monedaVenta[0])).toFixed(2) }}
-                                                            {{ monedaVenta[1] }}
-                                                        </span>
-                                                        <small class="p-ml-2">
-                                                            <s>{{ calcularPrecioConDescuento(resultadoMultiplicacion *
-                                                                parseFloat(monedaVenta[0])).toFixed(2) }}
-                                                                {{ monedaVenta[1] }}
-                                                            </s>
-                                                        </small>
-                                                    </h3>
-                                                    <h3 v-else>
-                                                        {{ calcularPrecioConDescuento(resultadoMultiplicacion *
-                                                            parseFloat(monedaVenta[0])).toFixed(2) }}
-                                                        {{ monedaVenta[1] }}
-                                                    </h3>
-                                                </div>
-                                                <div class="p-field">
-                                                    <Button label="Agregar" icon="pi pi-plus" @click="agregarDetalle"
-                                                        class="p-mr-2" />
-                                                    <Button label="Eliminar" icon="pi pi-trash"
-                                                        @click="eliminarSeleccionado" class="p-button-danger" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </Card>
-                            </div>
-                        </div>
-
                         <DataTable :value="arrayDetalle" class="p-mt-3">
                             <Column header="Opciones" style="width: 10%">
                                 <template #body="slotProps">
@@ -314,6 +342,7 @@
                                 </template>
                             </Column>
                             <Column field="articulo" header="Artículo" style="width: 30%" />
+                            <Column field="stock" header="Stock Actual" style="width: 30%" />
                             <Column field="precioUnidad" header="Precio Unidad" style="width: 15%">
                                 <template #body="slotProps">
                                     <input
@@ -347,270 +376,11 @@
                         </div>
                     </div>
 
-                    <div v-show="step === 3" class="step-content">
-                                <!--<div class="d-flex justify-content-center mb-3">
-                                    <div class="form-group">
-                                        <div class="d-flex">
-                                            <button class="btn btn-lg me-3"
-                                                :class="{ 'btn-primary': tipoVenta === 'contado', 'btn-outline-primary': tipoVenta !== 'contado' }"
-                                                @click="seleccionarTipoVenta('contado')">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa fa-money fa-2x mb-2"></i>
-                                                    <span>Contado</span>
-                                                </div>
-                                            </button>
-                                            <button class="btn btn-lg"
-                                                :class="{ 'btn-primary': tipoVenta === 'credito', 'btn-outline-primary': tipoVenta !== 'credito' }"
-                                                @click="seleccionarTipoVenta('credito')">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa fa-credit-card fa-2x mb-2"></i>
-                                                    <span>Crédito</span>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>-->
-                                <div v-if="tipoVenta === 'contado'">
-                                    <!-- ... (existing cash and QR payment code) ... -->
-                                    <div class="d-flex justify-content-center mb-3">
-                                        <div class="form-group">
-                                            <div class="btn-group">
-                                                <button class="btn btn-primary" @click="opcionPago = 'efectivo'">
-                                                    <i class="fa fa-money mr-2" aria-hidden="true"></i>
-                                                    Efectivo
-                                                </button>
-                                                <button class="btn btn-primary" @click="opcionPago = 'qr'">
-                                                    <i class="fa fa-qrcode mr-2" aria-hidden="true"></i>
-                                                    QR
-                                                </button>
-                                            </div>
-                                        </div><br>
-                                        <div v-if="opcionPago === 'efectivo'">
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            <form>
-                                                                <div class="form-group">
-                                                                    <label for="montoEfectivo"><i
-                                                                            class="fa fa-money mr-2"></i>
-                                                                        Monto
-                                                                        Recibido:</label>
-                                                                    <div class="input-group mb-3">
-                                                                        <div class="input-group-prepend">
-                                                                            <span class="input-group-text">{{
-                                                                                monedaVenta[1]
-                                                                            }}</span>
-                                                                        </div>
-                                                                        <input type="number" class="form-control"
-                                                                            id="montoEfectivo" v-model="recibido"
-                                                                            placeholder="Ingrese el monto recibido" />
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="cambioRecibir"><i
-                                                                            class="fa fa-exchange mr-2"></i>
-                                                                        Cambio a
-                                                                        Entregar:</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="cambioRecibir"
-                                                                        placeholder="Se calculará automáticamente"
-                                                                        :value="recibido - calcularTotal * parseFloat(monedaVenta[0])"
-                                                                        readonly />
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            <div class="mb-3">
-                                                                <h5 class="mb-0">Detalle de Venta</h5>
-                                                            </div>
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <span><i class="fa fa-dollar mr-2"></i> Monto
-                                                                    Total:</span>
-                                                                <span class="font-weight-bold">{{ (calcularTotal *
-                                                                    parseFloat(monedaVenta[0])).toFixed(2)
-                                                                    }}
-                                                                    {{
-                                                                        monedaVenta[1] }}</span>
-                                                            </div>
-                                                            <div class="d-flex justify-content-between">
-                                                                <span><i class="fa fa-money mr-2"></i> Total a
-                                                                    Pagar:</span>
-                                                                <span class="font-weight-bold h5">{{ (calcularTotal *
-                                                                    parseFloat(monedaVenta[0])).toFixed(2)
-                                                                    }} {{
-                                                                        monedaVenta[1] }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" @click="aplicarDescuento"
-                                                        class="btn btn-success btn-block">
-                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div v-else-if="opcionPago === 'qr'">
-                                            <div class="container">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-8">
-                                                        <div class="form-group">
-                                                            <input v-model="alias" readonly style="display: none;" />
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="montoEfectivo">Monto:</label>
-                                                            <span class="font-weight-bold">{{ montoEfectivo =
-                                                            (calcularTotal).toFixed(2) }}</span>
-                                                        </div>
-                                                        <button class="btn btn-primary mb-2" @click="generarQr">Generar
-                                                            QR</button>
-                                                        <div v-if="qrImage" class="mb-2 text-center">
-                                                            <img :src="qrImage" alt="Código QR" class="img-fluid" />
-                                                        </div>
-                                                        <button class="btn btn-secondary mb-2" @click="verificarEstado"
-                                                            v-if="qrImage">Verificar
-                                                            Estado
-                                                            de
-                                                            Pago</button>
-                                                        <div v-if="estadoTransaccion" class="card p-2">
-                                                            <div class="font-weight-bold">Estado Actual:</div>
-                                                            <div>
-                                                                <span :class="'badge badge-' + badgeSeverity">{{
-                                                                    estadoTransaccion.objeto.estadoActual
-                                                                }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" @click="registrarVenta(7)"
-                                                        class="btn btn-success btn-block">
-                                                        <i class="fa fa-check mr-2"></i> Registrar Pago
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="tipoVenta === 'credito'">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="" class="font-weight-bold">Cantidad de cuotas
-                                                <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="number" id="numeroCuotas" class="form-control"
-                                                v-model="numero_cuotas">
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <label for="" class="font-weight-bold">Frecuencia de Pagos
-                                                <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group mb-3">
-                                                <input type="number" class="form-control" v-model="tiempo_diaz">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">Dias</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label class="font-weight-bold">Total</label>
-                                                <label>
-                                                    {{ (calcularTotal * parseFloat(monedaVenta[0])).toFixed(2) }} {{
-                                                        monedaVenta[1] }}
-                                                </label>
-                                                <button @click="generarCuotas" type="button"
-                                                    class="btn btn-success">GENERAR CUOTAS</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" v-model="primera_cuota">
-                                        <label class="form-check-label" for="defaultCheck1">
-                                            Primera cuota pagada
-                                        </label>
-                                    </div>
-
-                                    <div class="row" v-if="primera_cuota">
-                                        <div class="col-md-5 form-group">
-                                            <label class="font-weight-bold">Monto a pagar</label>
-                                            <input type="number" class="form-control" v-model="primer_precio_cuota">
-                                        </div>
-                                        <div class="col-md-5 form-group">
-                                            <label class="font-weight-bold" for="select-input">Tipo de Pago</label>
-                                            <select class="form-control" id="select-input" v-model="tipo_pago"
-                                                @change="seleccionarTipoPago(tipo_pago)">
-                                                <option v-for="(value, key) in tiposPago" :value="value">{{ key }}
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Cuotas table -->
-                                    <div class="form-group row border">
-                                        <div class="table-responsive col-md-12">
-                                            <table class="table table-bordered table-striped table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Fecha Pago</th>
-                                                        <th>Precio Cuota</th>
-                                                        <th>Total Cancelado</th>
-                                                        <th>Saldo</th>
-                                                        <th>Fecha Cancelado</th>
-                                                        <th>Estado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="(cuota, index) in cuotas" :key="index">
-                                                        <td>{{ index + 1 }}</td>
-                                                        <td>{{ new Date(cuota.fecha_pago).toLocaleDateString('es-ES') }}
-                                                        </td>
-                                                        <td>{{ (cuota.precio_cuota *
-                                                            parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1]
-                                                            }}</td>
-                                                        <td>{{ (cuota.totalCancelado *
-                                                            parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1]
-                                                            }}</td>
-                                                        <td>{{ (cuota.saldo_restante *
-                                                            parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1]
-                                                            }}</td>
-                                                        <td>{{ cuota.fecha_cancelado ? new
-                                                            Date(cuota.fecha_cancelado).toLocaleDateString('es-ES') :
-                                                            "Sin fecha" }}</td>
-                                                        <td>{{ cuota.estado }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        @click="cerrarModal3()">Volver</button>
-                                    <button type="button" class="btn btn-primary"
-                                        @click="registrarVenta()">Registrar</button>
-                                </div>
-
-                                </div>
-                             
-
-                            </div>
-
-                            <div class="buttons d-flex justify-content-center">
-                                <button class="btn btn-primary mr-2" @click="prevStep"
-                                    :disabled="step === 1">Anterior</button>
-                                <button class="btn btn-primary" @click="validarYAvanzar"
-                                    :disabled="step === 3">Siguiente</button>
-                            </div>
-                        </div>
-                    
-               
+                    <div class="buttons d-flex justify-content-center">
+                        <button class="btn btn-primary mr-2" @click="prevStep" :disabled="step === 1">Anterior</button>
+                        <button class="btn btn-primary" @click="validarYAvanzar" :disabled="step === 2">Siguiente</button>
+                    </div>
+                 </div>
               
         
              </Dialog>
@@ -1841,25 +1611,25 @@ export default {
             }
         },
         buscarArticulo() {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                let me = this;
-                //var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + me.selectedAlmacen;
-                var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + this.idAlmacen;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+        let me = this;
+        var url = "/articulo/buscarArticuloVenta?filtro=" + me.codigo + "&idalmacen=" + this.idAlmacen;
 
-                axios
-                    .get(url)
-                    .then(function (response) {
-                        let respuesta = response.data;
-                        me.arraySeleccionado = respuesta.articulos[0];
-                        me.precioseleccionado = me.arraySeleccionado.precio_uno;
-                        console.log(me.arraySeleccionado);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            }, 1000);
-        },
+        axios
+            .get(url)
+            .then(function (response) {
+                let respuesta = response.data;
+                me.arraySeleccionado = respuesta.articulos[0];
+                me.precioseleccionado = me.arraySeleccionado.precio_uno;
+                console.log(me.arraySeleccionado);
+                me.agregarDetalle();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, 200); // 100 ms de retraso
+},
         pdfVenta(id) {
             window.open("/venta/pdf/" + id, "_blank");
         },
@@ -1992,76 +1762,100 @@ export default {
             });
             },
 
-        agregarDetalle() {
-            console.log("Entro a agregarDetalle");
-            if (this.encuentra(this.arraySeleccionado.id)) {
-                swal({
-                    type: "error",
-                    title: "Error...",
-                    text: "Este Artículo ya se encuentra agregado!",
-                });
-                return;
-            }
+            agregarDetalle() {
+    console.log("Entro a agregarDetalle");
 
-            if (this.saldosNegativos === 0 && this.arraySeleccionado.saldo_stock < this.cantidad * this.unidadPaquete) {
-                swal({
-                    type: "error",
-                    title: "Error...",
-                    text: "No hay stock disponible!",
-                });
-                return;
-            }
+    // Buscar si el artículo ya está en el arrayDetalle
+    const detalleExistente = this.arrayDetalle.find(detalle => detalle.idarticulo === this.arraySeleccionado.id);
 
-            const precioUnitario = parseFloat(this.precioseleccionado);
-            const cantidad = this.cantidad * this.unidadPaquete;
-            const descuento = (precioUnitario * cantidad * (this.descuentoProducto / 100)).toFixed(2);
-            const total = (precioUnitario * cantidad - descuento).toFixed(2);
+    if (detalleExistente) {
+        // Incrementar la cantidad y recalcular total y descuento
+        const cantidadAdicional = this.cantidad * this.unidadPaquete;
+        detalleExistente.cantidad += cantidadAdicional;
+        detalleExistente.total = (
+            detalleExistente.cantidad * detalleExistente.precio - 
+            detalleExistente.cantidad * detalleExistente.precio * (detalleExistente.descuento / 100)
+        ).toFixed(2);
 
-            const nuevoDetalle = {
-                id: Date.now(),
-                idkit: -1,
-                idarticulo: this.arraySeleccionado.id,
-                articulo: this.arraySeleccionado.nombre,
-                medida: this.arraySeleccionado.medida,
-                unidad_envase: this.arraySeleccionado.unidad_envase,
-                cantidad: cantidad,
-                cantidad_paquetes: this.arraySeleccionado.unidad_envase,
-                precio: precioUnitario,
-                descuento: this.descuentoProducto,
-                stock: this.arraySeleccionado.saldo_stock,
-                precioseleccionado: precioUnitario,
-                total: total
-            };
+        // Actualizar también en arrayProductos
+        const productoExistente = this.arrayProductos.find(producto => producto.codigoProducto === this.arraySeleccionado.codigo);
+        if (productoExistente) {
+            productoExistente.cantidad += cantidadAdicional;
+            productoExistente.subTotal = (
+                productoExistente.cantidad * productoExistente.precioUnitario - 
+                productoExistente.cantidad * productoExistente.precioUnitario * (productoExistente.montoDescuento / 100)
+            ).toFixed(2);
+        }
 
-            this.arrayDetalle.push(nuevoDetalle);
-            console.log("Para la Venta:", this.arrayDetalle);
+        console.log("Actualizado en Venta:", this.arrayDetalle);
+        console.log("Actualizado en Factura:", this.arrayProductos);
+        this.codigo = '';
 
-            const nuevoProducto = {
-                actividadEconomica: this.arraySeleccionado.actividadEconomica,
-                codigoProductoSin: this.arraySeleccionado.codigoProductoSin,
-                codigoProducto: this.arraySeleccionado.codigo,
-                descripcion: this.arraySeleccionado.nombre,
-                cantidad: cantidad,
-                unidadMedida: this.arraySeleccionado.codigoClasificador,
-                precioUnitario: precioUnitario.toFixed(2),
-                montoDescuento: descuento,
-                subTotal: total,
-                numeroSerie: null,
-                numeroImei: null,
-            };
+        this.calcularTotal();
+        return;
+    }
 
-            this.arrayProductos.push(nuevoProducto);
-            console.log("Para la Factura:", this.arrayProductos);
+    // Verificar si no hay stock suficiente
+    if (this.saldosNegativos === 0 && this.arraySeleccionado.saldo_stock < this.cantidad * this.unidadPaquete) {
+        swal({
+            type: "error",
+            title: "Error...",
+            text: "No hay stock disponible!",
+        });
+        return;
+    }
 
-            this.precioBloqueado = true;
-            this.arraySeleccionado = [];
-            this.cantidad = 1;
-            this.unidadPaquete = 1;
-            this.codigo = "";
-            this.descuentoProducto = 0;
+    // Si no existe, agregar como un nuevo detalle
+    const precioUnitario = parseFloat(this.precioseleccionado);
+    const cantidad = this.cantidad * this.unidadPaquete;
+    const descuento = (precioUnitario * cantidad * (this.descuentoProducto / 100)).toFixed(2);
+    const total = (precioUnitario * cantidad - descuento).toFixed(2);
 
-            this.calcularTotal();
-        },
+    const nuevoDetalle = {
+        id: Date.now(),
+        idkit: -1,
+        idarticulo: this.arraySeleccionado.id,
+        articulo: this.arraySeleccionado.nombre,
+        medida: this.arraySeleccionado.medida,
+        unidad_envase: this.arraySeleccionado.unidad_envase,
+        cantidad: cantidad,
+        cantidad_paquetes: this.arraySeleccionado.unidad_envase,
+        precio: precioUnitario,
+        descuento: this.descuentoProducto,
+        stock: this.arraySeleccionado.saldo_stock,
+        precioseleccionado: precioUnitario,
+        total: total
+    };
+
+    this.arrayDetalle.push(nuevoDetalle);
+    console.log("Para la Venta:", this.arrayDetalle);
+
+    const nuevoProducto = {
+        actividadEconomica: this.arraySeleccionado.actividadEconomica,
+        codigoProductoSin: this.arraySeleccionado.codigoProductoSin,
+        codigoProducto: this.arraySeleccionado.codigo,
+        descripcion: this.arraySeleccionado.nombre,
+        cantidad: cantidad,
+        unidadMedida: this.arraySeleccionado.codigoClasificador,
+        precioUnitario: precioUnitario.toFixed(2),
+        montoDescuento: descuento,
+        subTotal: total,
+        numeroSerie: null,
+        numeroImei: null,
+    };
+
+    this.arrayProductos.push(nuevoProducto);
+    console.log("Para la Factura:", this.arrayProductos);
+
+    this.precioBloqueado = true;
+    this.arraySeleccionado = [];
+    this.cantidad = 1;
+    this.unidadPaquete = 1;
+    this.codigo = "";
+    this.descuentoProducto = 0;
+
+    this.calcularTotal();
+},
 
         agregarDetalleModal(data) {
             //this.scrollToSection();
@@ -2155,53 +1949,65 @@ export default {
             this.idAlmacen = event.value;
         },
         validarVenta() {
-            let me = this;
-            me.errorVenta = 0;
-            me.errorMostrarMsjVenta = [];
+    let me = this;
+    me.errorVenta = 0;
+    me.errorMostrarMsjVenta = [];
+    let condicion = true;
 
-            // Verificar stock de cada artículo
-            me.arrayDetalle.forEach(function (x) {
-                if (x.cantidad > x.stock) {
-                    let art = `${x.articulo}: Stock insuficiente`;
-                    me.errorMostrarMsjVenta.push(art);
-                }
-            });
+    // Verificar stock de cada artículo
+    me.arrayDetalle.forEach(function (x) {
+        if (x.cantidad > x.stock) {
+            let art = `${x.articulo}: Stock insuficiente`;
+            me.errorMostrarMsjVenta.push(art);
+            condicion = false;
+        }
+    });
 
-            // Verificar si se seleccionó el tipo de comprobante
-            if (me.tipo_comprobante == 0)
-                me.errorMostrarMsjVenta.push("Seleccione el Comprobante");
+    // Verificar si se seleccionó el tipo de comprobante
+    if (me.tipo_comprobante == 0) {
+        me.errorMostrarMsjVenta.push("Seleccione el Comprobante");
+        condicion = false;
+    }
 
-            // Verificar si se ingresó el impuesto
-            if (!me.impuesto)
-                me.errorMostrarMsjVenta.push("Ingrese el impuesto de compra");
+    // Verificar si se ingresó el impuesto
+    if (!me.impuesto) {
+        me.errorMostrarMsjVenta.push("Ingrese el impuesto de compra");
+        condicion = false;
+    }
 
-            // Verificar si hay detalles en la venta
-            if (me.arrayDetalle.length <= 0)
-                me.errorMostrarMsjVenta.push("Ingrese detalles");
+    // Verificar si hay detalles en la venta
+    if (me.arrayDetalle.length <= 0) {
+        me.errorMostrarMsjVenta.push("Ingrese detalles");
+        condicion = false;
+    }
 
-            // Verificar si hay errores
-            if (me.errorMostrarMsjVenta.length) {
-                me.errorVenta = 1;
+    // Verificar si hay errores
+    if (me.errorMostrarMsjVenta.length > 0) {
+        me.errorVenta = 1;
 
-                // Mostrar todos los errores en un solo mensaje de SweetAlert
-                swal({
-                    type: "error",
-                    title: "Error en la venta",
-                    text: me.errorMostrarMsjVenta.join("\n"),
-                });
-            }
+        // Mostrar todos los errores en un solo mensaje de SweetAlert
+        swal({
+            type: "error",
+            title: "Error en la venta",
+            text: me.errorMostrarMsjVenta.join("\n"),
+        });
+    }
 
-           return true;
-        },
-        aplicarDescuento() {
+    return condicion;
+},
+aplicarDescuento(idtipopago) {
+            this.tipo_comprobante = 'RESIVO';
+            var idtipo_pago = idtipopago;
+
             const descuentoGiftCard = this.descuentoGiftCard;
             const numeroTarjeta = this.numeroTarjeta;
-            let idtipo_pago;
 
             if (numeroTarjeta && descuentoGiftCard) {
                 idtipo_pago = 86;
             } else if (numeroTarjeta && !descuentoGiftCard) {
                 idtipo_pago = 10;
+            }else if (idtipo_pago == 7) {
+                idtipo_pago = 7;
             } else {
                 idtipo_pago = descuentoGiftCard ? 35 : 1;
             }
@@ -2362,11 +2168,14 @@ export default {
                     .catch(function (error) {
                         console.log(error);
                     });
+                    
             }
         })
         .catch((error) => {
             console.error("Error al mostrar el diálogo:", error);
         });
+        this.opcionPago = 'efectivo';
+
 },
 
         async buscarOCrearCliente() {
@@ -2512,6 +2321,8 @@ export default {
 
             if (this.tipo_comprobante === "RESIVO") {
                 this.imprimirResivo(idVenta);
+                this.arrayProductos = [];
+
             } else if (this.tipo_comprobante === "FACTURA") {
                 this.emitirFactura(idVenta);
             }
@@ -2675,6 +2486,8 @@ export default {
                     me.mostrarSpinner = false;
                     me.menu = 49;
                     me.tipo_comprobante = 'RESIVO';
+                    me.opcionPago = 'efectivo';
+
 
                 } else{
                     me.listarVenta(1, "", "num_comprobante");
@@ -2692,6 +2505,8 @@ export default {
                     me.cerrarModal2();
                     me.mostrarSpinner = false;
                     me.tipo_comprobante = 'RESIVO';
+                    me.opcionPago = 'efectivo';
+
 
                     swal(
                         'FACTURA RECHAZADA',
@@ -2716,9 +2531,12 @@ export default {
                 me.recibido = '';
                 me.idcliente = 0;
                 me.metodoPago = '';
+                me.opcionPago = 'efectivo';
+
                 me.eliminarVentaFalloSiat(idVentaRecienRegistrada);
                 me.ejecutarFlujoCompleto();
                 me.listarVenta(1, "", "num_comprobante");
+
             });
         },
 

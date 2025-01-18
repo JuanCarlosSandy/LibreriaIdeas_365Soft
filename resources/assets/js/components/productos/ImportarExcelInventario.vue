@@ -234,8 +234,8 @@ export default {
 
                 "Almacen",
                 "Codigo Articulo",
-                "Fecha vencimiento",
                 "Saldo stock",
+                "Verificado",
             ],
 
             modalImportar: true,

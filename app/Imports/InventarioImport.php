@@ -43,13 +43,15 @@ class InventarioImport implements ToCollection
                 $idAlmacen = $this->getAlmacenId($row[0]);
                 $idArticulo = $this->getArticuloId($row[1]);
                 try {
-                    $fechaVencimiento = $row[2] ?? '2099-01-01'; // Asignar fecha por defecto si no se proporciona
+                    $fechaVencimiento = null; // Asignar fecha por defecto si no se proporciona
                     Inventario::create([
                         'idalmacen' => $idAlmacen,
                         'idarticulo' => $idArticulo,
                         'fecha_vencimiento' => $fechaVencimiento,
-                        'saldo_stock' => $row[3],
-                        'cantidad'=> $row[3],
+                        'saldo_stock' => $row[2],
+                        'cantidad'=> $row[2],
+                        'verificado'=> $row[3],
+
                     ]); 
                 } catch (Exception $e) {
                     if (!$idAlmacen) {

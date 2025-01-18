@@ -416,50 +416,55 @@ public function store(Request $request)
     //-------------------aumente el listado mejorado------
     public function indextraspaso(Request $request)
     {
-        if (!$request->ajax())
+        if (!$request->ajax()) {
             return redirect('/');
-
+        }
+    
         Log::info('Data', [
             'idAlmacen' => $request->idAlmacen,
             'buscar' => $request->buscar,
             'criterio' => $request->criterio,
         ]);
-
+    
         $buscar = $request->buscar;
-        $criterio = $request->criterio;
         $idAlmacen = $request->idAlmacen;
-
+    
+        // Construcción de la consulta base con joins
         $inventarios = Inventario::join('almacens', 'inventarios.idalmacen', '=', 'almacens.id')
             ->join('articulos', 'inventarios.idarticulo', '=', 'articulos.id')
-            ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id') // Agregar esta línea para unir la tabla de proveedores
+            ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
             ->join('personas', 'proveedores.id', '=', 'personas.id')
             ->select(
                 'inventarios.id',
                 'inventarios.idarticulo',
-
                 'articulos.nombre as nombre_producto',
                 'articulos.codigo',
                 'articulos.precio_costo_unid',
                 'articulos.precio_costo_paq',
                 'articulos.unidad_envase',
-
                 'inventarios.saldo_stock',
                 'inventarios.fecha_vencimiento',
                 'articulos.precio_venta',
-
                 'almacens.ubicacion',
                 'personas.nombre as nombre_proveedor',
-                'articulos.fotografia',
+                'articulos.fotografia'
             )
             ->where('inventarios.idalmacen', '=', $idAlmacen);
-        //->orderBy('inventarios.id', 'desc')->paginate(5);
-
+    
+        // Filtro por búsqueda en múltiples campos
         if (!empty($buscar)) {
-            $inventarios = $inventarios->where(function ($query) use ($criterio, $buscar) {
-                $query->where('articulos.' . $criterio, 'like', '%' . $buscar . '%');
+            $inventarios = $inventarios->where(function ($query) use ($buscar) {
+                $query->where('articulos.nombre', 'like', '%' . $buscar . '%')
+                    ->orWhere('articulos.codigo', 'like', '%' . $buscar . '%')
+                    ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+                    ->orWhere('almacens.ubicacion', 'like', '%' . $buscar . '%');
             });
         }
+    
+        // Ordenar y paginar resultados
         $inventarios = $inventarios->orderBy('inventarios.id', 'desc')->paginate(4);
+    
+        // Respuesta estructurada
         return [
             'pagination' => [
                 'total' => $inventarios->total(),
@@ -472,6 +477,7 @@ public function store(Request $request)
             'inventarios' => $inventarios
         ];
     }
+    
     ////////////////--Lista or item y lotes-/////////////////
     public function indexItemLote(Request $request, $tipo)
     {
@@ -492,11 +498,12 @@ public function store(Request $request)
                     'articulos.unidad_envase',
                     'almacens.nombre_almacen',
                     'inventarios.cantidad',
+                    'inventarios.verificado',
                     'personas.nombre',
                     DB::raw('SUM(inventarios.saldo_stock) as saldo_stock_total')
                 )
                 ->where('inventarios.idalmacen', '=', $idAlmacen)
-                ->groupBy('articulos.codigo','articulos.nombre', 'almacens.nombre_almacen', 'articulos.unidad_envase', 'inventarios.cantidad','personas.nombre')
+                ->groupBy('articulos.codigo','articulos.nombre', 'almacens.nombre_almacen', 'articulos.unidad_envase', 'inventarios.cantidad','personas.nombre','inventarios.verificado')
                 ->orderBy('articulos.nombre')
                 ->orderBy('almacens.nombre_almacen');
             //->get();
@@ -509,6 +516,7 @@ public function store(Request $request)
                     'articulos.precio_costo_unid',
                     'inventarios.saldo_stock',
                     'inventarios.cantidad',
+                    'inventarios.verificado',
                     DB::raw('DATE_FORMAT(inventarios.created_at, "%Y-%m-%d") as fecha_ingreso'), // Formato deseado
                     'inventarios.fecha_vencimiento',
 

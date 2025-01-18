@@ -21,7 +21,7 @@ class TraspasoController extends Controller
 
         $traspasos = Traspaso::select('id', 'almacen_origen', 'almacen_destino', 'fecha_traspaso', 'created_at')
         ->whereBetween('fecha_traspaso', [$fechaInicio, $fechaFin])
-            ->paginate(4); // Mover el paginate(4) aquí
+            ->paginate(100); // Mover el paginate(4) aquí
 
         return [
             'pagination' => [
@@ -38,71 +38,80 @@ class TraspasoController extends Controller
     //--registrando datos de Trapaso luego pasando datosa  inventario para registrar---
     public function store(Request $request)
     {
-        try{
+        try {
             DB::beginTransaction();
-
+    
+            // Crear el traspaso
             $traspasos = new Traspaso();
-            //$traspasos->id = $request->idproveedor;
-            
             $traspasos->tipo_traspaso = $request->tipo_traspaso;
             $traspasos->idusuario = \Auth::user()->id;
             $traspasos->almacen_origen = $request->almacen_origen;
             $traspasos->almacen_destino = $request->almacen_destino;
-            $traspasos-> fecha_traspaso = $request->fecha_traspaso;
-            Log::info('DATOS REGISTRO TRASPASO:', [
-                'tipo_traspaso' => $request->tipo_traspaso,
-                'idusuario' => $request->idusuario,
-                'almacen_origen' => $request->almacen_origen,
-                'almacen_destino' => $request->almacen_destino,
-                'fecha_traspaso' => $request->fecha_traspaso,
-    
-            ]);
+            $traspasos->fecha_traspaso = $request->fecha_traspaso;
             $traspasos->save();
-            
-            $detalles = $request->data;//Array de detalles
-            //Recorro todos los elementos
-            Log::info('PRODUCTOS:', [
-                'DATA' => $detalles,
-            ]);
-            // foreach($detalles as $ep=>$det)
-            foreach ($detalles as $detalle) 
-            {
-                 // Encuentra el inventario correspondiente al artículo y almacén de origen
+    
+            // Obtener los detalles del traspaso
+            $detalles = $request->data;
+    
+            // Recorrer los detalles de los productos
+            foreach ($detalles as $detalle) {
+                // Encuentra el inventario correspondiente al artículo y almacén de origen
                 $inventarioOrigen = Inventario::where('idalmacen', $detalle['idalmacen'])
-                                    ->where('idarticulo', $detalle['idarticulo'])
-                ->first();
+                    ->where('idarticulo', $detalle['idarticulo'])
+                    ->first();
+    
                 if ($inventarioOrigen) {
                     // Actualiza el saldo_stock restando la cantidad transferida
                     $inventarioOrigen->saldo_stock -= $detalle['cantidad_traspaso'];
+                    $inventarioOrigen->cantidad -= $detalle['cantidad_traspaso'];
                     $inventarioOrigen->save();
                 }
-
-                //------prueva registro de inventario -----
-                $inventario = new Inventario();
-                //$inventario->idalmacen = $detalle['idalmacen'];
-                $inventario->idalmacen = $detalle['idalmacendes'];
-                //$inventario->idalmacen = $detalle['idinventario'];
-                $inventario->idarticulo = $detalle['idarticulo'];
-                $inventario->fecha_vencimiento = $detalle['fecha_vencimiento'];
-                $inventario->saldo_stock = $detalle['cantidad_traspaso'];
-                // Agrega aquí los demás campos necesarios para la tabla de inventarios.
-                $inventario->save();
-                //-----hasta aqui---
-
+    
+                // Buscar si el artículo ya existe en el almacén de destino
+                $inventarioDestino = Inventario::where('idalmacen', $detalle['idalmacendes'])
+                    ->where('idarticulo', $detalle['idarticulo'])
+                    ->first();
+    
+                if ($inventarioDestino) {
+                    // Si existe, sumar la cantidad transferida
+                    $inventarioDestino->saldo_stock += $detalle['cantidad_traspaso'];
+                    $inventarioDestino->cantidad += $detalle['cantidad_traspaso'];
+                    $inventarioDestino->save();
+    
+                    // Asignar el idinventario del inventario de destino
+                    $idinventarioDestino = $inventarioDestino->id;
+                } else {
+                    // Si no existe, registrar como un nuevo inventario
+                    $inventario = new Inventario();
+                    $inventario->idalmacen = $detalle['idalmacendes']; // almacén de destino
+                    $inventario->idarticulo = $detalle['idarticulo'];
+                    $inventario->saldo_stock = $detalle['cantidad_traspaso'];
+                    $inventario->cantidad = $detalle['cantidad_traspaso'];
+                    $inventario->save();
+    
+                    // Asignar el idinventario del inventario de destino
+                    $idinventarioDestino = $inventario->id;
+                }
+    
+                // Registrar el detalle del traspaso
                 $detalletraspaso = new DetalleTraspaso();
                 $detalletraspaso->idtraspaso = $traspasos->id;
-                $detalletraspaso->idinventario = $detalle['idinventario'];
+                $detalletraspaso->idinventario = $idinventarioDestino; // id del inventario de destino
                 $detalletraspaso->cantidad_traspaso = $detalle['cantidad_traspaso'];
-                // $detalle->idinventario = $det['idinventario'];
-                // $detalle->cantidad_traspaso = $det['cantidad_traspaso'];
                 $detalletraspaso->save();
             }
-            DB::commit(); // Confirmar los cambios en la base de datos
-
-        } catch (Exception $e){
+    
+            // Confirmar los cambios en la base de datos
+            DB::commit();
+    
+        } catch (Exception $e) {
             DB::rollBack();
-            }
+            // Manejo del error
+            Log::error('Error al registrar traspaso', ['exception' => $e->getMessage()]);
+        }
     }
+    
+
     //---listado por id lo que se traspaso--
     public function indexPorID(Request $request){
         if (!$request->ajax()) return redirect('/');

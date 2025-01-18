@@ -22,6 +22,7 @@ class CreateInventariosTable extends Migration
             $table->date('fecha_vencimiento')->nullable()->default('2099-01-01');
             $table->integer('saldo_stock'); //saldo_stock
             $table->integer('cantidad'); //saldo_stock
+            $table->string('verificado', 45)->default('NO VERIFICADO'); // Nuevo campo 'verificado'
             $table->timestamps();
         });
     }

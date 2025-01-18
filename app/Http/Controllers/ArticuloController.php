@@ -130,7 +130,9 @@ class ArticuloController extends Controller
     }
 
     $buscar = $request->buscar;
+    $idAlmacen = $request->idAlmacen; // Recibir el idalmacen desde la solicitud
 
+    // Query base con joins necesarios
     $query = Articulo::join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
         ->join('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
         ->join('personas', 'proveedores.id', '=', 'personas.id')
@@ -161,6 +163,7 @@ class ArticuloController extends Controller
             'articulos.fotografia',
             DB::raw('SUM(inventarios.saldo_stock) as stock_total')
         )
+        ->where('inventarios.idalmacen', $idAlmacen) // Filtrar por almacén
         ->groupBy(
             'articulos.id',
             'articulos.idcategoria',
@@ -185,16 +188,18 @@ class ArticuloController extends Controller
             'articulos.fotografia'
         );
 
-    if ($buscar != '') {
-        $query->where(function($query) use ($buscar) {
-            $query->where('articulos.nombre', 'like', '%' . $buscar . '%')
-                ->orWhere('personas.nombre', 'like', '%' . $buscar . '%')
+    // Filtro por búsqueda en múltiples campos
+    if (!empty($buscar)) {
+        $query->where(function ($query) use ($buscar) {
+            $query->orWhere('articulos.nombre', 'like', '%' . $buscar . '%')
                 ->orWhere('articulos.codigo', 'like', '%' . $buscar . '%')
                 ->orWhere('categorias.nombre', 'like', '%' . $buscar . '%')
-                ->orWhere('marcas.nombre', 'like', '%' . $buscar . '%');
+                ->orWhere('marcas.nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('personas.nombre', 'like', '%' . $buscar . '%');
         });
     }
 
+    // Paginación y respuesta
     $articulos = $query->orderBy('articulos.id', 'desc')->paginate(6);
 
     return [
@@ -209,6 +214,8 @@ class ArticuloController extends Controller
         'articulos' => $articulos
     ];
 }
+
+
 
 
     public function buscadorGlobal(Request $request)

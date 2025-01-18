@@ -29,7 +29,6 @@
                             <thead>                    
                                 <tr>
                                     <th>Opciones</th>
-                                    <th>ID</th>
                                     <th>Almacen Origen</th>
                                     <th>Almacen Destino</th>
                                     <th>Fecha</th>
@@ -46,7 +45,6 @@
                                             <i class="icon-eye"></i>
                                         </button> &nbsp;
                                     </td>
-                                    <td v-text="traspaso.id"></td>
                                     <td v-text="traspaso.almacen_origen"></td>
                                     <td v-text="traspaso.almacen_destino"></td>
                                     <td>{{ formatDate(traspaso.fecha_traspaso) }}</td>
@@ -62,24 +60,16 @@
                             <thead>                    
                                 <tr>
                                     <th>Producto</th>
-                                    <th>Unid./Paq.</th>
-                                    <th>Valor Unit.</th>
                                     <!-- <th>Lote</th> -->
                                     <!-- <th>Paquete</th> -->
                                     <!-- <th>Unidades</th> -->
-                                    <th>Total</th>
-                                    <th>Saldo Unid.</th>
-                                    <th>F.Vencimiento</th>
+                                    <th>Total Traspasado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="traspDet in arrayInventarioTrasp" :key="traspDet.id">
                                     <td v-text="traspDet.nombre_producto"></td>
-                                    <td v-text="traspDet.unidad_envase"></td>
-                                    <td v-text="traspDet.precio_costo_unid"></td>
                                     <td v-text="traspDet.cantidad_traspaso"></td>
-                                    <td v-text="traspDet.saldo_stock"></td>
-                                    <td v-text="traspDet.fecha_vencimiento"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -103,41 +93,12 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="d-flex align-items-center mb-2">
-                                            <label class="small col-4">Operador</label>
-                                                <div class="col-8">
-                                                    <input type="text" class="form-control" placeholder="Usuario">
-                                                </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-center mb-2">
                                             <label class="small col-4">Almacen Origen(*)</label>
                                             <div class="col-8">
                                                 <select class="form-control" v-model="AlmacenSeleccionado" @change="getDatosAlmacen">
                                                     <option value="0" disabled>Seleccione</option>
                                                     <option v-for="opcion in arrayAlmacenes" :key="opcion.id" :value="opcion.id">{{ opcion.nombre_almacen }}</option>
                                                 </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <label class="small col-4">Unidad(*)</label>
-                                            <div class="col-8">
-                                                <select class="form-control" v-model="tipounipaq" @click="cambiarTipoUnidad()">
-                                                    <option value="0" disabled>Seleccione</option>
-                                                    <option v-for="tipounipaq in arrayUndPaq" :key="tipounipaq" :value="tipounipaq" v-text="tipounipaq"></option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">                                       
-                                        <div class="d-flex align-items-center mb-2">
-                                            <label class="small col-4">Fecha Traspaso(*)</label>
-                                            <div class="col-8">
-                                                <input type="date" class="form-control" v-model="fecha_traspaso">
                                             </div>
                                         </div>
                                     </div>
@@ -167,93 +128,47 @@
                             </div>
                         </form>
                         <!--para elegir producto de inventario-->
-                        <div class="card">
-                            <div class="row no-gutters">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <button @click="abrirModal2()" class="btn btn-primary">Buscar Producto</button>
-                                        <div class="input-group" style="width: 150px">
-                                            <input disabled type="text" class="form-control" v-model="codigo" @keyup="buscarArticulo()"
-                                                placeholder="Escriba el código" ref="articuloRef">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="card-body">
-                                        <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            {{ nombre_producto || 'Nombre no disponible' }}
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <img
-                                        v-if="arrayArticuloSeleccionado.length > 0 && arrayArticuloSeleccionado[0].fotografia"
-                                        :src="'img/articulo/' + arrayArticuloSeleccionado[0].fotografia + '?t=' + new Date().getTime()"
-                                        width="50" height="50" ref="imagen" class="card-img"/>
-                                    <img v-else src="https://www.bicifan.uy/wp-content/uploads/2016/09/producto-sin-imagen.png"  alt="Imagen del Card" class="card-img">
-                                </div>
+                        <div class="card d-flex flex-row align-items-center p-2">
+                            <button @click="abrirModal2()" class="btn btn-primary me-3">Buscar Producto</button>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h5 class="card-title me-3 mb-0">
+                                    <strong>Artículo:</strong> {{ nombre_producto || 'Seleccione un articulo' }}
+                                </h5>
+                                <h5 class="card-title mb-0">
+                                    <strong>Código:</strong> {{ codigo || '---' }}
+                                </h5>
                             </div>
                         </div>
-                        <div class="form-group row border">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="small col-4">Unid. Stock (Origen)</label>
-                                        <div class="col-8">
-                                            <input type="number" class="form-control" v-model="saldo_stock" readonly>
-                                        </div>
-                                    </div>
-                                </div> 
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="small col-4">Unid. Stock (Destino)</label>
-                                        <div class="col-8">
-                                            <input type="number" class="form-control" v-model="saldoStockTotal" readonly>
-                                        </div>
-                                    </div>
-                                </div>   
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="small col-4">Costo Unid :</label>
-                                        <div class="col-8">
-                                            <input v-if="tipounipaq === 'Unidad'" type="number" class="form-control" v-model="precio_costo_unid" readonly>
-                                            <input v-else-if="tipounipaq === 'Paquete'" type="number" class="form-control" v-model="precio_costo_paq" readonly>
-                                        </div>
-                                    </div>
-                                </div>                    
+
+
+                        <div class="form-group row border p-2">
+                            <div class="d-flex align-items-center w-100">
+                                <!-- Stock (Origen) -->
+                                <div class="d-flex align-items-center me-3">
+                                    <label class="small me-2">Stock (Origen)</label>
+                                    <input type="number" class="form-control form-control-sm" v-model="saldo_stock" readonly>
+                                </div>
+
+                                <!-- Stock (Destino) -->
+                                <div class="d-flex align-items-center me-3">
+                                    <label class="small me-2">Stock (Destino)</label>
+                                    <input type="number" class="form-control form-control-sm" v-model="saldoStockTotal" readonly>
+                                </div>
+
+                                <!-- Cantidad Trasp -->
+                                <div class="d-flex align-items-center me-3">
+                                    <label class="small me-2">Cantidad Trasp</label>
+                                    <input type="number" class="form-control form-control-sm" v-model="cantidad_traspaso">
+                                </div>
+
+                                <!-- Botón agregar -->
+                                <button @click="agregarDetalle()" class="btn btn-success btn-sm d-flex align-items-center">
+                                    <i class="icon-plus me-1"></i> Agregar
+                                </button>
                             </div>
                         </div>
-                        <div class="form-group row border">
-                            <div class="col-md-7">
-                                    <div class="card-body">
-                                        <label>CANTIDA {{ nombre_producto ? ' "' + nombre_producto + '"' : 'TRASPASO' }}</label>
-                                    </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="small col-4">Cantidad Trasp</label>
-                                        <div class="col-8">
-                                            <input type="number" class="form-control" v-model="cantidad_traspaso">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">                                       
-                                    <div class="d-flex align-items-center mb-2">
-                                        <label class="small col-4">Fecha Vencimiento</label>
-                                        <div class="col-8">
-                                            <input type="date" class="form-control" v-model="fecha_vencimiento" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i
-                                            class="icon-plus"></i> Agregar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+            
                         <!--################################-Muestra los datos cuando se da click a AGREGAr-#######################-->
                         <div class="form-group row border">
                             <div class="table-responsive col-md-12">
@@ -263,11 +178,10 @@
                                             <th>Eliminar</th>
                                             <th>Codigo</th>
                                             <th>Producto</th>
-                                            <th>Unid./Paq.</th>
-                                            <th>F.Vencimiento</th>
-                                            <th>Valor Unit.</th>
-                                            <th>Saldo Stock</th>
-                                            <th>Unid. Traspaso</th>
+                                            <!--<th>Unid./Paq.</th>
+                                            <th>F.Vencimiento</th>-->
+                                            <th>Saldo Stock Origen</th>
+                                            <th>Cant. Traspaso Destino</th>
                                         </tr>
                                     </thead>
                                     <tbody v-if="arrayDetalle.length">
@@ -280,16 +194,15 @@
                                             </td>
                                             <td v-text="detalle.codigo"></td>
                                             <td v-text="detalle.nombre_producto"></td>
-                                            <td v-text="detalle.unidad_envase"></td>
-                                            <td v-text="detalle.fecha_vencimiento"></td>
-                                            <td v-text="detalle.precio_costo_unid"></td>
+                                            <!--<td v-text="detalle.unidad_envase"></td>
+                                            <td v-text="detalle.fecha_vencimiento"></td>-->
                                             <td>{{ calcularPrecioP(detalle.saldo_stock, detalle.cantidad_traspaso) }}</td>
                                             <td v-text="detalle.cantidad_traspaso"></td>
                                         </tr>
                                     </tbody>
                                     <tbody v-else>
                                         <tr>
-                                            <td colspan="4">
+                                            <td colspan="5">
                                                 No hay articulos agregados
                                             </td>
                                         </tr>
@@ -321,27 +234,32 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <!-- Campo de búsqueda -->
                         <div class="form-group row">
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    <select class="form-control col-md-3">
-                                        <option value="nombre">Nombre</option>
-                                    </select>
-                                    <input type="text" v-model="buscar" @keyup="listarInventarios(buscar, criterio)"
-                                        class="form-control" placeholder="Texto a buscar">
+                                    <input
+                                        type="text"
+                                        v-model="buscar"
+                                        @keyup="actualizarBusqueda"
+                                        class="form-control"
+                                        placeholder="Texto a buscar"
+                                    />
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive" style="height: 300px; overflow-y: auto;">
+
+                        <!-- Tabla de resultados -->
+                        <div class="table-responsive" style="height: auto; overflow-y: auto;">
                             <table class="table table-bordered table-striped table-sm">
                                 <thead>
                                     <tr>
                                         <th>Opciones</th>
-                                        <th>Nombre Comercial</th>
                                         <th>Codigo</th>
+                                        <th>Articulo</th>
+                                        <th v-if="anio_motor === 'P'">Color</th> <!-- Solo muestra esta columna si anio_motor es 'P' -->
+                                        <th v-if="anio_motor === 'P'">Capacidad</th> <!-- Solo muestra esta columna si anio_motor es 'P' -->
                                         <th>Cantidad</th>
-                                        <th>F.Vencimiento</th>
-                                        <th>Precio Publico</th>
                                         <th>Ubicacion</th>
                                         <th>Proveedor Habitual</th>
                                     </tr>
@@ -349,33 +267,32 @@
                                 <tbody>
                                     <tr v-for="inventario in arrayInventario" :key="inventario.id">
                                         <td>
-                                            <button type="button" @click="agregarDetalleModal(inventario)"
-                                                class="btn btn-success btn-sm">
+                                            <button type="button" @click="agregarDetalleModal(inventario)" class="btn btn-success btn-sm">
                                                 <i class="icon-check"></i>
                                             </button>
                                         </td>
-                                        <td v-text="inventario.nombre_producto"></td>
                                         <td v-text="inventario.codigo"></td>
+                                        <td v-text="inventario.nombre_producto"></td>
+                                        <td v-if="anio_motor === 'P'" v-text="inventario.color"></td> <!-- Solo muestra si anio_motor es 'P' -->
+                                        <td v-if="anio_motor === 'P'" v-text="inventario.num_chasis"></td> <!-- Solo muestra si anio_motor es 'P' -->
                                         <td v-text="inventario.saldo_stock"></td>
-                                        <td v-text="inventario.fecha_vencimiento"></td>
-                                        <td v-text="inventario.precio_venta"></td>
                                         <td v-text="inventario.ubicacion"></td>
                                         <td v-text="inventario.nombre_proveedor"></td>
-            
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Paginación -->
                         <nav>
                             <ul class="pagination">
                                 <li class="page-item" v-if="pagination.current_page > 1">
-                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1,buscar,criterio)">Ant</a>
+                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1, buscar, criterio)">Ant</a>
                                 </li>
                                 <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
-                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(page,buscar,criterio)" v-text="page"></a>
+                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(page, buscar, criterio)" v-text="page"></a>
                                 </li>
                                 <li class="page-item" v-if="pagination.current_page < pagination.last_page">
-                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1,buscar,criterio)">Sig</a>
+                                    <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1, buscar, criterio)">Sig</a>
                                 </li>
                             </ul>
                         </nav>
@@ -388,6 +305,7 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
+
         <!--######################################-hasta QUI-################################-->
     </main>
 </template>
@@ -454,12 +372,21 @@
                     'to': 0,
                 },
                 offset: 2,
-                criterio :'nombre',
+                criterio :'',
                 buscar :'',
+                anio_motor: null, // Valor actual del filtro por categoría (C, A, T)
                 nombre : '',
 
             }
         },
+        watch: {
+            codigo(newValue) {
+                if (newValue) {
+                    this.listarInventarioSalStock();
+                }
+            },
+        },
+        
         computed: {
             isActived: function () {
                 return this.pagination.current_page;
@@ -585,19 +512,30 @@
             },
             //--------hasta aqui-----
             //------listado producto de inventario----
-            listarInventarios (page){
-                let me=this;
-                var url= '/inventariosTraspaso?page=' + page + '&buscar='+ me.buscar + '&criterio='+ me.criterio + '&idAlmacen=' +  me.idalmacen;
-                axios.get(url).then(function (response) {
-                    var respuesta= response.data;
-                    //console.log("lista almacen:",respuesta);
-                    me.arrayInventario = respuesta.inventarios.data;
-                    me.pagination= respuesta.pagination;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            listarInventarios(page) {
+                let me = this;
+                let url = `/inventariosTraspaso?page=${page}&buscar=${me.buscar}&idAlmacen=${me.idalmacen}`;
+                axios
+                    .get(url)
+                    .then(function (response) {
+                        let respuesta = response.data;
+                        me.arrayInventario = respuesta.inventarios.data;
+                        me.pagination = respuesta.pagination;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             },
+            filtrarPorAnioMotor(valor) {
+                this.anio_motor = valor; // Actualiza el filtro
+                this.buscar = ""; // Limpia el texto de búsqueda
+                this.listarInventarios(1); // Refresca la lista
+            },
+
+            actualizarBusqueda() {
+                this.listarInventarios(1); // Llama a listarInventarios con la página 1
+            },
+
             cambiarPagina(page, buscar, criterio) {
                 let me = this;
                 me.pagination.current_page = page;
@@ -667,6 +605,7 @@
                     me.unidad_envase = me.arrayArticuloSeleccionado[0].unidad_envase;
                     me.listarInventarioSalStock()
                 }
+                this.cerrarModal2();
             },
             //--------hasta aqui------------
             //----agregar los datos para mostrar en la Tabla de abajo---
@@ -728,6 +667,8 @@
                         me.idinventario = 0;
                         me.nombre_producto = '';
                         me.cantidad_traspaso = 1;
+                        me.saldo_stock = '';
+                        me.saldoStockTotal = 0;
                     }
                 }
             },
@@ -765,13 +706,18 @@
                 'data': this.arrayDetalle,
 
                 }).then(function (response) {
+                    swal({
+                        type: 'success',
+                        title: 'REGISTRADO',
+                        text: "El traspaso fue registrado con exito",
+                        showConfirmButton: false,
+                        timer: 2000, // El mensaje se cerrará automáticamente después de 1.5 segundos
+                    });
                     me.cerrarModal_1(); // Cierra el modal después de un traspaso exitoso
-                     SweetAlert('¡Traspaso exitoso!'); // Muestra la alerta de éxito
                     me.eliminarDetalle();
                 }).catch(function (error) {
                     console.log(error);
                 });
-
             },
             //-----ver traspaso lo que se registro en un listado----
             verTraspaso(id) {
@@ -801,7 +747,7 @@
                             case 'registrar':
                             {
                                 this.modal = 1;
-                                this.tituloModal = 'Registrar Traspaso o Trasnferencia';                               
+                                this.tituloModal = 'Registrar Traspaso o Transferencia';                               
                                 this.tipo_traspaso= '';
                                 this.almacen_origen = '';
                                 this.alamcen_destino = '';
@@ -818,7 +764,7 @@
             },
             //-----abrir modal de listado de producTo de inventario--
             abrirModal2() {
-                this.listarInventarios("","");
+                //this.listarInventarios("","");
                 this.arrayInventario = [];
                 this.modal2 = 1;
                 this.tituloModal2 = 'Seleccione los Productos que desee';
@@ -862,14 +808,22 @@
             cerrarModal_1() {
                     // Cierra el modal
                     this.modal = 0;
-                    
-                    // Muestra una alerta de SweetAlert2
-                    Swal.fire({
-                            title: '¡Éxito!',
-                            text: 'Traspaso exitoso',
-                            icon: 'success',
-                            confirmButtonText: 'Cerrar'
-                        });
+                    this.modal = 0;
+                        this.tituloModal = '';
+                        this.saldo_stock = '';
+                        this.saldoStockTotal = 0;
+                        this.idarticulo = 0;
+                        this.precio_costo_unid = '';
+                        this.nombre_producto = '';
+                        this.codigo = '';
+                        this.AlmacenSeleccionado = 1;
+                        this.cantidad_traspaso = 1;
+                        this.fecha_vencimiento = 1;
+                        this.eliminarDetalle();
+                        this.AlmacenDestSeleccionado = 1;
+                        if (this.arrayArticuloSeleccionado[0]) {
+                            this.arrayArticuloSeleccionado[0].fotografia = '';
+                        }
                 },
 
             advertenciaSwal(){
@@ -889,6 +843,7 @@
             cerrarModal2() {
                 this.modal2 = 0;
                 this.tituloModal2 = '';
+                this.buscar = "";
             },
         },
         mounted() {
@@ -899,15 +854,50 @@
         }
     }
 </script>
-<style>  
-    .mostrar {
-        overflow-y: scroll;
-
-        /* display: list-item !important;
+<style scoped>  
+    .mostrar{
+        display: list-item !important;
         opacity: 1 !important;
         position: absolute !important;
-        background-color: #3c29297a !important; */
-    }
+        background-color: #3c29297a !important;
+        }
+        .div-error{
+        display: flex;
+        justify-content: center;
+        }
+        .text-error{
+        color: red !important;
+        font-weight: bold;
+        }
+        .table-responsive {
+        margin: 20px 0;
+        }
+
+        .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+        }
+
+        .btn-sm {
+        padding: 0.25rem 0.5rem;
+        }
+
+        .thead-dark th {
+        background-color: #343a40;
+        color: white;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+        border: 1px solid #dee2e6;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .obligatorio {
+        color: red;
+        }
     .card-img {
         width: 120px;
         height: auto;

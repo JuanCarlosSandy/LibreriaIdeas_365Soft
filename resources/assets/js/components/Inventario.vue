@@ -68,7 +68,7 @@
                                 <!--<th>Unidad X Paq.</th>-->
                                 <th>Stock Actual</th>
                                 <th>Proveedor</th>
-                                <!--<th>Cantidad</th>-->
+                                <th>Ajustado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -78,6 +78,9 @@
                                 <!--<td v-text="inventario.unidad_envase"></td>-->
                                 <td v-text="inventario.saldo_stock_total"></td>
                                 <td v-text="inventario.nombre"></td>
+                                <td :class="{'text-success': inventario.verificado === 'STOCK VERIFICADO', 'text-danger': inventario.verificado !== 'STOCK VERIFICADO'}">
+                                    {{ inventario.verificado }}
+                                </td>
 
                                 <!--<td v-text="inventario.cantidad"></td>-->
 
@@ -305,6 +308,16 @@ export default {
 
 .text-error {
     color: red !important;
+    font-weight: bold;
+}
+
+.text-success {
+    color: green;
+    font-weight: bold;
+}
+
+.text-danger {
+    color: red;
     font-weight: bold;
 }
 </style>
