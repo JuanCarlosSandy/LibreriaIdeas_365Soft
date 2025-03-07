@@ -257,12 +257,12 @@
                 <div v-for="(precio, index) in precios" :key="precio.id" class="p-grid p-ai-center p-mb-2 mobile-responsive">
         <!-- Primera columna -->
         <div class="p-col-12 custom-precios">
-            <label class="p-mr-2 p-text-bold" style="width: 100%;">{{ precio.nombre_precio }}:</label>
+            <label class="p-mr-2 p-text-bold" style="width: 100%; height: ">{{ precio.nombre_precio }}:</label>
         </div>
 
         <!-- Segunda fila para inputs en vista móvil -->
         <div class="p-col-12 p-md-6 custom-precios">
-            <div class="p-inputgroup p-mr-2" style="width: 100%;">
+            <div class="p-inputgroup p-mr-2" style="width: 100%; height:">
                 <InputNumber v-if="index === 0" placeholder="Precio" v-model="precio_uno" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
                 <InputNumber v-if="index === 1" placeholder="Precio" v-model="precio_dos" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
                 <InputNumber v-if="index === 2" placeholder="Precio" v-model="precio_tres" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
@@ -272,14 +272,17 @@
         </div>
 
         <!-- Tercera fila para porcentaje y botón en vista móvil -->
+        
         <div class="p-col-12 p-md-6 custom-precios">
-            <div class="p-inputgroup p-mr-2" style="width: 100%;">
+        <!--<div class="p-inputgroup p-mr-2" style="width: 100%;">
                 <InputNumber placeholder="Porcentaje" v-model="precio.porcentage" mode="decimal" :minFractionDigits="2" class="p-inputtext-sm" />
                 <span class="p-inputgroup-addon">%</span>
             </div>
-            <div >
+        -->
+           <!-- <div >
                 <Button label="Calcular" class="p-button-primary p-button-sm"@click="calcularPrecio(precio, index)" />
-            </div>
+            </div>--> 
+            
         </div>
     </div>
             </form>
@@ -1315,7 +1318,7 @@ export default {
 </script>
 
 <style scoped>
->>>.p-datatable.p-datatable-gridlines .p-datatable-tbody > tr > td {
+.p-datatable.p-datatable-gridlines .p-datatable-tbody > tr > td {
     text-align: center;
 }
 .bold-input {
@@ -1362,7 +1365,7 @@ export default {
 .p-dialog {
   z-index: 10000 !important;
 }
->>> .p-dropdown .p-dropdown-trigger {
+ .p-dropdown .p-dropdown-trigger {
     width: 2rem;
 }
 .switch-container {
@@ -1374,6 +1377,7 @@ export default {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+
 }
 @media (max-width: 768px) {
     .toolbar-container {
