@@ -100,15 +100,15 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <productosbajostock></productosbajostock>
 
                     </div>
 
-                    <div class="col-md-6">
+                    <!--<div class="col-md-6">
                         <productosporvencerse></productosporvencerse>
 
-                    </div>
+                    </div>-->
                 </div>
 
 

@@ -219,7 +219,11 @@
                                             :class="{ 'is-invalid': errores.nombre }" @input="validarCampo('nombre')" />
                                         <p class="text-danger" v-if="errores.nombre">{{ errores.nombre }}</p>
                                     </div>
+                                    
+                                    
+                                    
                                     <div>
+                                        
 
                                         <label for="" class="font-weight-bold">Nombre Genérico
                                             <span class="text-danger">*</span>
@@ -237,6 +241,7 @@
                                     </div>
                                 </div>
 
+                                
                                 <div class="col-md-6">
                                     <div class="container ">
                                         <div class="row">
@@ -245,9 +250,11 @@
                                                     <i class="fa fa-camera fa-2x" style="color:#6e6e6e"
                                                         aria-hidden="true"></i>
                                                 </div>
+                                                    
                                                 <figure v-else>
                                                     <img :src="imagen" width="140" height="140" alt="Foto articulo">
                                                 </figure>
+                                            
                                             </div>
                                         </div>
                                     </div>
@@ -257,6 +264,7 @@
                                     </div>
                                 </div>
                             </div>
+                        
                             <div class="form-group row">
                                 <div class="col-md-6">
 
@@ -2000,6 +2008,7 @@ export default {
             //Envia la petición para visualizar la data de esa página
         },
         //mostrar foto de articulo
+        
         obtenerFotografia(event) {
 
             let file = event.target.files[0];
@@ -2008,6 +2017,7 @@ export default {
             // Validar si el archivo es una imagen en formato PNG o JPG
             if (fileType !== 'image/png' && fileType !== 'image/jpeg') {
                 alert('Por favor, seleccione una imagen en formato PNG o JPG.');
+                
                 return;
             }
 
@@ -2023,6 +2033,7 @@ export default {
             }
             reader.readAsDataURL(file);
         },
+        
         calcularPrecioValorMoneda(precio) {
             return ((precio * parseFloat(this.monedaPrincipal)).toFixed(2))
         },

@@ -79,8 +79,9 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div>
-                            <label class="font-weight-bold" for="foto">Foto del Producto</label>
+                        <!--<div>
+                            <label class="font-weight-bold" for="foto">Foto del Producto</label> 
+                            
                             <div class="container">
                                 <div class="row">
                                     <div class="d-flex justify-content-center">
@@ -90,12 +91,13 @@
                                         <figure v-else>
                                             <ImagePreview :src="imagen" alt="Image" width="140" height="140" />
                                         </figure>
-                                    </div>
+                                    
+                                    </div>-->
                                 </div>
                             </div>
-                            <div class="input-group mt-2">
+                            <!--<div class="input-group mt-2">
                                 <input type="file" @change="obtenerFotografia" class="form-control" placeholder="fotografia" ref="fotografiaInput">
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -219,10 +221,10 @@
                 </div>-->
                 <div class="form-group row">
 
-                    <div v-show="tipoAccion == 1" class="col-md-6 switch-container">
+                    <!--<div v-show="tipoAccion == 1" class="col-md-6 switch-container">
                         <label class="font-weight-bold" for="switchstock">Agregar a Stock <span class="text-danger">*</span></label>
                         <InputSwitch id="switchstock" v-model="agregarStock"  class="p-inputtext-sm" />
-                    </div>
+                    </div>-->
                 </div>
                 <div v-if="agregarStock && tipoAccion == 1" class="form-group row">
                     <div class="col-md-4">
@@ -491,7 +493,7 @@ export default {
                 { field: 'nombre_marca', header: 'MARCA' },
                 { field: 'stock', header: 'STOCK MINIMO' },
                 { field: 'nombre_proveedor', header: 'PROVEEDOR' },
-                { field: 'fotografia', header: 'FOTOGRAFIA', type: 'image' },
+                //{ field: 'fotografia', header: 'FOTOGRAFIA', type: 'image' },
                 { field: 'condicion', header: 'CONTROLADO', type: 'badge' }
             ]
         };
@@ -1365,7 +1367,7 @@ export default {
 .p-dialog {
   z-index: 10000 !important;
 }
- .p-dropdown .p-dropdown-trigger {
+.p-dropdown .p-dropdown-trigger {
     width: 2rem;
 }
 .switch-container {
