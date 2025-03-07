@@ -16,19 +16,18 @@ class CreateArticulosTable extends Migration
         Schema::create('articulos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('idcategoria')->unsigned(); //Linea
-            $table->integer('idgrupo')->unsigned(); //aumente 14 junio
+            $table->integer('idgrupo')->unsigned()->nullable(); //aumente 14 junio/modifique 28 febrero
             $table->integer('idproveedor')->unsigned(); //aumente 5 juio
-
             $table->integer('idmedida')->unsigned(); //new
 
             $table->string('codigo', 255)->unique();
             $table->string('nombre', 255); //Nombre comercial
-            $table->string('nombre_generico', 255); //aumente 5_julio
+            $table->string('nombre_generico', 255)->nullable(); //aumente 5_julio/modifique 28 febrero
             $table->integer('unidad_envase'); //aumente
             $table->decimal('precio_list_unid', 15, 4)->nullable(); //aumente
             $table->decimal('precio_costo_unid', 15, 4); //aumente
             $table->decimal('precio_costo_paq', 15, 4); //aumente
-            $table->decimal('precio_venta', 15, 4); //precio presio2
+            $table->decimal('precio_venta', 15, 4)->nullable(); //precio presio2
 
             $table->decimal('precio_uno', 15, 4)->nullable();//AUMENTE 19/9/2023
             $table->decimal('precio_dos', 15, 4)->nullable();//AUMENTE 19/9/2023
@@ -45,7 +44,7 @@ class CreateArticulosTable extends Migration
             $table->foreign('idproveedor')->references('id')->on('proveedores');
 
             //new
-            $table->decimal('costo_compra', 10, 2);
+            $table->decimal('costo_compra', 10, 2)->nullable(); //modifique 28 de febrero
             $table->foreign('idmedida')->references('id')->on('medidas');
             $table->string('codigo_alfanumerico', 50)->nullable();// aumente el 23-01-2024
             $table->string('descripcion_fabrica', 50)->nullable();// aumente el 23-01-2024

@@ -464,24 +464,28 @@ class ArticuloController extends Controller
         $articulo->idmarca = $request->idmarca;
         //$articulo->idindustria = $request->idindustria;
         //$articulo->idgrupo = $request->idgrupo; //aumente 12 junio
+        $articulo->idindustria = null;//new change
+        $articulo->nombre_generico = '';//new change
+        $articulo->idgrupo = null;//new change
         $articulo->vencimiento = $request->fechaVencimientoSeleccion; 
         $articulo->idmedida = $request->idmedida; //new
 
         $articulo->codigo = $request->codigo;
         $articulo->nombre = $request->nombre;
 
+
         //$articulo->nombre_generico = $request->nombre_generico; //aumete 12julio
 
         $articulo->unidad_envase = $request->unidad_envase;
-        $articulo->precio_venta = $request->precio_venta;
-
+        //$articulo->precio_venta = $request->precio_venta;
+        $articulo->precio_venta = null; //new change 
         $articulo->precio_uno = $request->precio_uno;
         $articulo->precio_dos = $request->precio_dos;
         $articulo->precio_tres = $request->precio_tres;
         $articulo->precio_cuatro = $request->precio_cuatro;
 
-        $articulo->costo_compra = $request->costo_compra; //new
-
+        //$articulo->costo_compra = $request->costo_compra; //new
+        $articulo->costo_compra = null; //new change
         $articulo->stock = $request->stock;
         $articulo->idproveedor = $request->idproveedor;
         $articulo->precio_costo_unid = $request->precio_costo_unid;
