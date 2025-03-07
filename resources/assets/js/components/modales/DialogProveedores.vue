@@ -38,17 +38,24 @@
         >
             <form @submit.prevent="enviarFormulario">
             <div class="p-fluid p-formgrid p-grid">
+
+            <!--
                 <div class="p-field p-col-12 p-md-6">
                 <label for="name">Nombre del proveedor *</label>
                 <InputText id="name" v-model="datosFormulario.nombre" @input="validarCampo('nombre')" :class="{'p-invalid': errores.nombre}" required />
                 <small class="p-error" v-if="errores.nombre"><strong>{{ errores.nombre }}</strong></small>
                 </div>
+            -->
+            
+            <!--
                 <div class="p-field p-col-12 p-md-6">
                 <label for="address">Dirección *</label>
                 <InputText id="address" v-model="datosFormulario.direccion" @input="validarCampo('direccion')" :class="{'p-invalid': errores.direccion}" required />
                 <small class="p-error" v-if="errores.direccion"><strong>{{ errores.direccion }}</strong></small>
                 </div>
-                <div class="p-field p-col-12 p-md-6">
+            -->
+            
+                <div class="p-field p-col-12 p-md-6"> 
                 <label for="documentType">Tipo de documento *</label>
                 <Dropdown id="documentType" v-model="datosFormulario.tipo_documento" :options="tiposDocumentos" optionLabel="etiqueta" optionValue="valor" @change="validarCampo('tipo_documento')" :class="{'p-invalid': errores.tipo_documento}" required />
                 <small class="p-error" v-if="errores.tipo_documento"><strong>{{ errores.tipo_documento }}</strong></small>
@@ -68,16 +75,21 @@
                 <InputNumber :useGrouping="false" id="phone" v-model="datosFormulario.telefono" @input="validarCampo('telefono')" :class="{'p-invalid': errores.telefono}" required />
                 <small class="p-error" v-if="errores.telefono"><strong>{{ errores.telefono }}</strong></small>
                 </div>
-                <div class="p-field p-col-12 p-md-6">
+            <!--
+            <div class="p-field p-col-12 p-md-6">
                 <label for="contact">Contacto *</label>
                 <InputText id="contact" v-model="datosFormulario.contacto" @input="validarCampo('contacto')" :class="{'p-invalid': errores.contacto}" required />
                 <small class="p-error" v-if="errores.contacto"><strong>{{ errores.contacto }}</strong></small>
                 </div>
+            -->
+            <!--
                 <div class="p-field p-col-12 p-md-6">
                 <label for="contactPhone">Teléfono de contacto *</label>
                 <InputNumber :useGrouping="false" id="contactPhone" v-model="datosFormulario.telefono_contacto" @input="validarCampo('telefono_contacto')" :class="{'p-invalid': errores.telefono_contacto}" required />
                 <small class="p-error" v-if="errores.telefono_contacto"><strong>{{ errores.telefono_contacto }}</strong></small>
                 </div>
+            -->
+            
             </div>
             </form>
             <template #footer>
@@ -280,7 +292,7 @@ export default {
 .form-group {
     margin-bottom: 15px;
 }
->>>.p-dialog .p-dialog-content{
+.p-dialog .p-dialog-content{
     padding-top: 10px;
     padding-bottom: 0px;
 }
