@@ -180,22 +180,41 @@
                     <div class="col-md-6">
                         <label class="font-weight-bold" for="preciounitario">Costo de Compra Unitario <span class="text-danger">*</span></label>
                         <div class="p-inputgroup">
-                            <InputNumber id="preciounitario"  v-model="datosFormulario.precio_costo_unid" placeholder="Sin decimales" class=" p-inputtext-sm bold-input"  mode="decimal" :minFractionDigits="2" 
-                                        :class="{'p-invalid' : errores.precio_costo_unid}" @input="validarCampo('precio_costo_unid')" />
-                            <Button label="Calcular" class="p-button-primary p-button-sm" @click="calcularPrecioCostoUnid" />
-                        </div>
-                        <small class="p-error" v-if="errores.precio_costo_unid"><strong>{{ errores.precio_costo_unid }}</strong></small>
-
+                        <InputNumber 
+                            id="preciounitario" 
+                            v-model="datosFormulario.precio_costo_unid" 
+                            placeholder="Sin decimales" 
+                            class="p-inputtext-sm bold-input" 
+                            mode="decimal" 
+                            :minFractionDigits="0"
+                            :maxFractionDigits="2"
+                            :useGrouping="true"
+                            :class="{'p-invalid' : errores.precio_costo_unid}" 
+                            @input="validarCampo('precio_costo_unid')" 
+                        />
+                        <Button label="Calcular" class="p-button-primary p-button-sm" @click="calcularPrecioCostoUnid" />
                     </div>
-                    <div class="col-md-6">
-                        <label class="font-weight-bold"  for="preciopaquete">Costo de Compra Paquete <span class="text-danger">*</span></label>
-                        <div class="p-inputgroup">
-                            <InputNumber id="preciopaquete"  v-model="datosFormulario.precio_costo_paq" placeholder="Sin decimales" class=" p-inputtext-sm bold-input"  mode="decimal" :minFractionDigits="2" 
-                                            :class="{'p-invalid' : errores.precio_costo_paq}" @input="validarCampo('precio_costo_paq')"/>
-                            <Button label="Calcular" class="p-button-primary p-button-sm" @click="calcularPrecioCostoPaq" />
-                        </div>
-                        <small class="p-error" v-if="errores.precio_costo_paq"><strong>{{ errores.precio_costo_paq }}</strong></small>
+                    <small class="p-error" v-if="errores.precio_costo_unid"><strong>{{ errores.precio_costo_unid }}</strong></small>
+                    </div>
 
+                    <div class="col-md-6">
+                    <label class="font-weight-bold" for="preciopaquete">Precio de Compra Paquete <span class="text-danger">*</span></label>
+                    <div class="p-inputgroup">
+                        <InputNumber 
+                            id="preciopaquete" 
+                            v-model="datosFormulario.precio_costo_paq" 
+                            placeholder="Sin decimales" 
+                            class="p-inputtext-sm bold-input" 
+                            mode="decimal" 
+                            :minFractionDigits="0"
+                            :maxFractionDigits="2"
+                            :useGrouping="true"
+                            :class="{'p-invalid' : errores.precio_costo_paq}" 
+                            @input="validarCampo('precio_costo_paq')"
+                        />
+                        <Button label="Calcular" class="p-button-primary p-button-sm" @click="calcularPrecioCostoPaq" />
+                    </div>
+                    <small class="p-error" v-if="errores.precio_costo_paq"><strong>{{ errores.precio_costo_paq }}</strong></small>
                     </div>
                 </div>
                 <!--<div class="form-group row">
@@ -264,13 +283,49 @@
 
         <!-- Segunda fila para inputs en vista móvil -->
         <div class="p-col-12 p-md-6 custom-precios">
-            <div class="p-inputgroup p-mr-2" style="width: 100%; height:">
-                <InputNumber v-if="index === 0" placeholder="Precio" v-model="precio_uno" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
-                <InputNumber v-if="index === 1" placeholder="Precio" v-model="precio_dos" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
-                <InputNumber v-if="index === 2" placeholder="Precio" v-model="precio_tres" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
-                <InputNumber v-if="index === 3" placeholder="Precio" v-model="precio_cuatro" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="p-inputtext-sm" />
-                <span class="p-inputgroup-addon">{{ monedaPrincipal[1] }}</span>
-            </div>
+        <div class="p-inputgroup p-mr-2" style="width: 100%; height:">
+            <InputNumber 
+            v-if="index === 0" 
+            placeholder="Precio" 
+            v-model="precio_uno" 
+            mode="decimal" 
+            :minFractionDigits="0" 
+            :maxFractionDigits="2" 
+            :useGrouping="true" 
+            class="p-inputtext-sm" 
+            />
+            <InputNumber 
+            v-if="index === 1" 
+            placeholder="Precio" 
+            v-model="precio_dos" 
+            mode="decimal" 
+            :minFractionDigits="0" 
+            :maxFractionDigits="2" 
+            :useGrouping="true" 
+            class="p-inputtext-sm" 
+            />
+            <InputNumber 
+            v-if="index === 2" 
+            placeholder="Precio" 
+            v-model="precio_tres" 
+            mode="decimal" 
+            :minFractionDigits="0" 
+            :maxFractionDigits="2" 
+            :useGrouping="true" 
+            class="p-inputtext-sm" 
+            />
+            <InputNumber 
+            v-if="index === 3" 
+            placeholder="Precio" 
+            v-model="precio_cuatro" 
+            mode="decimal" 
+            :minFractionDigits="0" 
+            :maxFractionDigits="2" 
+            :useGrouping="true" 
+            class="p-inputtext-sm" 
+            />
+            <span class="p-inputgroup-addon">{{ monedaPrincipal[1] }}</span>
+        </div>
         </div>
 
         <!-- Tercera fila para porcentaje y botón en vista móvil -->

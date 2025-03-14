@@ -59,10 +59,16 @@
             <small class="p-error" v-if="errores.encargado">{{ errores.encargado }}</small>
           </div>
           <div class="p-field p-col-12 p-md-6">
-            <label for="telefono">Teléfono</label>
-            <InputNumber id="telefono" v-model="datosFormulario.telefono" :class="{'p-invalid': errores.telefono}" @input="validarCampo('telefono')" />
-            <small class="p-error" v-if="errores.telefono">{{ errores.telefono }}</small>
-          </div>
+          <label for="telefono">Teléfono</label>
+          <InputNumber 
+            id="telefono" 
+            v-model="datosFormulario.telefono" 
+            :class="{'p-invalid': errores.telefono}" 
+            @input="validarCampo('telefono')"
+            :useGrouping="false" 
+          />
+          <small class="p-error" v-if="errores.telefono">{{ errores.telefono }}</small>
+        </div>
           <div class="p-field p-col-12 p-md-6">
             <label for="sucursal">Sucursal</label>
             <Dropdown v-model="sucursalSeleccionado" :options="arraySucursal" optionLabel="nombre" 

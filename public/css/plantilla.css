@@ -10197,7 +10197,7 @@ base-chart.chart {
   height: 58px;
   padding: 0;
   margin: 0;
-  background-color: #33b378;
+  background-color: #6d44a6;
   border-bottom: 1px solid #c2cfd6;
 }
 .app-header.navbar .navbar-brand {
@@ -10207,12 +10207,12 @@ base-chart.chart {
   padding: 0.5rem 1rem;
   margin-right: 0;
   background-color: #fff;
-  background-image: url("../img/AVATAR-RRSS_1-COLOR_NEGRO-2.png");
+  background-image: url("../img/libreriaH.png");
   background-color: transparent;
-  background-image: url("../img/AVATAR-RRSS_1-COLOR_NEGRO-2.png");
+  background-image: url("../img/libreriaH.png");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 89px auto;
+  background-size: 120px auto;
   border-bottom: 1px solid #c2cfd6;
 }
 .app-header.navbar .navbar-toggler {
@@ -10338,7 +10338,7 @@ base-chart.chart {
   .brand-minimized .app-header.navbar .navbar-brand {
     width: 50px;
     background-color: #fff;
-    background-image: url("../img/logologin.jpeg");
+    background-image: url("../img/farm4eneSmall.png");
     background-size: 24px;
     border-bottom: 1px solid #c2cfd6;
   }
