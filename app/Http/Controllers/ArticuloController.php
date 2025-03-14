@@ -367,7 +367,7 @@ class ArticuloController extends Controller
                 'articulos.codigo',
                 'articulos.precio_venta',
                 'articulos.condicion',
-                'categorias.nombre as nombre_categoria'
+                'personas.nombre as nombre_proveedor' //cambio realizado el 12/03/2025
             )
             ->orderBy('articulos.nombre')
             ->orderBy('almacens.nombre_almacen');

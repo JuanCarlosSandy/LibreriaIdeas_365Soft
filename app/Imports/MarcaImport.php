@@ -36,6 +36,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 //     }
 // }
 //-----------------------------------------------------------------
+/*
 class MarcaImport implements ToCollection, WithHeadingRow
 {
     public function collection(Collection $rows)
@@ -58,4 +59,64 @@ class MarcaImport implements ToCollection, WithHeadingRow
         }
     }
 }
+*/
 
+//nuevo codigo implementado 11/03/2025. 
+class MarcaImport implements ToCollection, WithHeadingRow
+{
+    public function collection(Collection $rows)
+    {
+        Log::info('Iniciando importación de ' . count($rows) . ' filas');
+        
+        foreach ($rows as $index => $row) {
+            Log::info('Procesando fila ' . ($index + 1), ['row' => json_encode($row)]);
+            
+            $nombre = null;
+            
+            // Intenta encontrar el nombre en diferentes formatos posibles
+            if (isset($row['nombre'])) {
+                $nombre = $row['nombre'];
+                Log::info('Encontrado nombre en columna "nombre": ' . $nombre);
+            } 
+            elseif (isset($row['nombrecondicion'])) {
+                $nombre = trim(str_replace(';', '', $row['nombrecondicion']));
+                Log::info('Encontrado nombre en columna "nombrecondicion": ' . $nombre);
+            }
+            elseif (isset($row[0])) {
+                $nombre = $row[0];
+                Log::info('Encontrado nombre en primera columna: ' . $nombre);
+            }
+            
+            if (!empty($nombre)) {
+                // Busca si ya existe una marca con el mismo nombre
+                $existingMarca = Marca::where('nombre', $nombre)->first();
+                
+                // Si no existe, inserta un nuevo registro
+                if (!$existingMarca) {
+                    try {
+                        Log::info('Creando marca: ' . $nombre);
+                        
+                        $marca = Marca::create([
+                            'nombre' => $nombre,
+                            'condicion' => '1',  // Valor predeterminado
+                        ]);
+                        
+                        if ($marca) {
+                            Log::info('Marca creada exitosamente con ID: ' . $marca->id);
+                        } else {
+                            Log::error('No se pudo crear la marca');
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Error al crear marca: ' . $e->getMessage());
+                    }
+                } else {
+                    Log::info('Marca ya existe: ' . $nombre);
+                }
+            } else {
+                Log::warning('Fila ' . ($index + 1) . ' ignorada: nombre no encontrado');
+            }
+        }
+        
+        Log::info('Finalizada importación de marcas');
+    }
+}

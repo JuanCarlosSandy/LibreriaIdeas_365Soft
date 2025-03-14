@@ -178,7 +178,7 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-md-6">
-                        <label class="font-weight-bold" for="preciounitario">Precio de Compra Unitario <span class="text-danger">*</span></label>
+                        <label class="font-weight-bold" for="preciounitario">Costo de Compra Unitario <span class="text-danger">*</span></label>
                         <div class="p-inputgroup">
                             <InputNumber id="preciounitario"  v-model="datosFormulario.precio_costo_unid" placeholder="Sin decimales" class=" p-inputtext-sm bold-input"  mode="decimal" :minFractionDigits="2" 
                                         :class="{'p-invalid' : errores.precio_costo_unid}" @input="validarCampo('precio_costo_unid')" />
@@ -188,7 +188,7 @@
 
                     </div>
                     <div class="col-md-6">
-                        <label class="font-weight-bold"  for="preciopaquete">Precio de Compra Paquete <span class="text-danger">*</span></label>
+                        <label class="font-weight-bold"  for="preciopaquete">Costo de Compra Paquete <span class="text-danger">*</span></label>
                         <div class="p-inputgroup">
                             <InputNumber id="preciopaquete"  v-model="datosFormulario.precio_costo_paq" placeholder="Sin decimales" class=" p-inputtext-sm bold-input"  mode="decimal" :minFractionDigits="2" 
                                             :class="{'p-invalid' : errores.precio_costo_paq}" @input="validarCampo('precio_costo_paq')"/>

@@ -178,7 +178,16 @@ Route::group(["middleware" => ["auth"]], function () {
             "/categoria/selectCategoria",
             "CategoriaController@selectCategoria"
         );
+
+        //rutas para ajuste inventario añadido en fecha 14/03/25
+        Route::get('/ajuste-inventario', 'AjusteInventarioController@index');
+        Route::post('/ajuste-inventario/registrar', 'AjusteInventarioController@store');
+        Route::get('/ajuste-inventario/obtenerStock', 'AjusteInventarioController@obtenerStock');
+        Route::get('/motivo', 'AjusteInventarioController@listarMotivo');
+        Route::post('/motivo/registrar', 'AjusteInventarioController@registrarMotivo');
         //----importacion y exportacion--
+        Route::get('inventarios/exportar', 'InventarioController@exportar')->name('inventario.exportar');//añadi nueva ruta para exportar en fecha 12/03/2025
+        Route::get('ventas/obtener-precio-por-tipo', 'VentaController@obtenerPrecioPorTipo');        //nueva ruta para el tipo de precio
         Route::get(
             "/linea/exportexcel",
             "CategoriaController@excelLinea"

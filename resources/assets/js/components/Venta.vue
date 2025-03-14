@@ -333,6 +333,33 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- nuevos botones para las opciones de tipo de precio -->
+                        <div class="precio-tipo-selector">
+                        <div class="btn-group" role="group">
+                            <button 
+                            type="button" 
+                            class="btn" 
+                            :class="tipoPrecioSeleccionado === 'factura' ? 'btn-primary' : 'btn-outline-primary'"
+                            @click="seleccionarTipoPrecio('factura')">
+                            Con Factura
+                            </button>
+                            <button 
+                            type="button" 
+                            class="btn" 
+                            :class="tipoPrecioSeleccionado === 'sin_factura' ? 'btn-primary' : 'btn-outline-primary'"
+                            @click="seleccionarTipoPrecio('sin_factura')">
+                            Sin Factura
+                            </button>
+                            <button 
+                            type="button" 
+                            class="btn" 
+                            :class="tipoPrecioSeleccionado === 'mayor' ? 'btn-primary' : 'btn-outline-primary'"
+                            @click="seleccionarTipoPrecio('mayor')">
+                            Por Mayor
+                            </button>
+                        </div>
+                        </div>
 
                         <DataTable :value="arrayDetalle" class="p-mt-3">
                             <Column header="Opciones" style="width: 10%">
@@ -421,7 +448,7 @@
                             </Column>
                             <Column field="codigo" header="Código" />
                             <Column field="nombre" header="Nombre" />
-                            <Column field="nombre_categoria" header="Categoría" />
+                            <Column field="nombre_proveedor" header="Proveedor" />
                             <Column header="Precio Venta">
                                 <template #body="slotProps">
                                     {{ (slotProps.data.precio_uno * parseFloat(monedaVenta[0])).toFixed(2) }} {{
@@ -638,6 +665,7 @@ export default {
             precio_dos: "",
             precio_tres: "",
             precio_cuatro: "",
+            tipoPrecioSeleccionado: 'factura', // Valor predeterminado: precio con factura
             //-----MODAL 2---
 
             tituloModal2: "",
@@ -757,6 +785,41 @@ export default {
             if (event.shiftKey && event.key === "B") {
                 this.abrirModal();
             }
+        },
+        // metodo para escoger el tipo de precio
+        seleccionarTipoPrecio(tipo) {
+            this.tipoPrecioSeleccionado = tipo;
+            
+            // Si hay artículos en la tabla, preguntar si quiere actualizar sus precios
+            if (this.arrayDetalle && this.arrayDetalle.length > 0) {
+                if (confirm('¿Desea actualizar los precios de todos los artículos?')) {
+                    this.actualizarTodosPreciosPorTipo();
+                }
+            }
+        },
+
+        actualizarTodosPreciosPorTipo() {
+            // Recorrer todos los artículos y actualizar sus precios
+            for (let i = 0; i < this.arrayDetalle.length; i++) {
+                const articulo = this.arrayDetalle[i];
+                this.obtenerPrecioPorTipo(articulo.idarticulo, i);
+            }
+        },
+
+        obtenerPrecioPorTipo(idArticulo, index) {
+            let me = this;
+            axios.get(`/ventas/obtener-precio-por-tipo?idArticulo=${idArticulo}&tipoPrecio=${this.tipoPrecioSeleccionado}`)
+                .then(function(response) {
+                    if (response.data.precio !== undefined) {
+                        // Actualizar el precio del artículo
+                        me.arrayDetalle[index].precioseleccionado = response.data.precio;
+                        // Recalcular el total
+                        me.actualizarDetalle(index, response.data.precio);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error al obtener precio:', error);
+                });
         },
 
         generarCuotas() {
@@ -914,7 +977,7 @@ export default {
             this.montoQR = 0;
         },
 
-
+        
         calcularPrecioUnitario(articulo) {
             // Lógica para calcular el precio unitario según el rango total de cantidades
             if (

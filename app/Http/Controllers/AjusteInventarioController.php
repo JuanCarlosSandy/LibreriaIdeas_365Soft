@@ -83,6 +83,24 @@ class AjusteInventarioController extends Controller
             'motivos' => $motivo
         ];
     }
+    //nuevo codigo para obtener el stock actual añadido en fecha 13/03/25
+    public function obtenerStock(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+
+        // Validamos que se envíe el id del producto y del almacén
+        $producto = $request->producto;
+        $almacen = $request->almacen;
+
+        // Buscar el stock actual en la tabla de inventario
+        $inventario = Inventario::where('idarticulo', $producto)
+            ->where('idalmacen', $almacen)
+            ->first();
+
+        // Retornar el stock actual o 0 si no existe en el inventario
+        return response()->json(['stock_actual' => $inventario ? $inventario->saldo_stock : 0]);
+    }
+
 
     public function store(Request $request)
     {

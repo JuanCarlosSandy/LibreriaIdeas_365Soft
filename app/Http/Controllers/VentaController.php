@@ -1148,6 +1148,44 @@ public function indexReciboCobrar(Request $request)
         }
     }
 
+    //nuevo metodo añadido para obtener el tipo de precio 13/03/25
+    public function obtenerPrecioPorTipo(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+        
+        try {
+            $idArticulo = $request->idArticulo;
+            $tipoPrecio = $request->tipoPrecio; // 'factura', 'sin_factura', 'mayor'
+            
+            $articulo = Articulo::find($idArticulo);
+            
+            if (!$articulo) {
+                return response()->json(['error' => 'Artículo no encontrado'], 404);
+            }
+            
+            $precio = 0;
+            
+            switch ($tipoPrecio) {
+                case 'factura':
+                    $precio = $articulo->precio_uno; // Precio con factura
+                    break;
+                case 'sin_factura':
+                    $precio = $articulo->precio_dos; // Precio sin factura
+                    break;
+                case 'mayor':
+                    $precio = $articulo->precio_tres; // Precio por mayor
+                    break;
+                default:
+                    $precio = $articulo->precio_uno; // Valor predeterminado
+                    break;
+            }
+            
+            return response()->json(['precio' => $precio]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener el precio: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function eliminarVentaFalloSiat($id)
 {
     $ultimaCaja = Caja::latest()->first();

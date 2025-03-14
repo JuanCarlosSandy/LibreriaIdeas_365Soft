@@ -70,8 +70,8 @@
 </nav>
                 </div>
             </div>
-
-        <div class="modal" tabindex="-1" :class="{ 'mostrar': modal }" role="dialog" aria-labelledby="myModalLabel"
+            <!-- registrar ajuste, modificado en fecha 14/03/2025-->
+            <div class="modal" tabindex="-1" :class="{ 'mostrar': modal }" role="dialog" aria-labelledby="myModalLabel"
             style="display: ;" aria-hidden="true">
             <div class="modal-dialog modal-primary modal-lg" role="document">
                 <div class="modal-content">
@@ -125,14 +125,28 @@
                                     <p class="text-danger" v-if="errores.idmarca">{{ errores.idmarca }}</p>
                                 </div>
                             </div>
-
+                            
                             <div class="form-group row">
+                                <!-- Stock Actual - Modificado para usar stock_actual -->
                                 <div class="col-md-4">
-                                    <label for="" class="font-weight-bold">Cantidad que se dará de baja <span
-                                            class="text-danger">*</span></label>
+                                    <label for="" class="font-weight-bold">Stock Actual</label>
+                                    <input type="text" class="form-control" v-model="stock_actual" readonly />
+                                </div>
+                                
+                                <!-- Cantidad que se dará de baja -->
+                                <div class="col-md-4">
+                                    <label for="" class="font-weight-bold">Cantidad que se dará de baja <span class="text-danger">*</span></label>
                                     <input type="number" v-model="datosFormulario.cantidad" class="form-control"
-                                        placeholder="Cantidad"
-                                        @input="validarCampo('cantidad')" />
+                                        placeholder="Cantidad" @input="validarCampo('cantidad')" min="0" :max="stock_actual" />
+                                    <p class="text-danger" v-if="datosFormulario.cantidad > stock_actual">
+                                        La cantidad no puede ser mayor al stock actual
+                                    </p>
+                                </div>
+                                
+                                <!-- Stock Restante - Nuevo campo añadido -->
+                                <div class="col-md-4">
+                                    <label for="" class="font-weight-bold">Stock Restante</label>
+                                    <input type="text" class="form-control" v-model="stock_restante" readonly />
                                 </div>
                             </div>
                         </div>
@@ -142,7 +156,6 @@
                             <button type="submit" v-if="tipoAccion == 2" class="btn btn-success">Actualizar</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -326,6 +339,9 @@ export default {
                 idAlmacenSeleccionado: null, // ID del almacén seleccionado
             },
 
+            stock_actual: 0,
+            stock_restante: 0,
+
             errores: {},
             monedaPrincipal: [],
 
@@ -426,9 +442,42 @@ export default {
             return this.calculatePages(this.pagination, this.offset.pagination);
         }
     },
+    //añadido en fecha 14/03/25
+    // Corrección de los watchers
     watch: {
-        previewCsv: 'parseCsv', // Llama a parseCsv cuando previewCsv cambie
+        // Para el producto seleccionado
+        'productoseleccionado': {
+            handler(newVal) {
+                console.log("Producto seleccionado cambiado:", newVal);
+                if (newVal && newVal.id) {
+                    // Actualizar el ID del producto en datosFormulario
+                    this.datosFormulario.producto = newVal.id;
+                    // Llamar a obtenerStock
+                    this.obtenerStock();
+                }
+            },
+            deep: true
+        },
+        
+        // Para el almacén seleccionado
+        'idAlmacenSeleccionado': function(newVal) {
+            console.log("Almacén seleccionado cambiado:", newVal);
+            this.AlmacenSeleccionado = newVal; // Sincronizar ambas variables
+            if (newVal && this.productoseleccionado && this.productoseleccionado.id) {
+                this.obtenerStock();
+            }
+        },
+        
+        // Para la cantidad
+        'datosFormulario.cantidad': function(newVal) {
+            console.log("Cantidad cambiada:", newVal);
+            this.actualizarStock();
+        }
     },
+
+    //watch: {
+      //  previewCsv: 'parseCsv', // Llama a parseCsv cuando previewCsv cambie
+    //},
     methods: {
         toastSuccess(mensaje) {
             this.$toasted.show(`
@@ -706,7 +755,63 @@ export default {
             //Envia la petición para visualizar la data de esa página
         },
 
-
+        // Método para obtener el stock actual 14/03/25
+        obtenerStock() {
+            console.log("Llamando a obtenerStock - Inicio");
+            
+            // Obtener los IDs del producto y almacén (manejar múltiples posibilidades)
+            const productoId = this.datosFormulario.producto || (this.productoseleccionado ? this.productoseleccionado.id : null);
+            const almacenId = this.idAlmacenSeleccionado || this.AlmacenSeleccionado;
+            
+            console.log("Datos para obtenerStock:", {
+                productoId: productoId,
+                almacenId: almacenId
+            });
+            
+            // Verificar que tenemos tanto el producto como el almacén seleccionados
+            if (productoId && almacenId) {
+                console.log("Enviando petición al servidor...");
+                
+                // Hacer la petición al endpoint correcto
+                axios.get('/ajuste-inventario/obtenerStock', {
+                    params: {
+                        producto: productoId,
+                        almacen: almacenId
+                    }
+                })
+                .then(response => {
+                    console.log("Respuesta recibida del servidor:", response.data);
+                    
+                    // Actualizar el stock actual con la respuesta del servidor
+                    this.stock_actual = response.data.stock_actual;
+                    console.log("Stock actual actualizado:", this.stock_actual);
+                    
+                    // Calcular inmediatamente el stock restante
+                    this.actualizarStock();
+                })
+                .catch(error => {
+                    console.error("Error al obtener el stock:", error);
+                    console.error("Detalles del error:", error.response ? error.response.data : error.message);
+                    this.stock_actual = 0; // En caso de error, establecer en 0
+                    this.stock_restante = 0;
+                });
+            } else {
+                console.log("No hay producto o almacén seleccionado");
+                // Si no hay producto o almacén seleccionado, poner en 0
+                this.stock_actual = 0;
+                this.stock_restante = 0;
+            }
+        },
+        actualizarStock() {
+            console.log("Ejecutando actualizarStock");
+            // Calcular el stock restante basado en la cantidad a dar de baja
+            const cantidad = parseInt(this.datosFormulario.cantidad) || 0;
+            console.log("Cantidad:", cantidad);
+            console.log("Stock actual:", this.stock_actual);
+            
+            this.stock_restante = Math.max(0, this.stock_actual - cantidad);
+            console.log("Stock restante calculado:", this.stock_restante);
+        },
 
 
         calcularPrecioValorMoneda(precio) {
@@ -931,6 +1036,7 @@ export default {
             }
         },
         
+        
         datosConfiguracion() {
             let me = this;
             var url = '/configuracion';
@@ -959,7 +1065,15 @@ export default {
         this.datosConfiguracion();
         this.obtenerConfiguracionTrabajo();
         this.listarArticulo(1, this.buscar, this.criterio);
-    }
+    },
+
+        
+        
+        
+    
+
+
+
 }
 </script>
 <style scoped>

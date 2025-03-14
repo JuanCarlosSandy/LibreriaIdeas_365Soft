@@ -12,6 +12,7 @@ use App\Exports\ProductosPorVencerseExport;
 use App\Exports\ProductosVencidosExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InventarioImport;
+use App\Exports\InventarioExport;
 use Exception;
 
 class InventarioController extends Controller
@@ -619,7 +620,7 @@ public function store(Request $request)
         //---------------------------------
         return  response()->json(['inventarios' => $inventarios]);
     }
-
+    //funcion para importar
     public function importar(Request $request)
     {
         try {
@@ -645,4 +646,40 @@ public function store(Request $request)
             return response()->json(['error' => 'Error en la importación', 'mensaje' => $e->getMessage()], 500);
         }
     }
+    //funcion para exportar implementada en fecha 12/03/2025
+    public function exportar(Request $request)
+
+    {
+        try {
+            $idAlmacen = $request->query('idAlmacen', 1);
+            
+            // Consulta ajustada a tu estructura de base de datos
+            $inventario = DB::table('inventarios')
+                ->join('articulos', 'inventarios.idarticulo', '=', 'articulos.id')
+                ->join('almacens', 'inventarios.idalmacen', '=', 'almacens.id')
+                ->leftJoin('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
+                ->leftJoin('personas', 'proveedores.id', '=', 'personas.id')
+                ->select(
+                    'articulos.codigo',
+                    'articulos.nombre as articulo',
+                    'inventarios.saldo_stock as stock_actual',
+                    'personas.nombre as proveedor',
+                    'inventarios.verificado as ajustado'
+                )
+                ->where('inventarios.idalmacen', $idAlmacen)
+                ->get();
+            
+            // Crear y configurar el archivo Excel
+            return Excel::download(new InventarioExport($inventario), 'inventario_' . date('Y-m-d') . '.xlsx');
+        } catch (Exception $e) {
+            Log::error('Error en la exportación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error en la exportación', 'mensaje' => $e->getMessage()], 500);
+        }
+}
+
+
+
+
+
+
 }

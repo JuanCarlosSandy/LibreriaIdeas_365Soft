@@ -12,6 +12,10 @@
                     <button type="button" @click="abrirModalImportar()" class="btn btn-success">
                         <i class="icon-plus"></i>&nbsp;Importar
                     </button>
+                    <!-- Añadi el botón de exportar en fecha 12/03/25 -->
+                    <button type="button" @click="exportarInventario()" class="btn btn-primary ml-2">
+                        <i class="icon-download"></i>&nbsp;Exportar
+                    </button>
                 </div>
                 <div class="row">
                     <div class="row align-items-center g-2">
@@ -277,6 +281,14 @@ export default {
             this.getDatosAlmacen(); // Actualizar datos de almacén
             //this.listarInventario(); // Listar inventario basado en almacén seleccionado
         },
+         //nuevo metodo para exportar añadido en 12/03/25
+         exportarInventario() {
+            let me = this;
+            // Usar el mismo ID de almacén que se usa para listar el inventario
+            let idAlmacen = me.almacenSeleccionado;
+            // Redirigir a la ruta de exportación
+            window.location.href = '/inventarios/exportar?idAlmacen=' + idAlmacen;
+        }
         //--------------------------------------
     },
     mounted() {
