@@ -9,18 +9,25 @@
             <span class="badge bg-primary" id="cufdValor" v-show="mostrarCUFD">No hay CUFD</span>-->
 
             <template>
-                <div class="p-d-flex p-jc-between p-ai-center">
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
-                        <InputText v-model="buscar" @input="buscarVenta" placeholder="Texto a buscar" />
-                    </span>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <!-- Campo de búsqueda -->
+                    <div class="d-flex align-items-center flex-grow-1">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <InputText v-model="buscar" @input="buscarVenta" placeholder="Texto a buscar" class="w-100 w-md-auto"/>
+                        </span>
+                    </div>
 
+                    <!-- Botón de reset -->
                     <Button icon="pi pi-refresh" @click="resetBuscarCriterio" class="p-button-rounded p-button-text"></Button>
-                    <div class="col-md-6 text-right">
-                        <button class="btn btn-primary" @click="cambiarTipoventa('Factura', buscar, criterio)">Factura</button>
+
+                    <!-- Botón de tipo de venta -->
+                    <div class="text-end">
                         <button class="btn btn-secondary" @click="cambiarTipoventa('Recibo', buscar, criterio)">Recibo</button>
                     </div>
-                    <Button @click="abrirTipoVenta" label="Nuevo" icon="pi pi-plus" class="p-button-primary" />
+
+                    <!-- Botón de nuevo -->
+                    <Button @click="abrirTipoVenta" label="Nuevo" icon="pi pi-plus" class="p-button-primary"></Button>
                 </div>
             </template>
             <!-- Listado-->
@@ -163,7 +170,7 @@
         </panel>
         <!-- HASTA AQUI DEVOLUCIONES -->
         <template>
-            <Dialog :visible.sync="modal2" :containerStyle="{ width: '60vw' }" :modal="true" :closable="false"
+            <Dialog :visible.sync="modal2" :containerStyle="{ width: '80vw' }" :modal="true" :closable="false"
                 :closeOnEscape="false">
                 <template #header>
                     <div class="modal-header">
@@ -225,9 +232,12 @@
                                     <div v-if="opcionPago === 'efectivo'" style="margin-top: -5px;">
                                         <!-- Primera Card -->
                                         <div class="card mb-2" style="font-size: 0.75rem;">
-                                            <div class="card-body d-flex justify-content-between align-items-center">
-                                                <div class="d-flex align-items-center">
-                                                    <label for="montoEfectivo" class="mb-0 mr-2"><i class="fa fa-money mr-2"></i> Monto Recibido:</label>
+                                            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                                <!-- Monto Recibido -->
+                                                <div class="d-flex flex-column flex-md-row align-items-center w-100 mb-2 mb-md-0">
+                                                    <label for="montoEfectivo" class="mb-1 mb-md-0 mr-md-2">
+                                                        <i class="fa fa-money mr-2"></i> Monto Recibido:
+                                                    </label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">{{ monedaVenta[1] }}</span>
@@ -235,8 +245,12 @@
                                                         <input type="number" class="form-control" id="montoEfectivo" v-model="recibido" placeholder="Ingrese el monto recibido" />
                                                     </div>
                                                 </div>
-                                                <div class="d-flex align-items-center ml-3">
-                                                    <label for="cambioRecibir" class="mb-0 mr-2"><i class="fa fa-exchange mr-2"></i> Cambio a Entregar:</label>
+
+                                                <!-- Cambio a Entregar -->
+                                                <div class="d-flex flex-column flex-md-row align-items-center w-100">
+                                                    <label for="cambioRecibir" class="mb-1 mb-md-0 mr-md-2">
+                                                        <i class="fa fa-exchange mr-2"></i> Cambio a Entregar:
+                                                    </label>
                                                     <input type="text" class="form-control" id="cambioRecibir" :value="recibido - calcularTotal * parseFloat(monedaVenta[0])" readonly />
                                                 </div>
                                             </div>
@@ -244,27 +258,26 @@
 
                                         <!-- Segunda Card -->
                                         <div class="card" style="font-size: 0.75rem;">
-                                            <div class="card-body d-flex justify-content-between align-items-center">
-                                                <div class="d-flex flex-column">
-                                                    <h5 class="mb-0" style="font-size: 0.95rem;">Detalle de Venta</h5>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="fa fa-money mr-2" style="font-size: 0.75rem;"></i>
-                                                            <span style="font-size: 0.75rem;">Total a Pagar:&nbsp;&nbsp;</span>
-                                                        </div>
-                                                        <span class="font-weight-bold h5 mb-0" style="font-size: 0.95rem; line-height: 1;">{{ (calcularTotal * parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1] }}</span>
-                                                    </div>
-                                                </div>
+                                            <div class="card-body text-center">
+                                                <!-- Título centrado arriba -->
+                                                <h5 class="mb-3" style="font-size: 0.95rem;">Detalle de Venta</h5>
 
-                                                <!--<div class="ml-3">
-                                                    <button class="btn btn-light" @click="aplicarDescuentoRecibo(1)">
-                                                        <img src="/img/Librerialogin.png" alt="Botón Imagen" class="img-fluid" style="height: 24px;">
-                                                    </button>
-                                                </div>-->
-                                                <button type="button" @click="aplicarDescuento"
-                                                        class="btn btn-success btn-block">
+                                                <!-- Contenedor del total y el botón -->
+                                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                                    <!-- Total a pagar -->
+                                                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                                                        <i class="fa fa-money mr-2" style="font-size: 0.75rem;"></i>
+                                                        <span style="font-size: 0.75rem;">Total a Pagar:&nbsp;&nbsp;</span>
+                                                        <span class="font-weight-bold h5 mb-0" style="font-size: 0.95rem; line-height: 1;">
+                                                            {{ (calcularTotal * parseFloat(monedaVenta[0])).toFixed(2) }} {{ monedaVenta[1] }}
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- Botón de pago -->
+                                                    <button type="button" @click="aplicarDescuento" class="btn btn-success">
                                                         <i class="fa fa-check mr-2"></i> Registrar Pago
                                                     </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
