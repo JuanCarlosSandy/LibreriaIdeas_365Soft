@@ -1,7 +1,7 @@
 <template>
     <main class="main">
         <!-- Breadcrumb -->
-        <Panel header=" Ventas">
+        <Panel header="Cobrar">
             <!--<span class="badge bg-secondary" id="comunicacionSiat" style="color: white;" v-show="mostrarElementos">Desconectado</span>
             <span class="badge bg-secondary" id="cuis" v-show="mostrarElementos">CUIS: Inexistente</span>
             <span class="badge bg-secondary" id="cufd" v-show="mostrarElementos">No existe cufd vigente</span>
@@ -87,6 +87,7 @@
                             </Column>
 
                             <Column field="usuario" header="Vendedor"></Column>
+                            <Column field="nombreSucursal" header="Sucursal"></Column>
                             <Column field="razonSocial" header="Cliente"></Column>
                             <Column field="documentoid" header="Documento" class="d-none d-md-table-cell"></Column>
                             <Column field="num_comprobante" header="N° de Venta" class="d-none d-md-table-cell"></Column>

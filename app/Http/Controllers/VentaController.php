@@ -261,6 +261,7 @@ public function indexRecibo(Request $request)
 
     $query = Venta::join('users', 'ventas.idusuario', '=', 'users.id')
         ->join('personas', 'ventas.idcliente', '=', 'personas.id')
+        ->leftjoin('sucursales', 'ventas.idsucursal', '=', 'sucursales.id')
         ->select(
             'ventas.tipo_comprobante as tipo_comprobante',
             'ventas.idcliente',
@@ -275,6 +276,7 @@ public function indexRecibo(Request $request)
             'users.usuario',
             'personas.nombre as razonSocial',
             'personas.num_documento as documentoid',
+            'sucursales.nombre as nombreSucursal'
 
         )
         ->where('ventas.tipo_comprobante', '=', 'RESIVO')
@@ -283,6 +285,10 @@ public function indexRecibo(Request $request)
     // Filtrar por usuario si no es administrador
     if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
+    }
+        // Filtrar por sucursal si es rol 4
+    if ($usuario->idrol == 4) {
+        $query->where('ventas.idsucursal', $usuario->idsucursal);
     }
 
     if (!empty($buscar)) {
@@ -467,7 +473,7 @@ public function indexFacturaCobrar(Request $request)
     if ($usuario->idrol == 4) {
         $query->where('ventas.idsucursal', $usuario->idsucursal);
     }
-    
+
     if (!empty($buscar)) {
         $query->where(function ($q) use ($buscar) {
             $q->where('ventas.num_comprobante', 'like', '%' . $buscar . '%')
@@ -526,6 +532,7 @@ public function indexReciboCobrar(Request $request)
 
     $query = Venta::join('users', 'ventas.idusuario', '=', 'users.id')
         ->join('personas', 'ventas.idcliente', '=', 'personas.id')
+        ->leftjoin('sucursales', 'ventas.idsucursal', '=', 'sucursales.id')
         ->select(
             'ventas.tipo_comprobante as tipo_comprobante',
             'ventas.idcliente',
@@ -540,6 +547,7 @@ public function indexReciboCobrar(Request $request)
             'users.usuario',
             'personas.nombre as razonSocial',
             'personas.num_documento as documentoid',
+            'sucursales.nombre as nombreSucursal'
 
         )
         ->where('ventas.tipo_comprobante', '=', 'RESIVO')

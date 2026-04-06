@@ -95,6 +95,7 @@
                             </Column>
 
                             <Column field="usuario" header="Vendedor"></Column>
+                            <Column field="nombreSucursal" header="Sucursal"></Column>
                             <Column field="razonSocial" header="Cliente"></Column>
                             <Column field="documentoid" header="Documento" class="d-none d-md-table-cell"></Column>
                             <Column field="num_comprobante" header="N° de Venta" class="d-none d-md-table-cell"></Column>
