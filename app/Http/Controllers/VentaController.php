@@ -463,7 +463,11 @@ public function indexFacturaCobrar(Request $request)
     if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
     }
-
+    // Filtrar por sucursal si es rol 4
+    if ($usuario->idrol == 4) {
+        $query->where('ventas.idsucursal', $usuario->idsucursal);
+    }
+    
     if (!empty($buscar)) {
         $query->where(function ($q) use ($buscar) {
             $q->where('ventas.num_comprobante', 'like', '%' . $buscar . '%')
@@ -545,6 +549,10 @@ public function indexReciboCobrar(Request $request)
     // Filtrar por usuario si no es administrador
     if ($usuario->idrol == 2) { // Asumiendo que el rol 1 es el de administrador
         $query->where('ventas.idusuario', $usuario->id);
+    }
+    // Filtrar por sucursal si es rol 4
+    if ($usuario->idrol == 4) {
+        $query->where('ventas.idsucursal', $usuario->idsucursal);
     }
 
     if (!empty($buscar)) {
@@ -940,6 +948,9 @@ public function indexReciboCobrar(Request $request)
         } else {
             $venta->estado = 'Registrado';
         }
+                // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user();  // Usuario logueado
+        $venta->idsucursal = $usuario->idsucursal; // ✅ nuevo: guardar la sucursal del usuario
     
         // Obtener la última caja abierta de la sucursal del usuario logueado
         $usuario = \Auth::user(); // Usuario logueado
@@ -984,6 +995,10 @@ public function indexReciboCobrar(Request $request)
         if ($request->idtipo_venta == 2) {
             $venta->estado = 'Pendiente';
         }
+
+                // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user();  // Usuario logueado
+        $venta->idsucursal = $usuario->idsucursal; // ✅ nuevo: guardar la sucursal del usuario
 
         // Obtener la última caja abierta de la sucursal del usuario logueado
         $usuario = \Auth::user(); // Usuario logueado
@@ -1985,6 +2000,9 @@ public function indexReciboCobrar(Request $request)
         }
 
         $ventaResivo->idcaja = $ultimaCajaAbierta->id;
+          // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user();
+        $ventaResivo->idsucursal = $usuario->idsucursal; // ✅ nuevo: guardar la sucursal del usuario
         $ventaResivo->save();
 
         if ($request->idtipo_venta == 2) {
@@ -2029,6 +2047,9 @@ public function indexReciboCobrar(Request $request)
         }
 
         $ventaResivo->idcaja = $ultimaCajaAbierta->id;
+          // Obtener la última caja abierta de la sucursal del usuario logueado
+        $usuario = \Auth::user();
+        $ventaResivo->idsucursal = $usuario->idsucursal; // ✅ nuevo: guardar la sucursal del usuario
         $ventaResivo->save();
 
         if ($request->idtipo_venta == 2) {

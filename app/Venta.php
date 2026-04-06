@@ -17,7 +17,8 @@ class Venta extends Model
         'estado',
         'idcaja',
         'idtipo_venta',
-        'idtipo_pago'
+        'idtipo_pago',
+        'idsucursal'
     ];
 
     public function caja()
