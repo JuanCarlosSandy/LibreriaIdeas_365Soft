@@ -67,17 +67,13 @@ class PuntoVentaController extends Controller
     {
         if(!$request->ajax()) return redirect('/');
 
-        $ultimoCodigo = PuntoVenta::max('codigoPuntoVenta');
-
-        $nuevoCodigo = $ultimoCodigo + 1;
-
         $punto_ventas = new PuntoVenta();
         $punto_ventas->nombre = $request->nombre;
         $punto_ventas->descripcion = $request->descripcion;
         $punto_ventas->nit = $request->nit;
         $punto_ventas->idtipopuntoventa = $request->idtipopuntoventa;
         $punto_ventas->idsucursal = $request->idsucursal;
-        $punto_ventas->codigoPuntoVenta = $nuevoCodigo;
+        $punto_ventas->codigoPuntoVenta = $request->codigoPuntoVenta;
         $punto_ventas->estado = '1';
 
         $punto_ventas->save();
@@ -87,8 +83,15 @@ class PuntoVentaController extends Controller
     public function cambioEstado(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-        $punto_ventas = PuntoVenta::findOrFail($request->id);
+        $punto_ventas = PuntoVenta::findOrFail($request->codigoPuntoVenta);
         $punto_ventas->estado = '0';
         $punto_ventas->save();
+    }
+
+    public function obtenerPorSucursal($idSucursal)
+    {
+        $puntosDeVenta = PuntoVenta::where('idsucursal', $idSucursal)->get();
+
+        return response()->json($puntosDeVenta);
     }
 }

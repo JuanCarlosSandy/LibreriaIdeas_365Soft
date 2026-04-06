@@ -24,70 +24,53 @@ class UserController extends Controller
 
         $buscar = $request->buscar;
 
-        if ($buscar == '') {
-            $personas = User::join('personas', 'users.id', '=', 'personas.id')
-                ->join('roles', 'users.idrol', '=', 'roles.id')
-                ->join('sucursales', 'users.idsucursal', '=', 'sucursales.id')
-                ->select(
-                    'personas.id', 
-                    'personas.nombre', 
-                    'personas.tipo_documento', 
-                    'personas.num_documento', 
-                    'personas.direccion', 
-                    'personas.telefono', 
-                    'personas.email', 
-                    'personas.fotografia', 
-                    'users.usuario', 
-                    'users.password', 
-                    'users.condicion', 
-                    'users.idrol', 
-                    'roles.nombre as rol', 
-                    'users.idsucursal', 
-                    'sucursales.nombre as sucursal'
-                )
-                ->orderBy('personas.id', 'desc')
-                ->paginate(6);
-        } else {
-            $personas = User::join('personas', 'users.id', '=', 'personas.id')
-                ->join('roles', 'users.idrol', '=', 'roles.id')
-                ->join('sucursales', 'users.idsucursal', '=', 'sucursales.id')
-                ->select(
-                    'personas.id', 
-                    'personas.nombre', 
-                    'personas.tipo_documento', 
-                    'personas.num_documento', 
-                    'personas.direccion', 
-                    'personas.telefono', 
-                    'personas.email', 
-                    'personas.fotografia', 
-                    'users.usuario', 
-                    'users.password', 
-                    'users.condicion', 
-                    'users.idrol', 
-                    'roles.nombre as rol', 
-                    'users.idsucursal', 
-                    'sucursales.nombre as sucursal'
-                )
-                ->where(function ($query) use ($buscar) {
-                    $query->where('personas.nombre', 'like', '%' . $buscar . '%')
-                        ->orWhere('personas.num_documento', 'like', '%' . $buscar . '%')
-                        ->orWhere('personas.telefono', 'like', '%' . $buscar . '%')
-                        ->orWhere('roles.nombre', 'like', '%' . $buscar . '%')
-                        ->orWhere('sucursales.nombre', 'like', '%' . $buscar . '%');
-                })
-                ->orderBy('personas.id', 'desc')
-                ->paginate(6);
+        $usuario = \Auth::user();
+        $idrol = $usuario->idrol;
+        $idsucursal = $usuario->idsucursal;
+
+        $query = User::join('personas', 'users.id', '=', 'personas.id')
+            ->join('roles', 'users.idrol', '=', 'roles.id')
+            ->join('sucursales', 'users.idsucursal', '=', 'sucursales.id')
+            ->join('punto_ventas', 'users.idpuntoventa', '=', 'punto_ventas.id')
+            ->select(
+                'personas.id',
+                'personas.nombre',
+                'personas.tipo_documento',
+                'personas.num_documento',
+                'personas.direccion',
+                'personas.telefono',
+                'personas.email',
+                'personas.fotografia',
+                'users.usuario',
+                'users.password',
+                'users.condicion',
+                'users.idrol',
+                'roles.nombre as rol',
+                'users.idsucursal',
+                'sucursales.nombre as sucursal',
+                'punto_ventas.nombre as puntoventa',
+                'punto_ventas.id as idpuntoventa'
+            );
+
+        // Búsqueda global en varias columnas
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('personas.nombre', 'like', "%$buscar%")
+                    ->orWhere('personas.tipo_documento', 'like', "%$buscar%")
+                    ->orWhere('personas.num_documento', 'like', "%$buscar%")
+                    ->orWhere('personas.direccion', 'like', "%$buscar%")
+                    ->orWhere('personas.telefono', 'like', "%$buscar%")
+                    ->orWhere('personas.email', 'like', "%$buscar%")
+                    ->orWhere('users.usuario', 'like', "%$buscar%")
+                    ->orWhere('roles.nombre', 'like', "%$buscar%")
+                    ->orWhere('sucursales.nombre', 'like', "%$buscar%")
+                ;
+            });
         }
 
+        $personas = $query->orderBy('personas.id', 'desc')->get();
+
         return [
-            'pagination' => [
-                'total' => $personas->total(),
-                'current_page' => $personas->currentPage(),
-                'per_page' => $personas->perPage(),
-                'last_page' => $personas->lastPage(),
-                'from' => $personas->firstItem(),
-                'to' => $personas->lastItem(),
-            ],
             'personas' => $personas
         ];
     }
@@ -137,7 +120,7 @@ class UserController extends Controller
             $user->usuario = $request->usuario;
             $user->password = bcrypt($request->password);
             $user->condicion = '1';
-            $user->idpuntoventa = '1';
+            $user->idpuntoventa = $request->idpuntoventa;
             $user->save();
 
             DB::commit();
@@ -164,22 +147,24 @@ class UserController extends Controller
             $persona->email = $request->email;
 
 
-            $nombreimagen = "";
+            $nombreimagen = $persona->fotografia;
             if ($request->hasFile('fotografia')) {
                 // Eliminar imagen anterior si existe
-                if ($persona->fotografia != '' && Storage::exists('public/img/usuarios/' . $persona->fotografia)) {
-                    Storage::delete('public/img/usuarios/' . $persona->fotografia);
+                if ($persona->fotografia != '' && File::exists(public_path('img/usuarios/' . $persona->fotografia))) {
+                    File::delete(public_path('img/usuarios/' . $persona->fotografia));
                 }
 
                 $imagen = $request->file("fotografia");
                 $nombreimagen = Str::slug($request->nombre) . "." . $imagen->guessExtension();
-                $imagen->storeAs('public/img/usuarios', $nombreimagen);
-
                 $ruta = public_path("img/usuarios/");
+
+                // Crear el directorio si no existe
+                if (!File::isDirectory($ruta)) {
+                    File::makeDirectory($ruta, 0755, true);
+                }
 
                 // Copiar la imagen al directorio
                 copy($imagen->getRealPath(), $ruta . $nombreimagen);
-
 
                 $persona->fotografia = $nombreimagen;
             }
@@ -213,7 +198,9 @@ class UserController extends Controller
             if ($request->idsucursal != '') {
                 $user->idsucursal = $request->idsucursal;
             }
-
+            if ($request->idpuntoventa != '') {
+                $user->idpuntoventa = $request->idpuntoventa;
+            }
             $user->save();
 
             DB::commit();
@@ -221,6 +208,7 @@ class UserController extends Controller
             DB::rollBack();
         }
     }
+
 
     public function desactivar(Request $request)
     {

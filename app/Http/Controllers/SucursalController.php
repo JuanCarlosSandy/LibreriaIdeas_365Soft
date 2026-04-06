@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Empresa;
+use App\PuntoVenta;
 use Illuminate\Http\Request;
 use App\Sucursales;
 use Illuminate\Support\Facades\DB;

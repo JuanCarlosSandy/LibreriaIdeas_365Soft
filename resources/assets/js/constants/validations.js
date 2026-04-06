@@ -231,16 +231,8 @@ export const esquemaAlmacen = yup.object().shape({
     .string()
     .required("El nombre del almacén es obligatorio")
     .max(80, "El nombre del almacén no puede tener más de 80 caracteres"),
-  ubicacion: yup.string().required("La ubicación física es obligatoria"),
   encargado: yup.string().required("El nombre del encargado es obligatorio"),
-  telefono: yup
-    .string()
-    .required("El teléfono es obligatorio")
-    .matches(/^\d{8}$/, "El teléfono debe contener exactamente 8 números"),
   sucursal: yup.string().required("El nombre de la sucursal es obligatorio"),
-  observaciones: yup
-    .string()
-    .max(255, "Las observaciones no pueden tener más de 255 caracteres"),
 });
 
 export const esquemaCliente = yup.object().shape({

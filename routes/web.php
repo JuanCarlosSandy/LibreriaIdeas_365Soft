@@ -942,6 +942,8 @@ Route::group(["middleware" => ["auth"]], function () {
         Route::get('/ventaselect/{id}', 'VentaController@ventaSelecionada');
         Route::get("/articuloAjusteInven", "ArticuloController@indexAjusteInven");
 
+        Route::get('/api/puntosDeVenta/{idSucursal}', 'PuntoVentaController@obtenerPorSucursal');
+
 
     });
 
