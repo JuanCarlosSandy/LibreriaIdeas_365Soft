@@ -410,48 +410,78 @@ class ArticuloController extends Controller
     }
     public function buscarArticuloVenta(Request $request)
     {
-        if (!$request->ajax())
-            return redirect('/');
+        if (!$request->ajax()) return redirect('/');
 
-        $filtro = $request->filtro;
+        $filtro = trim($request->filtro);
         $idAlmacen = $request->idalmacen;
+
         $articulos = Articulo::join('medidas', 'articulos.idmedida', '=', 'medidas.id')
             ->join('categorias', 'articulos.idcategoria', '=', 'categorias.id')
-            ->join('inventarios', 'inventarios.idarticulo', '=', 'articulos.id')
+            ->leftJoin('proveedores', 'articulos.idproveedor', '=', 'proveedores.id')
+            ->leftJoin('personas', 'proveedores.id', '=', 'personas.id')
+            ->leftJoin('inventarios', function($join) use ($idAlmacen) {
+                $join->on('inventarios.idarticulo', '=', 'articulos.id')
+                    ->where('inventarios.idalmacen', '=', $idAlmacen);
+            })
             ->select(
                 'articulos.id',
                 'articulos.nombre',
-                'articulos.stock',
-                'articulos.precio_costo_unid',
-                'articulos.precio_costo_paq',
-                'medidas.descripcion_medida as medida',
-                'medidas.codigoClasificador as codigoClasificador',
-                'articulos.precio_venta',
-                'categorias.codigoProductoSin',
-                'categorias.actividadEconomica',
                 'articulos.codigo',
+                'articulos.codigo_alfanumerico',
+                'articulos.descripcion',
                 'articulos.precio_uno',
-                'articulos.precio_dos',
-                'articulos.precio_tres',
-                'articulos.precio_cuatro',
+                'articulos.precio_dos', 
                 'articulos.fotografia',
                 'articulos.condicion',
-                'articulos.descripcion',
-
                 'categorias.nombre as nombre_categoria',
-                'unidad_envase',
-                DB::raw('(SELECT SUM(inventarios.saldo_stock) FROM inventarios WHERE inventarios.idarticulo = articulos.id AND inventarios.idalmacen = ?) as saldo_stock')
-
+                'medidas.descripcion_medida as medida',
+                'personas.nombre as nombre_proveedor',
+                'categorias.codigoProductoSin',
+                'categorias.actividadEconomica',
+                'medidas.codigoClasificador',
+                'medidas.descripcion_medida as medida',
+                DB::raw('MIN(inventarios.fecha_vencimiento) as fecha_vencimiento'),
+                DB::raw('IFNULL(SUM(inventarios.saldo_stock), 0) as saldo_stock')
             )
-            ->where('articulos.codigo', '=', $filtro)
-            ->where('inventarios.idalmacen', '=', $idAlmacen)
-            // ->where('inventarios.saldo_stock', '>', 0)
-            //->orderBy('inventarios.fecha_vencimiento', 'asc')
-            ->addBinding($idAlmacen, 'select')
-            ->orderBy('articulos.nombre', 'asc')->take(1)->get();
-        Log::info('ARTICULO:', [
-            'DATA' => $articulos,
-        ]);
+            ->where(function ($query) use ($filtro) {
+                $palabras = preg_split('/\s+/', $filtro);
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($sub) use ($palabra) {
+                        $sub->where('articulos.nombre', 'LIKE', "%{$palabra}%")
+                            ->orWhere('articulos.codigo', 'LIKE', "%{$palabra}%")
+                            ->orWhere('articulos.codigo_alfanumerico', 'LIKE', "%{$palabra}%");
+                    });
+                }
+            })
+            ->where('articulos.condicion', '=', 1)
+            ->groupBy(
+                'articulos.id',
+                'articulos.nombre',
+                'articulos.codigo',
+                'articulos.codigo_alfanumerico',
+                'articulos.descripcion',
+                'articulos.precio_uno',
+                'articulos.precio_dos',
+                'articulos.fotografia',
+                'articulos.condicion',
+                'categorias.nombre',
+                'medidas.descripcion_medida',
+                'personas.nombre',
+                'categorias.codigoProductoSin',
+                'categorias.actividadEconomica',
+                'medidas.codigoClasificador',
+                'medidas.descripcion_medida',
+            )
+            ->orderByRaw("
+                CASE 
+                    WHEN articulos.nombre LIKE ? THEN 1
+                    WHEN articulos.nombre LIKE ? THEN 2
+                    ELSE 3
+                END
+            ", ["{$filtro}%", "%{$filtro}%"])
+            ->orderBy('articulos.nombre', 'asc')
+            ->take(10)
+            ->get();
 
         return ['articulos' => $articulos];
     }

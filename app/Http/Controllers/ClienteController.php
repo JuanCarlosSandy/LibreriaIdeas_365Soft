@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon; 
 
 class ClienteController extends Controller
 {
@@ -360,14 +361,53 @@ public function store(Request $request)
         }
     }
 
-    public function buscarPorDocumento(Request $request) {
-        $documento = $request->query('documento');
-        $cliente = Persona::where('num_documento', $documento)->first();
-    
-        if ($cliente) {
-            return response()->json($cliente);
+    public function buscarPorDocumento(Request $request)
+    {
+        $busqueda = $request->query('documento');
+
+        if (!$busqueda || trim($busqueda) === '') {
+            return response()->json([], 400); // evita consultas vacías
+        }
+
+        // IDs a excluir (usuarios y proveedores)
+        $idsExcluidos = DB::table('users')->select('id')
+            ->union(DB::table('proveedores')->select('id'));
+
+        // Separa las palabras del texto de búsqueda (soporta “juan sandy 789”)
+        $palabras = preg_split('/\s+/', trim($busqueda));
+
+        $clientes = Persona::whereNotIn('id', $idsExcluidos)
+            ->where(function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($subquery) use ($palabra) {
+                        $subquery->where('nombre', 'LIKE', "%{$palabra}%")
+                            ->orWhere('num_documento', 'LIKE', "%{$palabra}%")
+                            ->orWhere('telefono', 'LIKE', "%{$palabra}%")
+                            ->orWhere('email', 'LIKE', "%{$palabra}%");
+                    });
+                }
+            })
+            ->get();
+
+        // Verifica si cada cliente cumple años hoy
+        $clientes->transform(function ($cliente) {
+            $cliente->es_cumpleanos_hoy = false;
+
+            if (!empty($cliente->fecha_nacimiento)) {
+                $hoy = Carbon::now();
+                $fechaNacimiento = Carbon::parse($cliente->fecha_nacimiento);
+                if ($hoy->isBirthday($fechaNacimiento)) {
+                    $cliente->es_cumpleanos_hoy = true;
+                }
+            }
+
+            return $cliente;
+        });
+
+        if ($clientes->isNotEmpty()) {
+            return response()->json($clientes);
         } else {
-            return response()->json(null, 404);
+            return response()->json([], 404);
         }
     }
     

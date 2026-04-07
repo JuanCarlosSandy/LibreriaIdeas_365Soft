@@ -301,7 +301,7 @@ public function indexRecibo(Request $request)
         });
     }
 
-    $ventas = $query->paginate(5);
+    $ventas = $query->paginate(12);
 
     return [
         'pagination' => [
